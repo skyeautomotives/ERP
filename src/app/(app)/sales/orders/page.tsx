@@ -6,9 +6,9 @@ import { Pagination } from "@/components/pagination";
 
 const PAGE_SIZE = 20;
 const STATUS_STYLES: Record<string, string> = {
-  pending: "bg-yellow-50 text-yellow-700",
-  converted: "bg-green-50 text-green-700",
-  cancelled: "bg-gray-100 text-gray-500",
+  pending: "bg-yellow-50 dark:bg-yellow-950/40 text-yellow-700 dark:text-yellow-400",
+  converted: "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-400",
+  cancelled: "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400",
 };
 
 export default async function SalesOrdersPage({
@@ -32,7 +32,7 @@ export default async function SalesOrdersPage({
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-gray-900">Sales Orders</h1>
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Sales Orders</h1>
         {can(user, "sales", "create") && (
           <Link
             href="/sales/orders/new"
@@ -43,24 +43,24 @@ export default async function SalesOrdersPage({
         )}
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-lg border border-gray-200 bg-white">
+      <div className="mt-4 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-gray-200 bg-gray-50 text-xs uppercase text-gray-500">
+          <thead className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 text-xs uppercase text-gray-500 dark:text-gray-400">
             <tr>
               <th className="px-4 py-2 font-medium">Customer</th>
               <th className="px-4 py-2 font-medium">Created</th>
               <th className="px-4 py-2 font-medium">Status</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
             {(orders ?? []).map((o) => (
-              <tr key={o.id} className="hover:bg-gray-50">
+              <tr key={o.id} className="hover:bg-gray-50 dark:hover:bg-gray-900">
                 <td className="px-4 py-2">
-                  <Link href={`/sales/orders/${o.id}`} className="font-medium text-blue-600 hover:underline">
+                  <Link href={`/sales/orders/${o.id}`} className="font-medium text-blue-600 dark:text-blue-400 hover:underline">
                     {o.customers?.name ?? "Unknown customer"}
                   </Link>
                 </td>
-                <td className="px-4 py-2 text-gray-500">{new Date(o.created_at).toLocaleString()}</td>
+                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{new Date(o.created_at).toLocaleString()}</td>
                 <td className="px-4 py-2">
                   <span className={`rounded px-1.5 py-0.5 text-xs font-medium ${STATUS_STYLES[o.status]}`}>
                     {o.status}
@@ -70,7 +70,7 @@ export default async function SalesOrdersPage({
             ))}
             {(!orders || orders.length === 0) && (
               <tr>
-                <td colSpan={3} className="px-4 py-6 text-center text-gray-400">
+                <td colSpan={3} className="px-4 py-6 text-center text-gray-400 dark:text-gray-500">
                   No sales orders yet.
                 </td>
               </tr>

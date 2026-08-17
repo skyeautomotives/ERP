@@ -18,7 +18,7 @@ export function CancelInvoiceButton({ invoiceId }: { invoiceId: string }) {
           router.refresh();
         });
       }}
-      className="rounded-md border border-red-200 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-60"
+      className="rounded-md border border-red-200 dark:border-red-900 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950 disabled:opacity-60"
     >
       {pending ? "Cancelling..." : "Cancel invoice"}
     </button>

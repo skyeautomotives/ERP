@@ -25,34 +25,34 @@ export default async function SalesOrderDetailPage({ params }: { params: Promise
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold text-gray-900">{order.customers?.name ?? "Sales order"}</h1>
-          <p className="text-sm text-gray-500">Status: {order.status}</p>
+          <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{order.customers?.name ?? "Sales order"}</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Status: {order.status}</p>
         </div>
         {order.status === "pending" && can(user, "sales", "create") && <OrderActions orderId={order.id} />}
         {order.status === "converted" && order.converted_invoice_id && (
           <Link
             href={`/sales/${order.converted_invoice_id}`}
-            className="text-sm font-medium text-blue-600 hover:underline"
+            className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
           >
             View invoice
           </Link>
         )}
       </div>
 
-      <div className="mt-6 grid grid-cols-2 gap-6 rounded-lg border border-gray-200 bg-white p-6 text-sm">
+      <div className="mt-6 grid grid-cols-2 gap-6 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 text-sm">
         <div>
-          <p className="text-gray-500">Route</p>
-          <p className="font-medium text-gray-900">{order.routes?.name ?? "-"}</p>
+          <p className="text-gray-500 dark:text-gray-400">Route</p>
+          <p className="font-medium text-gray-900 dark:text-gray-100">{order.routes?.name ?? "-"}</p>
         </div>
         <div>
-          <p className="text-gray-500">Sales staff</p>
-          <p className="font-medium text-gray-900">{order.user_profiles?.full_name ?? "-"}</p>
+          <p className="text-gray-500 dark:text-gray-400">Sales staff</p>
+          <p className="font-medium text-gray-900 dark:text-gray-100">{order.user_profiles?.full_name ?? "-"}</p>
         </div>
       </div>
 
-      <div className="mt-6 overflow-hidden rounded-lg border border-gray-200 bg-white">
+      <div className="mt-6 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-gray-200 bg-gray-50 text-xs uppercase text-gray-500">
+          <thead className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 text-xs uppercase text-gray-500 dark:text-gray-400">
             <tr>
               <th className="px-4 py-2 font-medium">Product</th>
               <th className="px-4 py-2 font-medium">Qty</th>
@@ -60,15 +60,15 @@ export default async function SalesOrderDetailPage({ params }: { params: Promise
               <th className="px-4 py-2 font-medium">Disc %</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
             {(items ?? []).map((item) => (
               <tr key={item.id}>
-                <td className="px-4 py-2 text-gray-900">
+                <td className="px-4 py-2 text-gray-900 dark:text-gray-100">
                   {item.products?.code} - {item.products?.name}
                 </td>
-                <td className="px-4 py-2 text-gray-500">{item.quantity}</td>
-                <td className="px-4 py-2 text-gray-500">{Number(item.rate).toFixed(2)}</td>
-                <td className="px-4 py-2 text-gray-500">{item.discount_percent}</td>
+                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{item.quantity}</td>
+                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{Number(item.rate).toFixed(2)}</td>
+                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{item.discount_percent}</td>
               </tr>
             ))}
           </tbody>
@@ -76,8 +76,8 @@ export default async function SalesOrderDetailPage({ params }: { params: Promise
       </div>
 
       {order.notes && (
-        <p className="mt-4 text-sm text-gray-500">
-          <span className="font-medium text-gray-700">Notes: </span>
+        <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
+          <span className="font-medium text-gray-700 dark:text-gray-300">Notes: </span>
           {order.notes}
         </p>
       )}

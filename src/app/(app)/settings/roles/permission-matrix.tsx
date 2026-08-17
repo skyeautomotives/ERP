@@ -49,7 +49,7 @@ export function PermissionMatrix({
             className={`rounded-full px-3 py-1 text-sm font-medium ${
               r.id === selectedRoleId
                 ? "bg-blue-600 text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200"
             }`}
           >
             {r.name}
@@ -58,14 +58,14 @@ export function PermissionMatrix({
       </div>
 
       {isAdminRole && (
-        <p className="mb-3 text-sm text-gray-500">
+        <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">
           Admin always has full access and can&apos;t be restricted here.
         </p>
       )}
 
-      <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+      <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-gray-200 bg-gray-50 text-xs uppercase text-gray-500">
+          <thead className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 text-xs uppercase text-gray-500 dark:text-gray-400">
             <tr>
               <th className="px-4 py-2 font-medium">Module</th>
               {ACTIONS.map((a) => (
@@ -75,10 +75,10 @@ export function PermissionMatrix({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
             {modules.map((mod) => (
               <tr key={mod}>
-                <td className="px-4 py-2 capitalize text-gray-900">{mod}</td>
+                <td className="px-4 py-2 capitalize text-gray-900 dark:text-gray-100">{mod}</td>
                 {ACTIONS.map((action) => {
                   const permissionId = permByModuleAction.get(`${mod}:${action}`);
                   if (!permissionId) return <td key={action} />;

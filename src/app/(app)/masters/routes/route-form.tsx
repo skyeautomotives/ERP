@@ -27,33 +27,35 @@ export function RouteForm({
   return (
     <form action={formAction} className="max-w-lg space-y-4">
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Route name</label>
+        <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Route name</label>
         <input
           name="name"
           required
           defaultValue={route?.name ?? ""}
           disabled={!canEdit}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-50"
+          autoComplete="off"
+          className="w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-500 dark:disabled:text-gray-500"
         />
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Area</label>
+        <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Area</label>
         <input
           name="area"
           defaultValue={route?.area ?? ""}
           disabled={!canEdit}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-50"
+          autoComplete="off"
+          className="w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-500 dark:disabled:text-gray-500"
         />
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Assigned staff</label>
+        <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Assigned staff</label>
         <select
           name="assigned_user_id"
           defaultValue={route?.assigned_user_id ?? ""}
           disabled={!canEdit}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-50"
+          className="w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm disabled:bg-gray-50 dark:disabled:bg-gray-800"
         >
           <option value="">Unassigned</option>
           {staff.map((s) => (
@@ -65,10 +67,10 @@ export function RouteForm({
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Route days</label>
+        <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Route days</label>
         <div className="flex flex-wrap gap-3">
           {WEEKDAYS.map((day) => (
-            <label key={day} className="flex items-center gap-1 text-sm text-gray-700">
+            <label key={day} className="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-300">
               <input
                 type="checkbox"
                 name="route_days"
@@ -82,7 +84,7 @@ export function RouteForm({
         </div>
       </div>
 
-      {state.error && <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{state.error}</p>}
+      {state.error && <p className="rounded-md bg-red-50 dark:bg-red-950/40 px-3 py-2 text-sm text-red-700 dark:text-red-400">{state.error}</p>}
 
       {canEdit && (
         <button

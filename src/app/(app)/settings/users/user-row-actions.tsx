@@ -17,7 +17,7 @@ export function UserRowActions({
   const [pending, startTransition] = useTransition();
 
   if (isSelf) {
-    return <span className="text-xs text-gray-400">You</span>;
+    return <span className="text-xs text-gray-400 dark:text-gray-500">You</span>;
   }
 
   return (
@@ -29,7 +29,7 @@ export function UserRowActions({
           router.refresh();
         })
       }
-      className="text-sm font-medium text-blue-600 hover:underline disabled:opacity-60"
+      className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline disabled:opacity-60"
     >
       {isActive ? "Deactivate" : "Activate"}
     </button>

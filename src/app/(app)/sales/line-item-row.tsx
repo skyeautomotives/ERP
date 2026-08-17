@@ -74,13 +74,13 @@ export function LineItemRow({
   }
 
   return (
-    <div className="rounded-md border border-gray-200 p-3">
+    <div className="rounded-md border border-gray-200 dark:border-gray-800 p-3">
       <div className="grid grid-cols-12 gap-2">
         <select
           name="line_product_id"
           value={item.product_id}
           onChange={(e) => handleProductChange(e.target.value)}
-          className="col-span-4 rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+          className="col-span-4 rounded-md border border-gray-300 dark:border-gray-700 px-2 py-1.5 text-sm"
         >
           <option value="">Select product...</option>
           {products.map((p) => (
@@ -97,7 +97,7 @@ export function LineItemRow({
           placeholder="Qty"
           value={item.quantity || ""}
           onChange={(e) => onChange({ ...item, quantity: Number(e.target.value) })}
-          className="col-span-2 rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+          className="col-span-2 rounded-md border border-gray-300 dark:border-gray-700 px-2 py-1.5 text-sm"
         />
         <input
           type="number"
@@ -106,7 +106,7 @@ export function LineItemRow({
           placeholder="Rate"
           value={item.rate || ""}
           onChange={(e) => onChange({ ...item, rate: Number(e.target.value) })}
-          className="col-span-2 rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+          className="col-span-2 rounded-md border border-gray-300 dark:border-gray-700 px-2 py-1.5 text-sm"
         />
         <input
           type="number"
@@ -116,22 +116,22 @@ export function LineItemRow({
           placeholder="Disc %"
           value={item.discount_percent || ""}
           onChange={(e) => onChange({ ...item, discount_percent: Number(e.target.value) })}
-          className="col-span-2 rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+          className="col-span-2 rounded-md border border-gray-300 dark:border-gray-700 px-2 py-1.5 text-sm"
         />
-        <span className="col-span-1 self-center text-sm text-gray-500">
+        <span className="col-span-1 self-center text-sm text-gray-500 dark:text-gray-400">
           GST {product?.gst_percent ?? 0}%
         </span>
         <button
           type="button"
           onClick={onRemove}
-          className="col-span-1 rounded-md text-sm font-medium text-red-600 hover:bg-red-50"
+          className="col-span-1 rounded-md text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
         >
           Remove
         </button>
       </div>
 
       {customerId && item.product_id && (
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
           {loadingLastPrice
             ? "Checking last price..."
             : lastPrice

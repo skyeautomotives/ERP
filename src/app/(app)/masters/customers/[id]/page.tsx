@@ -27,14 +27,14 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-gray-900">{customer.name}</h1>
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{customer.name}</h1>
         {canEdit && (
           <DeactivateButton id={customer.id} isActive={customer.is_active} action={setCustomerActive} />
         )}
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="rounded-lg border border-gray-200 bg-white p-6 lg:col-span-2">
+        <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 lg:col-span-2">
           <CustomerForm
             customer={customer}
             routes={(routes ?? []).map((r) => ({ id: r.id, label: r.name }))}
@@ -43,8 +43,8 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
             canEdit={canEdit}
           />
         </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-6">
-          <h2 className="mb-3 text-sm font-semibold text-gray-900">History</h2>
+        <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6">
+          <h2 className="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100">History</h2>
           <RecordHistory table="customers" recordId={customer.id} />
         </div>
       </div>

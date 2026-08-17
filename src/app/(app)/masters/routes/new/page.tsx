@@ -12,8 +12,8 @@ export default async function NewRoutePage() {
 
   return (
     <div>
-      <h1 className="text-lg font-semibold text-gray-900">New route</h1>
-      <div className="mt-6 rounded-lg border border-gray-200 bg-white p-6">
+      <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">New route</h1>
+      <div className="mt-6 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6">
         <RouteForm staff={staff} action={createRoute} canEdit />
       </div>
     </div>

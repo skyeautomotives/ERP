@@ -26,8 +26,8 @@ export default async function NewCreditSalePage() {
 
   return (
     <div>
-      <h1 className="text-lg font-semibold text-gray-900">New credit sale</h1>
-      <div className="mt-6 max-w-4xl rounded-lg border border-gray-200 bg-white p-6">
+      <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">New credit sale</h1>
+      <div className="mt-6 max-w-4xl rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6">
         <SalesInvoiceForm
           saleType="credit"
           customers={customers ?? []}

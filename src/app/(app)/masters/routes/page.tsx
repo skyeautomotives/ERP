@@ -33,7 +33,7 @@ export default async function RoutesPage({
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-gray-900">Routes</h1>
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Routes</h1>
         {can(user, "masters", "create") && (
           <Link
             href="/masters/routes/new"
@@ -48,9 +48,9 @@ export default async function RoutesPage({
         <SearchInput placeholder="Search routes..." />
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-lg border border-gray-200 bg-white">
+      <div className="mt-4 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-gray-200 bg-gray-50 text-xs uppercase text-gray-500">
+          <thead className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 text-xs uppercase text-gray-500 dark:text-gray-400">
             <tr>
               <th className="px-4 py-2 font-medium">Name</th>
               <th className="px-4 py-2 font-medium">Area</th>
@@ -59,17 +59,17 @@ export default async function RoutesPage({
               <th className="px-4 py-2 font-medium">Status</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
             {(routes ?? []).map((r) => (
-              <tr key={r.id} className="hover:bg-gray-50">
+              <tr key={r.id} className="hover:bg-gray-50 dark:hover:bg-gray-900">
                 <td className="px-4 py-2">
-                  <Link href={`/masters/routes/${r.id}`} className="font-medium text-blue-600 hover:underline">
+                  <Link href={`/masters/routes/${r.id}`} className="font-medium text-blue-600 dark:text-blue-400 hover:underline">
                     {r.name}
                   </Link>
                 </td>
-                <td className="px-4 py-2 text-gray-500">{r.area ?? "-"}</td>
-                <td className="px-4 py-2 text-gray-500">{r.user_profiles?.full_name ?? "-"}</td>
-                <td className="px-4 py-2 text-gray-500">{(r.route_days ?? []).join(", ") || "-"}</td>
+                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{r.area ?? "-"}</td>
+                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{r.user_profiles?.full_name ?? "-"}</td>
+                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{(r.route_days ?? []).join(", ") || "-"}</td>
                 <td className="px-4 py-2">
                   <StatusBadge active={r.is_active} />
                 </td>
@@ -77,7 +77,7 @@ export default async function RoutesPage({
             ))}
             {(!routes || routes.length === 0) && (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-gray-400">
+                <td colSpan={5} className="px-4 py-6 text-center text-gray-400 dark:text-gray-500">
                   No routes yet.
                 </td>
               </tr>

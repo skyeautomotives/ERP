@@ -33,7 +33,7 @@ export default async function ProductsPage({
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-gray-900">Products</h1>
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Products</h1>
         {can(user, "masters", "create") && (
           <Link
             href="/masters/products/new"
@@ -48,9 +48,9 @@ export default async function ProductsPage({
         <SearchInput placeholder="Search by name or code..." />
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-lg border border-gray-200 bg-white">
+      <div className="mt-4 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-gray-200 bg-gray-50 text-xs uppercase text-gray-500">
+          <thead className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 text-xs uppercase text-gray-500 dark:text-gray-400">
             <tr>
               <th className="px-4 py-2 font-medium">Code</th>
               <th className="px-4 py-2 font-medium">Name</th>
@@ -61,19 +61,19 @@ export default async function ProductsPage({
               <th className="px-4 py-2 font-medium">Status</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
             {(products ?? []).map((p) => (
-              <tr key={p.id} className="hover:bg-gray-50">
-                <td className="px-4 py-2 text-gray-500">{p.code}</td>
+              <tr key={p.id} className="hover:bg-gray-50 dark:hover:bg-gray-900">
+                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{p.code}</td>
                 <td className="px-4 py-2">
-                  <Link href={`/masters/products/${p.id}`} className="font-medium text-blue-600 hover:underline">
+                  <Link href={`/masters/products/${p.id}`} className="font-medium text-blue-600 dark:text-blue-400 hover:underline">
                     {p.name}
                   </Link>
                 </td>
-                <td className="px-4 py-2 text-gray-500">{p.brand ?? "-"}</td>
-                <td className="px-4 py-2 text-gray-500">{p.product_group ?? "-"}</td>
-                <td className="px-4 py-2 text-gray-500">{p.selling_rate ?? "-"}</td>
-                <td className="px-4 py-2 text-gray-500">{p.gst_percent}</td>
+                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{p.brand ?? "-"}</td>
+                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{p.product_group ?? "-"}</td>
+                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{p.selling_rate ?? "-"}</td>
+                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{p.gst_percent}</td>
                 <td className="px-4 py-2">
                   <StatusBadge active={p.is_active} />
                 </td>
@@ -81,7 +81,7 @@ export default async function ProductsPage({
             ))}
             {(!products || products.length === 0) && (
               <tr>
-                <td colSpan={7} className="px-4 py-6 text-center text-gray-400">
+                <td colSpan={7} className="px-4 py-6 text-center text-gray-400 dark:text-gray-500">
                   No products yet.
                 </td>
               </tr>

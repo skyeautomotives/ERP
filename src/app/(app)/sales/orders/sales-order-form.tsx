@@ -81,12 +81,12 @@ export function SalesOrderForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">Customer</label>
+          <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Customer</label>
           <select
             name="customer_id"
             value={customerId}
             onChange={(e) => handleCustomerChange(e.target.value)}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm"
           >
             <option value="">Select customer...</option>
             {customers.map((c) => (
@@ -97,12 +97,12 @@ export function SalesOrderForm({
           </select>
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">Route</label>
+          <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Route</label>
           <select
             name="route_id"
             value={routeId}
             onChange={(e) => setRouteId(e.target.value)}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm"
           >
             <option value="">None</option>
             {routes.map((r) => (
@@ -113,12 +113,12 @@ export function SalesOrderForm({
           </select>
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">Sales staff</label>
+          <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Sales staff</label>
           <select
             name="staff_id"
             value={staffId}
             onChange={(e) => setStaffId(e.target.value)}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm"
           >
             <option value="">Select staff...</option>
             {staff.map((s) => (
@@ -132,11 +132,11 @@ export function SalesOrderForm({
 
       <div>
         <div className="mb-2 flex items-center justify-between">
-          <label className="text-sm font-medium text-gray-700">Products</label>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Products</label>
           <button
             type="button"
             onClick={() => setItems((prev) => [...prev, emptyItem()])}
-            className="text-sm font-medium text-blue-600 hover:underline"
+            className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
           >
             + Add line
           </button>
@@ -156,16 +156,16 @@ export function SalesOrderForm({
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Notes</label>
+        <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           rows={2}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+          className="w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm"
         />
       </div>
 
-      {error && <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+      {error && <p className="rounded-md bg-red-50 dark:bg-red-950/40 px-3 py-2 text-sm text-red-700 dark:text-red-400">{error}</p>}
 
       <button
         type="submit"

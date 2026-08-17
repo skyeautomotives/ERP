@@ -17,8 +17,8 @@ export default async function NewCustomerPage() {
 
   return (
     <div>
-      <h1 className="text-lg font-semibold text-gray-900">New customer</h1>
-      <div className="mt-6 max-w-2xl rounded-lg border border-gray-200 bg-white p-6">
+      <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">New customer</h1>
+      <div className="mt-6 max-w-2xl rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6">
         <CustomerForm
           routes={(routes ?? []).map((r) => ({ id: r.id, label: r.name }))}
           staff={staff.map((s) => ({ id: s.id, label: s.full_name }))}

@@ -25,7 +25,7 @@ export function Pagination({
   if (totalPages <= 1) return null;
 
   return (
-    <div className="flex items-center justify-between border-t border-gray-200 px-4 py-3 text-sm text-gray-500">
+    <div className="flex items-center justify-between border-t border-gray-200 dark:border-gray-800 px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
       <span>
         Page {page} of {totalPages} ({total} total)
       </span>
@@ -33,8 +33,8 @@ export function Pagination({
         <Link
           href={hrefFor(Math.max(1, page - 1))}
           aria-disabled={page <= 1}
-          className={`rounded-md border border-gray-300 px-3 py-1 ${
-            page <= 1 ? "pointer-events-none opacity-40" : "hover:bg-gray-50"
+          className={`rounded-md border border-gray-300 dark:border-gray-700 px-3 py-1 ${
+            page <= 1 ? "pointer-events-none opacity-40" : "hover:bg-gray-50 dark:hover:bg-gray-900"
           }`}
         >
           Previous
@@ -42,8 +42,8 @@ export function Pagination({
         <Link
           href={hrefFor(Math.min(totalPages, page + 1))}
           aria-disabled={page >= totalPages}
-          className={`rounded-md border border-gray-300 px-3 py-1 ${
-            page >= totalPages ? "pointer-events-none opacity-40" : "hover:bg-gray-50"
+          className={`rounded-md border border-gray-300 dark:border-gray-700 px-3 py-1 ${
+            page >= totalPages ? "pointer-events-none opacity-40" : "hover:bg-gray-50 dark:hover:bg-gray-900"
           }`}
         >
           Next

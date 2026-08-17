@@ -24,14 +24,15 @@ function Field({
 }) {
   return (
     <div>
-      <label className="mb-1 block text-sm font-medium text-gray-700">{label}</label>
+      <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
       <input
         name={name}
         type={type}
         required={required}
         defaultValue={defaultValue ?? ""}
         disabled={disabled}
-        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-50"
+        autoComplete="off"
+        className="w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-500 dark:disabled:text-gray-500"
       />
     </div>
   );
@@ -79,12 +80,12 @@ export function SupplierForm({
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Opening balance type</label>
+        <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Opening balance type</label>
         <select
           name="opening_balance_type"
           defaultValue={supplier?.opening_balance_type ?? "credit"}
           disabled={!canEdit}
-          className="w-full max-w-xs rounded-md border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-50"
+          className="w-full max-w-xs rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm disabled:bg-gray-50 dark:disabled:bg-gray-800"
         >
           <option value="debit">Debit</option>
           <option value="credit">Credit</option>
@@ -102,7 +103,7 @@ export function SupplierForm({
         <Field label="IFSC" name="bank_ifsc" defaultValue={supplier?.bank_ifsc} disabled={!canEdit} />
       </div>
 
-      {state.error && <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{state.error}</p>}
+      {state.error && <p className="rounded-md bg-red-50 dark:bg-red-950/40 px-3 py-2 text-sm text-red-700 dark:text-red-400">{state.error}</p>}
 
       {canEdit && (
         <button

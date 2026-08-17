@@ -14,12 +14,12 @@ export default async function CompanySettingsPage() {
 
   return (
     <div>
-      <h1 className="text-lg font-semibold text-gray-900">Company Setup</h1>
-      <p className="mt-1 text-sm text-gray-500">
+      <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Company Setup</h1>
+      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
         This profile is used on printable invoices and reports (section 50 of the spec).
       </p>
 
-      <div className="mt-6 max-w-2xl rounded-lg border border-gray-200 bg-white p-6">
+      <div className="mt-6 max-w-2xl rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6">
         <CompanyForm company={company} canEdit={can(user, "settings", "edit")} />
       </div>
     </div>

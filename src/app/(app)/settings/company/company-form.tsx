@@ -24,7 +24,7 @@ function Field({
 }) {
   return (
     <div>
-      <label htmlFor={name} className="mb-1 block text-sm font-medium text-gray-700">
+      <label htmlFor={name} className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
         {label}
       </label>
       <input
@@ -33,7 +33,8 @@ function Field({
         type={type}
         defaultValue={defaultValue ?? ""}
         disabled={disabled}
-        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-50 disabled:text-gray-500"
+        autoComplete="off"
+        className="w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-500 dark:disabled:text-gray-500"
       />
     </div>
   );
@@ -43,7 +44,7 @@ export function CompanyForm({ company, canEdit }: { company: Company | null; can
   const [state, formAction, pending] = useActionState(updateCompanySettings, initialState);
 
   if (!company) {
-    return <p className="text-sm text-gray-500">No company record found.</p>;
+    return <p className="text-sm text-gray-500 dark:text-gray-400">No company record found.</p>;
   }
 
   return (
@@ -61,7 +62,7 @@ export function CompanyForm({ company, canEdit }: { company: Company | null; can
 
       {canEdit && (
         <div>
-          <label htmlFor="logo" className="mb-1 block text-sm font-medium text-gray-700">
+          <label htmlFor="logo" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
             Logo
           </label>
           <input id="logo" name="logo" type="file" accept="image/*" className="text-sm" />
@@ -89,7 +90,7 @@ export function CompanyForm({ company, canEdit }: { company: Company | null; can
       </div>
 
       <div>
-        <label htmlFor="invoice_terms" className="mb-1 block text-sm font-medium text-gray-700">
+        <label htmlFor="invoice_terms" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
           Invoice terms
         </label>
         <textarea
@@ -97,8 +98,9 @@ export function CompanyForm({ company, canEdit }: { company: Company | null; can
           name="invoice_terms"
           defaultValue={company.invoice_terms ?? ""}
           disabled={!canEdit}
+          autoComplete="off"
           rows={3}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-50 disabled:text-gray-500"
+          className="w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-500 dark:disabled:text-gray-500"
         />
       </div>
 
@@ -109,9 +111,9 @@ export function CompanyForm({ company, canEdit }: { company: Company | null; can
         disabled={!canEdit}
       />
 
-      {state.error && <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{state.error}</p>}
+      {state.error && <p className="rounded-md bg-red-50 dark:bg-red-950/40 px-3 py-2 text-sm text-red-700 dark:text-red-400">{state.error}</p>}
       {state.success && (
-        <p className="rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">Saved.</p>
+        <p className="rounded-md bg-green-50 dark:bg-green-950/40 px-3 py-2 text-sm text-green-700 dark:text-green-400">Saved.</p>
       )}
 
       {canEdit && (

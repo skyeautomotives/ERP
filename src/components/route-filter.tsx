@@ -22,7 +22,7 @@ export function RouteFilter({ routes }: { routes: { id: string; name: string }[]
     <select
       defaultValue={searchParams.get("route") ?? ""}
       onChange={handleChange}
-      className="rounded-md border border-gray-300 px-3 py-2 text-sm"
+      className="rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm"
     >
       <option value="">All routes</option>
       {routes.map((r) => (

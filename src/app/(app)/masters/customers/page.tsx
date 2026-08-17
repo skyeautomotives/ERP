@@ -36,7 +36,7 @@ export default async function CustomersPage({
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-gray-900">Customers</h1>
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Customers</h1>
         {can(user, "masters", "create") && (
           <Link
             href="/masters/customers/new"
@@ -52,9 +52,9 @@ export default async function CustomersPage({
         <RouteFilter routes={routes ?? []} />
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-lg border border-gray-200 bg-white">
+      <div className="mt-4 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-gray-200 bg-gray-50 text-xs uppercase text-gray-500">
+          <thead className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 text-xs uppercase text-gray-500 dark:text-gray-400">
             <tr>
               <th className="px-4 py-2 font-medium">Name</th>
               <th className="px-4 py-2 font-medium">Phone</th>
@@ -64,18 +64,18 @@ export default async function CustomersPage({
               <th className="px-4 py-2 font-medium">Status</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
             {(customers ?? []).map((c) => (
-              <tr key={c.id} className="hover:bg-gray-50">
+              <tr key={c.id} className="hover:bg-gray-50 dark:hover:bg-gray-900">
                 <td className="px-4 py-2">
-                  <Link href={`/masters/customers/${c.id}`} className="font-medium text-blue-600 hover:underline">
+                  <Link href={`/masters/customers/${c.id}`} className="font-medium text-blue-600 dark:text-blue-400 hover:underline">
                     {c.name}
                   </Link>
                 </td>
-                <td className="px-4 py-2 text-gray-500">{c.phone ?? "-"}</td>
-                <td className="px-4 py-2 text-gray-500">{c.gstin ?? "-"}</td>
-                <td className="px-4 py-2 text-gray-500">{c.routes?.name ?? "-"}</td>
-                <td className="px-4 py-2 text-gray-500">{c.category ?? "-"}</td>
+                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{c.phone ?? "-"}</td>
+                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{c.gstin ?? "-"}</td>
+                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{c.routes?.name ?? "-"}</td>
+                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{c.category ?? "-"}</td>
                 <td className="px-4 py-2">
                   <StatusBadge active={c.is_active} />
                 </td>
@@ -83,7 +83,7 @@ export default async function CustomersPage({
             ))}
             {(!customers || customers.length === 0) && (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-center text-gray-400">
+                <td colSpan={6} className="px-4 py-6 text-center text-gray-400 dark:text-gray-500">
                   No customers yet.
                 </td>
               </tr>

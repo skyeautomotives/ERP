@@ -20,22 +20,22 @@ export default async function UsersSettingsPage() {
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold text-gray-900">Users</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Users</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             Only Admins can create accounts or change access - self sign-up is disabled.
           </p>
         </div>
         {currentUser?.roleName === "Admin" && <UserForm roles={roles ?? []} />}
       </div>
 
-      <div className="mt-6 overflow-hidden rounded-lg border border-gray-200 bg-white">
+      <div className="mt-6 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
         {usersError ? (
-          <p className="p-4 text-sm text-gray-500">
+          <p className="p-4 text-sm text-gray-500 dark:text-gray-400">
             You don&apos;t have permission to view the user list.
           </p>
         ) : (
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-gray-200 bg-gray-50 text-xs uppercase text-gray-500">
+            <thead className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 text-xs uppercase text-gray-500 dark:text-gray-400">
               <tr>
                 <th className="px-4 py-2 font-medium">Name</th>
                 <th className="px-4 py-2 font-medium">Email</th>
@@ -44,16 +44,16 @@ export default async function UsersSettingsPage() {
                 <th className="px-4 py-2 font-medium"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {(users ?? []).map((u) => (
                 <tr key={u.id}>
-                  <td className="px-4 py-2 text-gray-900">{u.full_name}</td>
-                  <td className="px-4 py-2 text-gray-500">{u.email}</td>
-                  <td className="px-4 py-2 text-gray-500">{u.role_name}</td>
+                  <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{u.full_name}</td>
+                  <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{u.email}</td>
+                  <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{u.role_name}</td>
                   <td className="px-4 py-2">
                     <span
                       className={`rounded px-1.5 py-0.5 text-xs font-medium ${
-                        u.is_active ? "bg-green-50 text-green-700" : "bg-gray-100 text-gray-500"
+                        u.is_active ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-400" : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
                       }`}
                     >
                       {u.is_active ? "Active" : "Inactive"}

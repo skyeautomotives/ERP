@@ -23,7 +23,7 @@ export async function RecordHistory({ table, recordId }: { table: string; record
     .limit(50);
 
   if (!logs || logs.length === 0) {
-    return <p className="text-sm text-gray-500">No history yet.</p>;
+    return <p className="text-sm text-gray-500 dark:text-gray-400">No history yet.</p>;
   }
 
   return (
@@ -36,13 +36,13 @@ export async function RecordHistory({ table, recordId }: { table: string; record
         return (
           <li key={i} className="border-b border-gray-100 pb-3 text-sm last:border-0">
             <div className="flex items-center justify-between">
-              <span className="font-medium text-gray-700">{log.action}</span>
-              <span className="text-xs text-gray-400">
+              <span className="font-medium text-gray-700 dark:text-gray-300">{log.action}</span>
+              <span className="text-xs text-gray-400 dark:text-gray-500">
                 {new Date(log.created_at).toLocaleString()}
               </span>
             </div>
             {changes && changes.length > 0 && (
-              <ul className="mt-1 list-disc pl-5 text-xs text-gray-500">
+              <ul className="mt-1 list-disc pl-5 text-xs text-gray-500 dark:text-gray-400">
                 {changes.map((c) => (
                   <li key={c}>{c}</li>
                 ))}

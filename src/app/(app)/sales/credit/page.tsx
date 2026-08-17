@@ -35,7 +35,7 @@ export default async function CreditSalesPage({
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-gray-900">Credit Sales</h1>
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Credit Sales</h1>
         {can(user, "sales", "create") && (
           <Link
             href="/sales/credit/new"
@@ -50,9 +50,9 @@ export default async function CreditSalesPage({
         <SearchInput placeholder="Search invoice number..." />
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-lg border border-gray-200 bg-white">
+      <div className="mt-4 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-gray-200 bg-gray-50 text-xs uppercase text-gray-500">
+          <thead className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 text-xs uppercase text-gray-500 dark:text-gray-400">
             <tr>
               <th className="px-4 py-2 font-medium">Invoice #</th>
               <th className="px-4 py-2 font-medium">Date</th>
@@ -62,22 +62,22 @@ export default async function CreditSalesPage({
               <th className="px-4 py-2 font-medium">Status</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
             {(invoices ?? []).map((inv) => (
-              <tr key={inv.id} className="hover:bg-gray-50">
+              <tr key={inv.id} className="hover:bg-gray-50 dark:hover:bg-gray-900">
                 <td className="px-4 py-2">
-                  <Link href={`/sales/${inv.id}`} className="font-medium text-blue-600 hover:underline">
+                  <Link href={`/sales/${inv.id}`} className="font-medium text-blue-600 dark:text-blue-400 hover:underline">
                     {inv.invoice_number}
                   </Link>
                 </td>
-                <td className="px-4 py-2 text-gray-500">{inv.invoice_date}</td>
-                <td className="px-4 py-2 text-gray-500">{inv.customers?.name ?? "-"}</td>
-                <td className="px-4 py-2 text-gray-500">{inv.due_date ?? "-"}</td>
-                <td className="px-4 py-2 text-gray-500">{Number(inv.total_amount).toFixed(2)}</td>
+                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{inv.invoice_date}</td>
+                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{inv.customers?.name ?? "-"}</td>
+                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{inv.due_date ?? "-"}</td>
+                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{Number(inv.total_amount).toFixed(2)}</td>
                 <td className="px-4 py-2">
                   <span
                     className={`rounded px-1.5 py-0.5 text-xs font-medium ${
-                      inv.status === "active" ? "bg-green-50 text-green-700" : "bg-gray-100 text-gray-500"
+                      inv.status === "active" ? "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-400" : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
                     }`}
                   >
                     {inv.status}
@@ -87,7 +87,7 @@ export default async function CreditSalesPage({
             ))}
             {(!invoices || invoices.length === 0) && (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-center text-gray-400">
+                <td colSpan={6} className="px-4 py-6 text-center text-gray-400 dark:text-gray-500">
                   No credit sales yet.
                 </td>
               </tr>

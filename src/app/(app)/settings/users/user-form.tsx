@@ -54,41 +54,44 @@ export function UserForm({ roles }: { roles: Role[] }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-md space-y-3 rounded-lg border border-gray-200 bg-white p-4"
+      className="max-w-md space-y-3 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4"
     >
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Full name</label>
+        <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Full name</label>
         <input
           name="fullName"
           required
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+          autoComplete="off"
+          className="w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
         />
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Email</label>
+        <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
         <input
           name="email"
           type="email"
           required
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+          autoComplete="off"
+          className="w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
         />
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Temporary password</label>
+        <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Temporary password</label>
         <input
           name="password"
           type="text"
           required
           minLength={8}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+          autoComplete="new-password"
+          className="w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
         />
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Role</label>
+        <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Role</label>
         <select
           name="roleId"
           required
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+          className="w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm"
         >
           {roles.map((r) => (
             <option key={r.id} value={r.id}>
@@ -98,7 +101,7 @@ export function UserForm({ roles }: { roles: Role[] }) {
         </select>
       </div>
 
-      {error && <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+      {error && <p className="rounded-md bg-red-50 dark:bg-red-950/40 px-3 py-2 text-sm text-red-700 dark:text-red-400">{error}</p>}
 
       <div className="flex gap-2">
         <button
@@ -111,7 +114,7 @@ export function UserForm({ roles }: { roles: Role[] }) {
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="rounded-md px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100"
+          className="rounded-md px-4 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
         >
           Cancel
         </button>

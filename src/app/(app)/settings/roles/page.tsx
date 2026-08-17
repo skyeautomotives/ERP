@@ -12,8 +12,8 @@ export default async function RolesSettingsPage() {
   if (currentUser?.roleName !== "Admin") {
     return (
       <div>
-        <h1 className="text-lg font-semibold text-gray-900">Roles & Permissions</h1>
-        <p className="mt-4 text-sm text-gray-500">Only Admins can view the permission matrix.</p>
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Roles & Permissions</h1>
+        <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">Only Admins can view the permission matrix.</p>
       </div>
     );
   }
@@ -33,8 +33,8 @@ export default async function RolesSettingsPage() {
 
   return (
     <div>
-      <h1 className="text-lg font-semibold text-gray-900">Roles & Permissions</h1>
-      <p className="mt-1 text-sm text-gray-500">
+      <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Roles & Permissions</h1>
+      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
         Configure what each role can see and do, module by module (section 5 of the spec).
       </p>
 
