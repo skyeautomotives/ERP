@@ -263,6 +263,26 @@ A simple checklist for tracking each month's GSTR-1 and GSTR-3B through **Draft*
 
 Credit and debit notes aren't yet merged into a combined table inside the GSTR-1 report itself (they show up correctly in their own screens and in your account balances, just not folded into that one report yet).
 
+## Phase 9: Staff, Sales, and Collection Performance
+
+A new **Staff** section in the menu holds three reports for seeing how each staff member and each route is doing.
+
+### Staff Performance (Staff > Staff Performance)
+
+One row per staff member for the date range you pick (Today / This Week / This Month, or a custom range): how many invoices and customers they handled, total sales, how much of that was credit, how much has been collected, how much is still outstanding, sales returns, and profit (Admins/Accountants/Management only - Sales Staff accounts don't see profit anywhere in the app). The last six columns show how quickly their credit sales are getting paid off, broken into the same 0-15/16-30/31-45/46-60/61-90/90+ day bands used on Bill-wise Outstanding.
+
+### Credit Collection Within 90 Days (Staff > Collection Report)
+
+Every individual payment collected against a credit sale in the period, one row each - which staff member, which customer, the original invoice and its due date, when it was actually paid, how much, and how many days that took. Useful for spotting slow-paying accounts or comparing staff on collection speed.
+
+### Route Performance (Staff > Route Performance)
+
+Sales, collection, outstanding, customer count, and profit for each delivery route over the period, plus a second table showing the split by both route and staff (since more than one staff member can work the same route).
+
+### A correction worth knowing about
+
+While building this section, a real issue was found and fixed: cash sales were incorrectly being counted as "outstanding" everywhere in the app (Bill-wise Outstanding, Customer Ledger, and these new staff reports), even though a cash sale is paid in full on the spot. That's fixed now - only credit sales carry an outstanding balance. Bill-wise Outstanding was also silently showing "Nothing outstanding" at all times due to a technical query bug - that's fixed too, and it now correctly lists real outstanding invoices.
+
 ---
 
-*More sections will be added here as each phase of the build ships (Staff & Incentives, Dashboard, and Mobile).*
+*More sections will be added here as each phase of the build ships (Incentive Engine, Dashboard, and Mobile).*

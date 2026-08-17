@@ -350,4 +350,28 @@ export const HELP_CONTENT: Record<string, HelpContent> = {
       { label: "Reference #", text: "Optional - the acknowledgement or reference number you get after filing, for your own records." },
     ],
   },
+  "staff-performance": {
+    title: "Staff Performance",
+    description: "Sales, collection, outstanding, and returns for every staff member over a period, plus how quickly each one's credit sales get paid off.",
+    fields: [
+      { label: "Credit sales", text: "Only the credit-sale portion of total sales - the part that can have an outstanding balance and needs collecting." },
+      { label: "Collection", text: "Money actually received in this period against this staff member's credit sales, regardless of when the original invoice was raised." },
+      { label: "0-15d ... 90+d", text: "Of the money collected in this period, how many days after the invoice date it arrived - the same ageing bands used on Bill-wise Outstanding." },
+    ],
+  },
+  "collection-report": {
+    title: "Credit Collection Within 90 Days",
+    description: "One row per payment collected against a credit sale in this period, showing exactly how long it took from invoice to payment.",
+    fields: [
+      { label: "Days taken", text: "Payment date minus invoice date." },
+      { label: "Status", text: "Which ageing band the collection falls into - green is fast, red is slow." },
+    ],
+  },
+  "route-performance": {
+    title: "Route Performance",
+    description: "Sales, collection, and outstanding by delivery route over a period, plus which staff sold on each route.",
+    fields: [
+      { label: "Route-wise staff breakdown", text: "Since a route isn't always worked by exactly one staff member, this table shows sales split by both route and staff for the period." },
+    ],
+  },
 };

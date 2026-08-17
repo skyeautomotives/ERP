@@ -1964,12 +1964,15 @@ export type Database = {
       }
       purchase_invoice_outstanding: {
         Row: {
+          due_date: string | null
           invoice_id: string | null
           our_reference_number: string | null
           outstanding_amount: number | null
           paid_amount: number | null
           status: string | null
           supplier_id: string | null
+          supplier_invoice_date: string | null
+          supplier_name: string | null
           total_amount: number | null
         }
         Relationships: [
@@ -1985,6 +1988,9 @@ export type Database = {
       sales_invoice_outstanding: {
         Row: {
           customer_id: string | null
+          customer_name: string | null
+          due_date: string | null
+          invoice_date: string | null
           invoice_id: string | null
           invoice_number: string | null
           outstanding_amount: number | null
@@ -2117,6 +2123,21 @@ export type Database = {
           total_debit: number
         }[]
       }
+      get_collection_detail: {
+        Args: { p_from: string; p_to: string }
+        Returns: {
+          collection_amount: number
+          collection_status: string
+          customer_name: string
+          days_taken: number
+          due_date: string
+          invoice_amount: number
+          invoice_date: string
+          invoice_number: string
+          payment_date: string
+          staff_name: string
+        }[]
+      }
       get_customer_ledger: {
         Args: { p_as_of_date?: string; p_customer_id: string }
         Returns: {
@@ -2204,6 +2225,48 @@ export type Database = {
           supplier_name: string
           taxable_total: number
           total_amount: number
+        }[]
+      }
+      get_route_performance: {
+        Args: { p_from: string; p_to: string }
+        Returns: {
+          customer_count: number
+          profit_total: number
+          route_id: string
+          route_name: string
+          total_collection: number
+          total_outstanding: number
+          total_sales: number
+        }[]
+      }
+      get_route_staff_breakdown: {
+        Args: { p_from: string; p_to: string }
+        Returns: {
+          invoice_count: number
+          route_name: string
+          sales_total: number
+          staff_name: string
+        }[]
+      }
+      get_staff_performance: {
+        Args: { p_from: string; p_to: string }
+        Returns: {
+          collected_0_15: number
+          collected_16_30: number
+          collected_31_45: number
+          collected_46_60: number
+          collected_61_90: number
+          collected_90_plus: number
+          credit_sales: number
+          customer_count: number
+          invoice_count: number
+          profit_total: number
+          sales_return_total: number
+          staff_id: string
+          staff_name: string
+          total_collection: number
+          total_outstanding: number
+          total_sales: number
         }[]
       }
       get_stock_as_of: {

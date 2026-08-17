@@ -51,18 +51,17 @@ export default async function OutstandingPage({
   if (activeTab === "customer") {
     const { data } = await supabase
       .from("sales_invoice_outstanding")
-      .select("invoice_id, invoice_number, total_amount, outstanding_amount, status, sales_invoices(invoice_date, due_date, customers(name))")
+      .select("invoice_id, invoice_number, customer_name, invoice_date, due_date, total_amount, outstanding_amount, status")
       .eq("status", "active")
       .gt("outstanding_amount", 0);
     rows = (data ?? []).map((r) => {
-      const invoice = r.sales_invoices as unknown as { invoice_date: string; due_date: string | null; customers: { name: string } | null } | null;
-      const dueDate = invoice?.due_date || invoice?.invoice_date || today;
+      const dueDate = r.due_date || r.invoice_date || today;
       const daysOverdue = daysBetween(dueDate, today);
       return {
         id: r.invoice_id as string,
         number: r.invoice_number as string,
-        party: invoice?.customers?.name ?? "-",
-        invoiceDate: invoice?.invoice_date ?? "-",
+        party: r.customer_name ?? "-",
+        invoiceDate: r.invoice_date ?? "-",
         dueDate,
         totalAmount: Number(r.total_amount),
         outstandingAmount: Number(r.outstanding_amount),
@@ -73,25 +72,17 @@ export default async function OutstandingPage({
   } else {
     const { data } = await supabase
       .from("purchase_invoice_outstanding")
-      .select("invoice_id, our_reference_number, total_amount, outstanding_amount, status, purchase_invoices(supplier_invoice_date, suppliers(name, credit_period_days))")
+      .select("invoice_id, our_reference_number, supplier_name, supplier_invoice_date, due_date, total_amount, outstanding_amount, status")
       .eq("status", "active")
       .gt("outstanding_amount", 0);
     rows = (data ?? []).map((r) => {
-      const invoice = r.purchase_invoices as unknown as {
-        supplier_invoice_date: string;
-        suppliers: { name: string; credit_period_days: number } | null;
-      } | null;
-      const invoiceDate = invoice?.supplier_invoice_date ?? today;
-      const creditDays = invoice?.suppliers?.credit_period_days ?? 0;
-      const dueDateObj = new Date(invoiceDate);
-      dueDateObj.setDate(dueDateObj.getDate() + creditDays);
-      const dueDate = dueDateObj.toISOString().slice(0, 10);
+      const dueDate = r.due_date || r.supplier_invoice_date || today;
       const daysOverdue = daysBetween(dueDate, today);
       return {
         id: r.invoice_id as string,
         number: r.our_reference_number as string,
-        party: invoice?.suppliers?.name ?? "-",
-        invoiceDate,
+        party: r.supplier_name ?? "-",
+        invoiceDate: r.supplier_invoice_date ?? "-",
         dueDate,
         totalAmount: Number(r.total_amount),
         outstandingAmount: Number(r.outstanding_amount),
