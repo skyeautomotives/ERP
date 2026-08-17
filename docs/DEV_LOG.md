@@ -61,6 +61,22 @@ Plan file used: `C:\Users\vjoel\.claude\plans\federated-popping-engelbart.md` (g
 
 **Fast-follow / not done:** "Stock Transfer" (section 19) skipped entirely - no warehouse/location concept exists anywhere in the spec's master data or what's been built; would require inventing a new master not requested elsewhere.
 
+## In-app contextual help - IN PROGRESS, paused mid-build (user asked to continue later)
+
+User asked (2026-08-17) for a detailed field-by-field user guide plus in-app "?" help on every screen, same cross-cutting treatment as dark mode. Plan file used: `C:\Users\vjoel\.claude\plans\federated-popping-engelbart.md` (will be overwritten by the next phase's plan - this section is the durable record).
+
+**Design (approved):** one reusable `HelpButton` ("?" icon next to each page's `<h1>`, opens a popover) fed by centralized content in `src/lib/help-content.ts`, rather than per-field inline tooltips everywhere. Content keyed by feature slug, reused across a feature's list/new/detail pages.
+
+**Done:**
+- `src/components/help-button.tsx` - the reusable component (click-outside + Escape to close, full dark: variants). Builds clean, not yet imported anywhere.
+- `src/lib/help-content.ts` - all 15 content entries written (company-settings, users, roles, customers, suppliers, products, routes, credit-sales, cash-sales, sales-orders, sales-invoice-detail, purchase-entries, purchase-verification, stock-report, stock-adjustments, movement-analysis).
+
+**Still to do (resume here):**
+- Wire `<HelpButton content={HELP_CONTENT["..."]} />` into each page next to its `<h1>` - roughly 20 files: `settings/company`, `settings/users`, `settings/roles`, `masters/{customers,suppliers,products,routes}/page.tsx` + their `new/page.tsx`, `sales/{credit,cash,orders}/page.tsx` + their `new/page.tsx`, `sales/[id]/page.tsx`, `sales/orders/[id]/page.tsx`, `purchase/entries/page.tsx` + `new/page.tsx` + `[id]/page.tsx`, `purchase/verification/page.tsx`, `inventory/stock/page.tsx`, `inventory/adjustments/page.tsx`, `inventory/analysis/page.tsx`.
+- `npm run build` again after wiring, fresh dev server restart, Playwright pass per the plan's Verification section (open a handful of screens, click help icon, confirm real content shows and closes on click-outside/Escape, check both color schemes).
+- Commit + push.
+- This becomes a **standing convention**: every future phase's new pages should get a `HELP_CONTENT` entry + `<HelpButton>` from the start, same as `dark:` variants and `autoComplete="off"` already are.
+
 ## Established architecture / conventions (apply to every future phase)
 
 - **RBAC**: `public.has_permission(module_key, action)` and `public.is_admin()` Postgres functions (Phase 1). Module keys currently seeded: dashboard, sales, purchase, inventory, accounts, gst, staff, reports, masters, settings - each with view/create/edit/delete/export actions. `src/lib/auth/permissions.ts` has the client-side `can(user, module, action)` mirror and `getCurrentUser()`.
