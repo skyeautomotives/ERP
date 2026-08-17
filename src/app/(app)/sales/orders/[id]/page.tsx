@@ -3,6 +3,8 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { OrderActions } from "../order-actions";
+import { HelpButton } from "@/components/help-button";
+import { HELP_CONTENT } from "@/lib/help-content";
 
 export default async function SalesOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -25,7 +27,10 @@ export default async function SalesOrderDetailPage({ params }: { params: Promise
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{order.customers?.name ?? "Sales order"}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{order.customers?.name ?? "Sales order"}</h1>
+            <HelpButton content={HELP_CONTENT["sales-orders"]} />
+          </div>
           <p className="text-sm text-gray-500 dark:text-gray-400">Status: {order.status}</p>
         </div>
         {order.status === "pending" && can(user, "sales", "create") && <OrderActions orderId={order.id} />}

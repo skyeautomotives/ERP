@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { PermissionMatrix } from "./permission-matrix";
+import { HelpButton } from "@/components/help-button";
+import { HELP_CONTENT } from "@/lib/help-content";
 
 export default async function RolesSettingsPage() {
   const currentUser = await getCurrentUser();
@@ -12,7 +14,10 @@ export default async function RolesSettingsPage() {
   if (currentUser?.roleName !== "Admin") {
     return (
       <div>
+        <div className="flex items-center gap-2">
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Roles & Permissions</h1>
+        <HelpButton content={HELP_CONTENT["roles"]} />
+      </div>
         <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">Only Admins can view the permission matrix.</p>
       </div>
     );
@@ -33,7 +38,10 @@ export default async function RolesSettingsPage() {
 
   return (
     <div>
-      <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Roles & Permissions</h1>
+      <div className="flex items-center gap-2">
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Roles & Permissions</h1>
+        <HelpButton content={HELP_CONTENT["roles"]} />
+      </div>
       <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
         Configure what each role can see and do, module by module (section 5 of the spec).
       </p>

@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { Pagination } from "@/components/pagination";
+import { HelpButton } from "@/components/help-button";
+import { HELP_CONTENT } from "@/lib/help-content";
 
 const PAGE_SIZE = 20;
 const STATUS_STYLES: Record<string, string> = {
@@ -32,7 +34,10 @@ export default async function SalesOrdersPage({
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Sales Orders</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Sales Orders</h1>
+          <HelpButton content={HELP_CONTENT["sales-orders"]} />
+        </div>
         {can(user, "sales", "create") && (
           <Link
             href="/sales/orders/new"

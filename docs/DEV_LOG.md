@@ -61,7 +61,7 @@ Plan file used: `C:\Users\vjoel\.claude\plans\federated-popping-engelbart.md` (g
 
 **Fast-follow / not done:** "Stock Transfer" (section 19) skipped entirely - no warehouse/location concept exists anywhere in the spec's master data or what's been built; would require inventing a new master not requested elsewhere.
 
-## In-app contextual help - IN PROGRESS, paused mid-build (user asked to continue later)
+## In-app contextual help - COMPLETE
 
 User asked (2026-08-17) for a detailed field-by-field user guide plus in-app "?" help on every screen, same cross-cutting treatment as dark mode. Plan file used: `C:\Users\vjoel\.claude\plans\federated-popping-engelbart.md` (will be overwritten by the next phase's plan - this section is the durable record).
 
@@ -71,11 +71,11 @@ User asked (2026-08-17) for a detailed field-by-field user guide plus in-app "?"
 - `src/components/help-button.tsx` - the reusable component (click-outside + Escape to close, full dark: variants). Builds clean, not yet imported anywhere.
 - `src/lib/help-content.ts` - all 15 content entries written (company-settings, users, roles, customers, suppliers, products, routes, credit-sales, cash-sales, sales-orders, sales-invoice-detail, purchase-entries, purchase-verification, stock-report, stock-adjustments, movement-analysis).
 
-**Still to do (resume here):**
-- Wire `<HelpButton content={HELP_CONTENT["..."]} />` into each page next to its `<h1>` - roughly 20 files: `settings/company`, `settings/users`, `settings/roles`, `masters/{customers,suppliers,products,routes}/page.tsx` + their `new/page.tsx`, `sales/{credit,cash,orders}/page.tsx` + their `new/page.tsx`, `sales/[id]/page.tsx`, `sales/orders/[id]/page.tsx`, `purchase/entries/page.tsx` + `new/page.tsx` + `[id]/page.tsx`, `purchase/verification/page.tsx`, `inventory/stock/page.tsx`, `inventory/adjustments/page.tsx`, `inventory/analysis/page.tsx`.
-- `npm run build` again after wiring, fresh dev server restart, Playwright pass per the plan's Verification section (open a handful of screens, click help icon, confirm real content shows and closes on click-outside/Escape, check both color schemes).
-- Commit + push.
-- This becomes a **standing convention**: every future phase's new pages should get a `HELP_CONTENT` entry + `<HelpButton>` from the start, same as `dark:` variants and `autoComplete="off"` already are.
+**Wired in** to all ~20 pages: settings/{company,users,roles}, masters/{customers,suppliers,products,routes} (list + new), sales/{credit,cash,orders} (list + new) + sales/[id] + sales/orders/[id], purchase/entries (list + new + [id]) + purchase/verification, inventory/{stock,adjustments,analysis}. Pattern used everywhere: wrap the page's `<h1>` in `<div className="flex items-center gap-2">` alongside `<HelpButton content={HELP_CONTENT["slug"]} />`.
+
+Verified with Playwright in dark color scheme across 5 representative screens (Company Setup, New Customer, Credit Sales, Purchase Verification, Stock Report): panel opens with real content, closes on Escape, renders cleanly. Screenshot-checked visually too - clean and readable.
+
+**Standing convention now**: every future phase's new pages get a `HELP_CONTENT` entry in `src/lib/help-content.ts` + `<HelpButton>` next to the `<h1>` from the start, same as `dark:` variants and `autoComplete="off"` already are.
 
 ## Established architecture / conventions (apply to every future phase)
 

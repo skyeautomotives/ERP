@@ -4,6 +4,8 @@ import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { CancelInvoiceButton } from "@/components/cancel-invoice-button";
 import { cancelPurchaseInvoice } from "../actions";
 import { VerificationPanel } from "../verification-panel";
+import { HelpButton } from "@/components/help-button";
+import { HELP_CONTENT } from "@/lib/help-content";
 
 export default async function PurchaseDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -31,7 +33,10 @@ export default async function PurchaseDetailPage({ params }: { params: Promise<{
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{invoice.our_reference_number}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{invoice.our_reference_number}</h1>
+            <HelpButton content={HELP_CONTENT["purchase-entries"]} />
+          </div>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Supplier invoice {invoice.supplier_invoice_number} - {invoice.supplier_invoice_date}
           </p>

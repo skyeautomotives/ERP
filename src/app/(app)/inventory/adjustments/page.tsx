@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { AdjustmentForm } from "./adjustment-form";
+import { HelpButton } from "@/components/help-button";
+import { HELP_CONTENT } from "@/lib/help-content";
 
 export default async function StockAdjustmentsPage() {
   const user = await getCurrentUser();
@@ -19,7 +21,10 @@ export default async function StockAdjustmentsPage() {
 
   return (
     <div>
-      <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Stock Adjustment</h1>
+      <div className="flex items-center gap-2">
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Stock Adjustment</h1>
+        <HelpButton content={HELP_CONTENT["stock-adjustments"]} />
+      </div>
       <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
         Correct stock counts by hand - damage, loss, physical recount, or anything else that isn&apos;t a
         purchase or sale. To fix a mistaken adjustment, enter another one that offsets it.

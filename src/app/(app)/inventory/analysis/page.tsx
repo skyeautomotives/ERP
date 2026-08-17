@@ -2,6 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
+import { HelpButton } from "@/components/help-button";
+import { HELP_CONTENT } from "@/lib/help-content";
 
 const WINDOWS = [30, 60, 90];
 
@@ -25,7 +27,10 @@ export default async function MovementAnalysisPage({
 
   return (
     <div>
-      <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Movement Analysis</h1>
+      <div className="flex items-center gap-2">
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Movement Analysis</h1>
+        <HelpButton content={HELP_CONTENT["movement-analysis"]} />
+      </div>
       <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
         Which products are selling and which are sitting still, over the last {days} days.
       </p>

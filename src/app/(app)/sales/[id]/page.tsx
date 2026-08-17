@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { CancelInvoiceButton } from "@/components/cancel-invoice-button";
 import { cancelSalesInvoice } from "../actions";
+import { HelpButton } from "@/components/help-button";
+import { HELP_CONTENT } from "@/lib/help-content";
 
 const PROFIT_VISIBLE_ROLES = ["Admin", "Accountant", "Management"];
 
@@ -34,7 +36,10 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{invoice.invoice_number}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{invoice.invoice_number}</h1>
+            <HelpButton content={HELP_CONTENT["sales-invoice-detail"]} />
+          </div>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             {invoice.sale_type === "credit" ? "Credit Sale" : "Cash Sale"} - {invoice.invoice_date}
           </p>

@@ -5,6 +5,8 @@ import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { SearchInput } from "@/components/search-input";
 import { Pagination } from "@/components/pagination";
 import { StatusBadge } from "@/components/status-badge";
+import { HelpButton } from "@/components/help-button";
+import { HELP_CONTENT } from "@/lib/help-content";
 
 const PAGE_SIZE = 20;
 
@@ -33,7 +35,10 @@ export default async function SuppliersPage({
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Suppliers</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Suppliers</h1>
+          <HelpButton content={HELP_CONTENT["suppliers"]} />
+        </div>
         {can(user, "masters", "create") && (
           <Link
             href="/masters/suppliers/new"

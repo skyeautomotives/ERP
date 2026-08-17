@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { CompanyForm } from "./company-form";
+import { HelpButton } from "@/components/help-button";
+import { HELP_CONTENT } from "@/lib/help-content";
 
 export default async function CompanySettingsPage() {
   const user = await getCurrentUser();
@@ -14,7 +16,10 @@ export default async function CompanySettingsPage() {
 
   return (
     <div>
-      <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Company Setup</h1>
+      <div className="flex items-center gap-2">
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Company Setup</h1>
+        <HelpButton content={HELP_CONTENT["company-settings"]} />
+      </div>
       <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
         This profile is used on printable invoices and reports (section 50 of the spec).
       </p>

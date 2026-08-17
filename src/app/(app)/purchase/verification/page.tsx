@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { Pagination } from "@/components/pagination";
+import { HelpButton } from "@/components/help-button";
+import { HELP_CONTENT } from "@/lib/help-content";
 
 const PAGE_SIZE = 20;
 
@@ -55,7 +57,10 @@ export default async function PurchaseVerificationPage({
 
   return (
     <div>
-      <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Purchase Bill Verification</h1>
+      <div className="flex items-center gap-2">
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Purchase Bill Verification</h1>
+        <HelpButton content={HELP_CONTENT["purchase-verification"]} />
+      </div>
       <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
         Compare what the supplier&apos;s paper invoice says against what was entered here. Click an invoice to
         record or update its verification.

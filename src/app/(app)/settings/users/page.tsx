@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { UserForm } from "./user-form";
 import { UserRowActions } from "./user-row-actions";
+import { HelpButton } from "@/components/help-button";
+import { HELP_CONTENT } from "@/lib/help-content";
 
 export default async function UsersSettingsPage() {
   const currentUser = await getCurrentUser();
@@ -20,7 +22,10 @@ export default async function UsersSettingsPage() {
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Users</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Users</h1>
+            <HelpButton content={HELP_CONTENT["users"]} />
+          </div>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             Only Admins can create accounts or change access - self sign-up is disabled.
           </p>

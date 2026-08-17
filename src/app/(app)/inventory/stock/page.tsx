@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { SearchInput } from "@/components/search-input";
+import { HelpButton } from "@/components/help-button";
+import { HELP_CONTENT } from "@/lib/help-content";
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
@@ -38,7 +40,10 @@ export default async function StockReportPage({
 
   return (
     <div>
-      <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Stock Report</h1>
+      <div className="flex items-center gap-2">
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Stock Report</h1>
+        <HelpButton content={HELP_CONTENT["stock-report"]} />
+      </div>
       <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
         Live stock levels and valuation, computed from every purchase, sale, and adjustment recorded so far.
       </p>
