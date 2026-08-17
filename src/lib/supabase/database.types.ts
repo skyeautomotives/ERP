@@ -135,6 +135,93 @@ export type Database = {
         }
         Relationships: []
       }
+      customers: {
+        Row: {
+          address: string | null
+          assigned_user_id: string | null
+          category: string | null
+          created_at: string
+          created_by: string | null
+          credit_limit: number
+          credit_period_days: number
+          district: string | null
+          email: string | null
+          gstin: string | null
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          opening_balance: number
+          opening_balance_type: string
+          phone: string | null
+          route_id: string | null
+          state: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          address?: string | null
+          assigned_user_id?: string | null
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          credit_limit?: number
+          credit_period_days?: number
+          district?: string | null
+          email?: string | null
+          gstin?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          opening_balance?: number
+          opening_balance_type?: string
+          phone?: string | null
+          route_id?: string | null
+          state?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          address?: string | null
+          assigned_user_id?: string | null
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          credit_limit?: number
+          credit_period_days?: number
+          district?: string | null
+          email?: string | null
+          gstin?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          opening_balance?: number
+          opening_balance_type?: string
+          phone?: string | null
+          route_id?: string | null
+          state?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customers_assigned_user_id_fkey"
+            columns: ["assigned_user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customers_route_id_fkey"
+            columns: ["route_id"]
+            isOneToOne: false
+            referencedRelation: "routes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       permissions: {
         Row: {
           action: string
@@ -153,6 +240,90 @@ export type Database = {
           created_at?: string
           id?: string
           module_key?: string
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          batch_number: string | null
+          brand: string | null
+          code: string
+          created_at: string
+          created_by: string | null
+          expiry_date: string | null
+          gst_percent: number
+          hsn_code: string | null
+          id: string
+          is_active: boolean
+          landing_cost: number | null
+          max_stock_level: number | null
+          min_stock_level: number
+          mrp: number | null
+          name: string
+          opening_qty: number
+          opening_value: number
+          pack_size: string | null
+          product_group: string | null
+          product_sub_group: string | null
+          purchase_rate: number | null
+          selling_rate: number | null
+          unit: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          batch_number?: string | null
+          brand?: string | null
+          code: string
+          created_at?: string
+          created_by?: string | null
+          expiry_date?: string | null
+          gst_percent?: number
+          hsn_code?: string | null
+          id?: string
+          is_active?: boolean
+          landing_cost?: number | null
+          max_stock_level?: number | null
+          min_stock_level?: number
+          mrp?: number | null
+          name: string
+          opening_qty?: number
+          opening_value?: number
+          pack_size?: string | null
+          product_group?: string | null
+          product_sub_group?: string | null
+          purchase_rate?: number | null
+          selling_rate?: number | null
+          unit?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          batch_number?: string | null
+          brand?: string | null
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          expiry_date?: string | null
+          gst_percent?: number
+          hsn_code?: string | null
+          id?: string
+          is_active?: boolean
+          landing_cost?: number | null
+          max_stock_level?: number | null
+          min_stock_level?: number
+          mrp?: number | null
+          name?: string
+          opening_qty?: number
+          opening_value?: number
+          pack_size?: string | null
+          product_group?: string | null
+          product_sub_group?: string | null
+          purchase_rate?: number | null
+          selling_rate?: number | null
+          unit?: string | null
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -210,6 +381,116 @@ export type Database = {
           id?: string
           is_system?: boolean
           name?: string
+        }
+        Relationships: []
+      }
+      routes: {
+        Row: {
+          area: string | null
+          assigned_user_id: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          name: string
+          route_days: string[]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          area?: string | null
+          assigned_user_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          route_days?: string[]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          area?: string | null
+          assigned_user_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          route_days?: string[]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "routes_assigned_user_id_fkey"
+            columns: ["assigned_user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      suppliers: {
+        Row: {
+          address: string | null
+          bank_account_number: string | null
+          bank_ifsc: string | null
+          bank_name: string | null
+          contact_person: string | null
+          created_at: string
+          created_by: string | null
+          credit_period_days: number
+          gstin: string | null
+          id: string
+          is_active: boolean
+          name: string
+          opening_balance: number
+          opening_balance_type: string
+          phone: string | null
+          state: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          address?: string | null
+          bank_account_number?: string | null
+          bank_ifsc?: string | null
+          bank_name?: string | null
+          contact_person?: string | null
+          created_at?: string
+          created_by?: string | null
+          credit_period_days?: number
+          gstin?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          opening_balance?: number
+          opening_balance_type?: string
+          phone?: string | null
+          state?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          address?: string | null
+          bank_account_number?: string | null
+          bank_ifsc?: string | null
+          bank_name?: string | null
+          contact_person?: string | null
+          created_at?: string
+          created_by?: string | null
+          credit_period_days?: number
+          gstin?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          opening_balance?: number
+          opening_balance_type?: string
+          phone?: string | null
+          state?: string | null
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }

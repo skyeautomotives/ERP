@@ -3,13 +3,21 @@ import Link from "next/link";
 import { getCurrentUser, can, MODULES, type ModuleKey } from "@/lib/auth/permissions";
 import { logout } from "@/app/login/actions";
 
-const BUILT_MODULES: ModuleKey[] = ["dashboard", "settings"];
+const BUILT_MODULES: ModuleKey[] = ["dashboard", "masters", "settings"];
 
-const SETTINGS_LINKS = [
-  { href: "/settings/company", label: "Company" },
-  { href: "/settings/users", label: "Users" },
-  { href: "/settings/roles", label: "Roles & Permissions" },
-];
+const SUB_LINKS: Partial<Record<ModuleKey, { href: string; label: string }[]>> = {
+  masters: [
+    { href: "/masters/customers", label: "Customers" },
+    { href: "/masters/suppliers", label: "Suppliers" },
+    { href: "/masters/products", label: "Products" },
+    { href: "/masters/routes", label: "Routes" },
+  ],
+  settings: [
+    { href: "/settings/company", label: "Company" },
+    { href: "/settings/users", label: "Users" },
+    { href: "/settings/roles", label: "Roles & Permissions" },
+  ],
+};
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
@@ -48,13 +56,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               );
             }
 
-            if (mod.key === "settings") {
+            const subLinks = SUB_LINKS[mod.key];
+            if (subLinks) {
               return (
                 <div key={mod.key} className="pt-2">
                   <p className="px-3 text-xs font-semibold uppercase tracking-wide text-gray-400">
                     {mod.label}
                   </p>
-                  {SETTINGS_LINKS.map((link) => (
+                  {subLinks.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}

@@ -1,0 +1,177 @@
+"use client";
+
+import { useActionState } from "react";
+import type { ProductFormState } from "./actions";
+import type { Database } from "@/lib/supabase/database.types";
+
+type Product = Database["public"]["Tables"]["products"]["Row"];
+const initialState: ProductFormState = { error: null };
+
+function Field({
+  label,
+  name,
+  defaultValue,
+  disabled,
+  type = "text",
+  required = false,
+  step,
+}: {
+  label: string;
+  name: string;
+  defaultValue?: string | number | null;
+  disabled: boolean;
+  type?: string;
+  required?: boolean;
+  step?: string;
+}) {
+  return (
+    <div>
+      <label className="mb-1 block text-sm font-medium text-gray-700">{label}</label>
+      <input
+        name={name}
+        type={type}
+        step={step}
+        required={required}
+        defaultValue={defaultValue ?? ""}
+        disabled={disabled}
+        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-50"
+      />
+    </div>
+  );
+}
+
+export function ProductForm({
+  product,
+  action,
+  canEdit,
+}: {
+  product?: Product;
+  action: (prevState: ProductFormState, formData: FormData) => Promise<ProductFormState>;
+  canEdit: boolean;
+}) {
+  const [state, formAction, pending] = useActionState(action, initialState);
+
+  return (
+    <form action={formAction} className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        <Field label="Product code" name="code" defaultValue={product?.code} disabled={!canEdit} required />
+        <Field label="Product name" name="name" defaultValue={product?.name} disabled={!canEdit} required />
+      </div>
+
+      <div className="grid grid-cols-3 gap-4">
+        <Field label="Brand" name="brand" defaultValue={product?.brand} disabled={!canEdit} />
+        <Field label="Group" name="product_group" defaultValue={product?.product_group} disabled={!canEdit} />
+        <Field
+          label="Sub-group"
+          name="product_sub_group"
+          defaultValue={product?.product_sub_group}
+          disabled={!canEdit}
+        />
+      </div>
+
+      <div className="grid grid-cols-3 gap-4">
+        <Field label="HSN code" name="hsn_code" defaultValue={product?.hsn_code} disabled={!canEdit} />
+        <Field label="Unit" name="unit" defaultValue={product?.unit} disabled={!canEdit} />
+        <Field label="Pack size" name="pack_size" defaultValue={product?.pack_size} disabled={!canEdit} />
+      </div>
+
+      <div className="grid grid-cols-4 gap-4">
+        <Field label="MRP" name="mrp" type="number" step="0.01" defaultValue={product?.mrp} disabled={!canEdit} />
+        <Field
+          label="Purchase rate"
+          name="purchase_rate"
+          type="number"
+          step="0.01"
+          defaultValue={product?.purchase_rate}
+          disabled={!canEdit}
+        />
+        <Field
+          label="Selling rate"
+          name="selling_rate"
+          type="number"
+          step="0.01"
+          defaultValue={product?.selling_rate}
+          disabled={!canEdit}
+        />
+        <Field
+          label="Landing cost"
+          name="landing_cost"
+          type="number"
+          step="0.01"
+          defaultValue={product?.landing_cost}
+          disabled={!canEdit}
+        />
+      </div>
+
+      <Field
+        label="GST %"
+        name="gst_percent"
+        type="number"
+        step="0.01"
+        defaultValue={product?.gst_percent}
+        disabled={!canEdit}
+      />
+
+      <div className="grid grid-cols-3 gap-4">
+        <Field
+          label="Opening quantity"
+          name="opening_qty"
+          type="number"
+          step="0.001"
+          defaultValue={product?.opening_qty}
+          disabled={!canEdit}
+        />
+        <Field
+          label="Opening value"
+          name="opening_value"
+          type="number"
+          step="0.01"
+          defaultValue={product?.opening_value}
+          disabled={!canEdit}
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <Field
+          label="Minimum stock level"
+          name="min_stock_level"
+          type="number"
+          step="0.001"
+          defaultValue={product?.min_stock_level}
+          disabled={!canEdit}
+        />
+        <Field
+          label="Maximum stock level"
+          name="max_stock_level"
+          type="number"
+          step="0.001"
+          defaultValue={product?.max_stock_level}
+          disabled={!canEdit}
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <Field label="Batch number" name="batch_number" defaultValue={product?.batch_number} disabled={!canEdit} />
+        <Field
+          label="Expiry date"
+          name="expiry_date"
+          type="date"
+          defaultValue={product?.expiry_date}
+          disabled={!canEdit}
+        />
+      </div>
+
+      {state.error && <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{state.error}</p>}
+
+      {canEdit && (
+        <button
+          type="submit"
+          disabled={pending}
+          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
+        >
+          {pending ? "Saving..." : "Save"}
+        </button>
+      )}
+    </form>
+  );
+}
