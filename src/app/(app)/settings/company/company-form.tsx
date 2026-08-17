@@ -104,12 +104,20 @@ export function CompanyForm({ company, canEdit }: { company: Company | null; can
         />
       </div>
 
-      <Field
-        label="Invoice number prefix"
-        name="invoice_prefix"
-        defaultValue={company.invoice_prefix}
-        disabled={!canEdit}
-      />
+      <div className="grid grid-cols-2 gap-4">
+        <Field
+          label="Sales invoice number prefix"
+          name="invoice_prefix"
+          defaultValue={company.invoice_prefix}
+          disabled={!canEdit}
+        />
+        <Field
+          label="Purchase reference number prefix"
+          name="purchase_ref_prefix"
+          defaultValue={company.purchase_ref_prefix}
+          disabled={!canEdit}
+        />
+      </div>
 
       {state.error && <p className="rounded-md bg-red-50 dark:bg-red-950/40 px-3 py-2 text-sm text-red-700 dark:text-red-400">{state.error}</p>}
       {state.success && (

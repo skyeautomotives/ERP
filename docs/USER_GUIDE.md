@@ -103,6 +103,35 @@ Invoices are never deleted - open the invoice and click **Cancel invoice** inste
 
 Sales Returns and Sales Reports aren't built yet (shown as "Coming soon" under Sales). "Customer outstanding" isn't a full ledger yet either - that arrives once Receipts (a later phase) exist; for now, every credit sale is simply unpaid until that phase ships.
 
+## Phase 4: Purchase + Purchase Bill Verification
+
+### Recording a purchase
+
+**Purchase > Purchase Entry > New purchase**. Pick the supplier, type in the **supplier's own invoice number** (the number printed on their paper bill - this is different from "our reference number", which the system assigns automatically), the date on their invoice, then add product lines the same way as a sale.
+
+Stock goes **up** when you save a purchase, and each product's "last purchase rate" is updated automatically, ready to show up as the default next time you buy that product.
+
+### Duplicate invoice number protection
+
+If you try to enter a purchase from the same supplier using an invoice number that's already been recorded, the system stops you and asks you to confirm it's genuinely a new bill (not the same paper invoice entered twice by accident). Only users with the right permission can push through that warning, and doing so is recorded.
+
+### Bill Verification
+
+**Purchase > Bill Verification** shows every purchase with its verification status at a glance, and lets you filter by status. Open any purchase and use the **Bill Verification** panel to type in what the supplier's paper invoice actually says (taxable value, GST, and total) - the system compares it to what was entered here and tells you:
+
+- **Matched** - everything agrees.
+- **Partially Matched** - the total is right but the GST/taxable split doesn't add up the same way (worth a second look).
+- **Mismatch** - the totals don't agree at all - shows you exactly how much the difference is.
+- **Pending Verification** - nobody has checked this one against the paper bill yet.
+
+### Cancelling a purchase
+
+Same as sales - no deleting. Open the purchase and click **Cancel invoice**; stock is put back and the record stays for history.
+
+### What's not here yet
+
+Purchase Returns and Purchase Reports aren't built yet (shown as "Coming soon" under Purchase).
+
 ---
 
-*More sections will be added here as each phase of the build ships (Purchase, Inventory, Accounts, GST, Staff & Incentives, Dashboard, and Mobile).*
+*More sections will be added here as each phase of the build ships (Inventory, Accounts, GST, Staff & Incentives, Dashboard, and Mobile).*

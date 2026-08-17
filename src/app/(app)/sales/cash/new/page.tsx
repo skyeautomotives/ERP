@@ -19,7 +19,7 @@ export default async function NewCashSalePage() {
     getStaffOptions(),
     supabase
       .from("products")
-      .select("id, code, name, selling_rate, gst_percent")
+      .select("id, code, name, default_rate:selling_rate, gst_percent")
       .eq("is_active", true)
       .order("name"),
   ]);

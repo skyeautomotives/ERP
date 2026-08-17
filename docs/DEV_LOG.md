@@ -18,8 +18,8 @@ Internal progress/context log for continuing this build across sessions. Not use
 - [x] **Phase 2** - Customer/Supplier/Product/Route masters. Shipped 2026-08-17.
 - [x] **Phase 3** - Sales (credit, cash, sales orders). Shipped 2026-08-17.
 - [x] **Dark mode** - real `dark:` Tailwind support added across the whole app (not a spec phase, but a full pass). Shipped 2026-08-17.
-- [ ] **Phase 4** - Purchase + Purchase Verification. **IN PROGRESS** (see below).
-- [ ] Phase 5 - Inventory
+- [x] **Phase 4** - Purchase + Purchase Verification. Shipped and verified end-to-end 2026-08-17 (see below for what's left as a fast-follow, if any).
+- [ ] **Phase 5** - Inventory. **NEXT UP.**
 - [ ] Phase 6 - Cash/Bank Receipts + Cash/Bank Payments + Expenses
 - [ ] Phase 7 - Accounting + Ledgers + Trial Balance + P&L + Balance Sheet
 - [ ] Phase 8 - GST
@@ -32,28 +32,21 @@ Internal progress/context log for continuing this build across sessions. Not use
 
 User said (2026-08-17): "continue with the rest of the phases" - blanket approval to keep going through all remaining phases without stopping to ask between each. Still using EnterPlanMode per phase (has caught real design decisions every time), just not pausing for a go-ahead between phases.
 
-## Phase 4 (Purchase + Purchase Verification) - current state
+## Phase 4 (Purchase + Purchase Verification) - COMPLETE
 
-Plan file: `C:\Users\vjoel\.claude\plans\federated-popping-engelbart.md` (gets overwritten each phase - this log is the durable record, that file is scratch).
+Plan file used: `C:\Users\vjoel\.claude\plans\federated-popping-engelbart.md` (gets overwritten each phase - this log is the durable record, that file is scratch/current-phase-only).
 
-**Done:**
-- Migrations pushed: `20260817300001_purchase_prep.sql` (company_settings purchase numbering cols + products.last_purchase_rate/last_purchase_date), `20260817300002_purchase_invoices.sql`, `20260817300003_purchase_verifications.sql`, `20260817300004_purchase_rpcs.sql` (create_purchase_invoice, cancel_purchase_invoice, record_purchase_verification).
-- `database.types.ts` regenerated.
-- Nav updated (`src/app/(app)/layout.tsx`): "purchase" added to BUILT_MODULES + SUB_LINKS (Purchase Entry, Bill Verification real; Purchase Return, Purchase Reports coming-soon).
-- Settings > Company form/action: added `purchase_ref_prefix` field.
-- Refactored `LineItemRow` (product/qty/rate/discount picker) from `sales/line-item-row.tsx` to `src/components/line-item-row.tsx` for cross-module reuse (sales + purchase both need it) - renamed its `selling_rate` field to generic `default_rate`. Updated all 3 sales pages that feed it (`sales/credit/new`, `sales/cash/new`, `sales/orders/new`) to alias `default_rate:selling_rate` in their `.select()`.
-- Refactored `CancelInvoiceButton` the same way: moved `sales/cancel-invoice-button.tsx` -> `src/components/cancel-invoice-button.tsx`, now takes an `action` prop instead of being hardcoded to `cancelSalesInvoice`. Updated `sales/[id]/page.tsx` to pass `action={cancelSalesInvoice}`.
-- Built: `purchase/entries/actions.ts` (createPurchaseInvoice, cancelPurchaseInvoice, recordPurchaseVerification), `purchase/entries/purchase-invoice-form.tsx`, `purchase/entries/new/page.tsx`, `purchase/entries/page.tsx` (list), `purchase/entries/verification-panel.tsx`, `purchase/entries/[id]/page.tsx` (detail + verification + cancel).
+**What shipped:**
+- Migrations: `20260817300001_purchase_prep.sql` (company_settings purchase numbering cols + products.last_purchase_rate/last_purchase_date), `20260817300002_purchase_invoices.sql`, `20260817300003_purchase_verifications.sql`, `20260817300004_purchase_rpcs.sql` (create_purchase_invoice, cancel_purchase_invoice, record_purchase_verification).
+- Nav: "purchase" module live (Purchase Entry, Bill Verification real links; Purchase Return/Reports coming-soon).
+- Settings > Company: added `purchase_ref_prefix` field alongside the existing sales `invoice_prefix`.
+- Refactored two components for cross-module reuse (sales + purchase both need them), moved to `src/components/`: `LineItemRow` (renamed its rate-autofill field from `selling_rate` to generic `default_rate` - callers now alias `default_rate:selling_rate` or `default_rate:purchase_rate` in their `.select()`), and `CancelInvoiceButton` (now takes an `action` prop instead of being hardcoded to sales).
+- Built: `purchase/page.tsx` (redirect), `purchase/entries/{actions.ts, purchase-invoice-form.tsx, page.tsx, new/page.tsx, [id]/page.tsx, verification-panel.tsx}`, `purchase/verification/page.tsx` (status queue, filterable).
+- Full Playwright verification pass: intra-state purchase (CGST/SGST) correct, inter-state (IGST) correct, duplicate supplier-invoice-number blocked then override flow worked and was recorded, all three verification statuses (matched/partial/mismatch) computed correctly by the RPC (confirmed directly against the DB, not just the UI - one screenshot caught the UI mid-save and looked like a false negative, DB was actually correct), stock increased on purchase and correctly reversed on cancel, `products.last_purchase_rate` updated.
+- Test data cleaned up afterward. **Found unrelated pre-existing data during cleanup** - a product "123"/"Test" and one sales invoice INV00001 that none of my scripts created, most likely the user's own manual exploration of the dev server in their browser - deliberately left alone rather than deleted (see Gotchas #8, new).
+- `docs/USER_GUIDE.md` Phase 4 section added.
 
-**Still to do for Phase 4:**
-- `purchase/page.tsx` (redirect to `/purchase/entries`, same pattern as `sales/page.tsx`).
-- `purchase/verification/page.tsx` (the verification *queue* - list of all purchase invoices with status/difference at a glance, filterable, linking into each invoice's detail page). This is the dedicated nav item per spec section 17; the panel on the invoice detail page is where verification is actually *recorded*, this page is for *finding* what needs it.
-- `npm run build` to catch type errors (expect some - haven't built since the refactors above).
-- Restart dev server fresh (avoid the stale-Server-Action bug - see Gotchas below) and run a full Playwright verification pass per the plan file's Verification section: create purchase, confirm ref number/GST/stock/last_purchase_rate; duplicate supplier-invoice-number block + override flow; verification status logic (matched/partial/mismatch); cancel + stock reversal.
-- Clean up test data afterward (checked individually, correct FK order - see Gotchas).
-- Add Phase 4 section to `docs/USER_GUIDE.md`.
-- Commit + push.
-- Update the `project_erp_overview` memory file with Phase 4 completion.
+**Fast-follow / not done (intentionally, matches spec's Phase 4 charter exactly):** Purchase Returns, Purchase Reports - shown as "Coming soon", same as every other unbuilt screen.
 
 ## Established architecture / conventions (apply to every future phase)
 
@@ -80,6 +73,7 @@ Plan file: `C:\Users\vjoel\.claude\plans\federated-popping-engelbart.md` (gets o
 5. **Browsers apply native dark-mode styling to form controls independent of the page's own CSS** unless the page sets `color-scheme` - this is what caused the original "unreadable input text" bug reported by the user (looked like a CSS bug, was actually a missing `color-scheme` declaration plus zero `dark:` variants anywhere in the app).
 6. **Supabase-js RPC arg types are stricter than the actual DB function** when a plpgsql function parameter has no SQL `DEFAULT` - generated `Args` types mark nullable-in-practice params as required non-null strings. Cast the call's argument object to `Database["public"]["Functions"]["fn_name"]["Args"]` (or `as unknown as ...` when a literal `null` is involved and TS complains about "insufficient overlap").
 7. **create-next-app scaffolds a `.claude/` dir with local session settings** - gitignored, not committed. Also Next.js 16 deprecated the `middleware.ts` convention in favor of `proxy.ts` (rename the file, rename the exported function from `middleware` to `proxy`, functionally identical) - already done, just don't reintroduce a `middleware.ts`.
+8. **Not all data in the dev database is test data I created** - the user has their own login and has been exploring the live dev server directly in their browser (asked for the admin password more than once, reported a UI bug via screenshot). Before any test-data cleanup pass, check `created_at` timestamps and cross-reference against what your own scripts actually created - don't assume everything matching a loose pattern is yours to delete. When in doubt, leave it.
 
 ## Tokens / access (for reference, already used this session - handle carefully, don't display back to the user again)
 

@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { createSalesOrder } from "./actions";
 import type { InvoiceLineInput } from "../actions";
-import { LineItemRow, type LineItem, type ProductOption } from "../line-item-row";
+import { LineItemRow, type LineItem, type ProductOption } from "@/components/line-item-row";
 
 type CustomerOption = { id: string; name: string; route_id: string | null; assigned_user_id: string | null };
 type Option = { id: string; label: string };

@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { createSalesInvoice, type InvoiceLineInput } from "./actions";
-import { LineItemRow, type LineItem, type ProductOption } from "./line-item-row";
+import { LineItemRow, type LineItem, type ProductOption } from "@/components/line-item-row";
 
 type CustomerOption = {
   id: string;

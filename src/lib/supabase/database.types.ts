@@ -89,7 +89,10 @@ export type Database = {
           logo_url: string | null
           name: string
           next_invoice_number: number
+          next_purchase_ref_number: number
           phone: string | null
+          purchase_ref_padding: number
+          purchase_ref_prefix: string
           state: string | null
           updated_at: string
           updated_by: string | null
@@ -110,7 +113,10 @@ export type Database = {
           logo_url?: string | null
           name: string
           next_invoice_number?: number
+          next_purchase_ref_number?: number
           phone?: string | null
+          purchase_ref_padding?: number
+          purchase_ref_prefix?: string
           state?: string | null
           updated_at?: string
           updated_by?: string | null
@@ -131,7 +137,10 @@ export type Database = {
           logo_url?: string | null
           name?: string
           next_invoice_number?: number
+          next_purchase_ref_number?: number
           phone?: string | null
+          purchase_ref_padding?: number
+          purchase_ref_prefix?: string
           state?: string | null
           updated_at?: string
           updated_by?: string | null
@@ -259,6 +268,8 @@ export type Database = {
           id: string
           is_active: boolean
           landing_cost: number | null
+          last_purchase_date: string | null
+          last_purchase_rate: number | null
           max_stock_level: number | null
           min_stock_level: number
           mrp: number | null
@@ -286,6 +297,8 @@ export type Database = {
           id?: string
           is_active?: boolean
           landing_cost?: number | null
+          last_purchase_date?: string | null
+          last_purchase_rate?: number | null
           max_stock_level?: number | null
           min_stock_level?: number
           mrp?: number | null
@@ -313,6 +326,8 @@ export type Database = {
           id?: string
           is_active?: boolean
           landing_cost?: number | null
+          last_purchase_date?: string | null
+          last_purchase_rate?: number | null
           max_stock_level?: number | null
           min_stock_level?: number
           mrp?: number | null
@@ -329,6 +344,196 @@ export type Database = {
           updated_by?: string | null
         }
         Relationships: []
+      }
+      purchase_invoice_items: {
+        Row: {
+          cgst: number
+          discount_percent: number
+          gst_percent: number
+          id: string
+          igst: number
+          invoice_id: string
+          line_total: number
+          product_id: string
+          quantity: number
+          rate: number
+          sgst: number
+          taxable_value: number
+        }
+        Insert: {
+          cgst?: number
+          discount_percent?: number
+          gst_percent?: number
+          id?: string
+          igst?: number
+          invoice_id: string
+          line_total: number
+          product_id: string
+          quantity: number
+          rate: number
+          sgst?: number
+          taxable_value: number
+        }
+        Update: {
+          cgst?: number
+          discount_percent?: number
+          gst_percent?: number
+          id?: string
+          igst?: number
+          invoice_id?: string
+          line_total?: number
+          product_id?: string
+          quantity?: number
+          rate?: number
+          sgst?: number
+          taxable_value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_invoice_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_invoice_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      purchase_invoices: {
+        Row: {
+          cgst_total: number
+          created_at: string
+          created_by: string | null
+          discount_total: number
+          duplicate_override: boolean
+          id: string
+          igst_total: number
+          notes: string | null
+          our_reference_number: string
+          overridden_at: string | null
+          overridden_by: string | null
+          sgst_total: number
+          status: string
+          subtotal: number
+          supplier_id: string
+          supplier_invoice_date: string
+          supplier_invoice_number: string
+          taxable_total: number
+          total_amount: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          cgst_total?: number
+          created_at?: string
+          created_by?: string | null
+          discount_total?: number
+          duplicate_override?: boolean
+          id?: string
+          igst_total?: number
+          notes?: string | null
+          our_reference_number: string
+          overridden_at?: string | null
+          overridden_by?: string | null
+          sgst_total?: number
+          status?: string
+          subtotal?: number
+          supplier_id: string
+          supplier_invoice_date: string
+          supplier_invoice_number: string
+          taxable_total?: number
+          total_amount?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          cgst_total?: number
+          created_at?: string
+          created_by?: string | null
+          discount_total?: number
+          duplicate_override?: boolean
+          id?: string
+          igst_total?: number
+          notes?: string | null
+          our_reference_number?: string
+          overridden_at?: string | null
+          overridden_by?: string | null
+          sgst_total?: number
+          status?: string
+          subtotal?: number
+          supplier_id?: string
+          supplier_invoice_date?: string
+          supplier_invoice_number?: string
+          taxable_total?: number
+          total_amount?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_invoices_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      purchase_verifications: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          purchase_invoice_id: string
+          status: string
+          supplier_gst_total: number | null
+          supplier_taxable_value: number | null
+          supplier_total: number | null
+          updated_at: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          purchase_invoice_id: string
+          status?: string
+          supplier_gst_total?: number | null
+          supplier_taxable_value?: number | null
+          supplier_total?: number | null
+          updated_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          purchase_invoice_id?: string
+          status?: string
+          supplier_gst_total?: number | null
+          supplier_taxable_value?: number | null
+          supplier_total?: number | null
+          updated_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_verifications_purchase_invoice_id_fkey"
+            columns: ["purchase_invoice_id"]
+            isOneToOne: true
+            referencedRelation: "purchase_invoices"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       role_permissions: {
         Row: {
@@ -886,9 +1091,24 @@ export type Database = {
           role_name: string
         }[]
       }
+      cancel_purchase_invoice: {
+        Args: { p_invoice_id: string }
+        Returns: undefined
+      }
       cancel_sales_invoice: {
         Args: { p_invoice_id: string }
         Returns: undefined
+      }
+      create_purchase_invoice: {
+        Args: {
+          p_items: Json
+          p_notes: string
+          p_override_duplicate: boolean
+          p_supplier_id: string
+          p_supplier_invoice_date: string
+          p_supplier_invoice_number: string
+        }
+        Returns: string
       }
       create_sales_invoice: {
         Args: {
@@ -926,6 +1146,16 @@ export type Database = {
           action: string
           module_key: string
         }[]
+      }
+      record_purchase_verification: {
+        Args: {
+          p_invoice_id: string
+          p_notes: string
+          p_supplier_gst_total: number
+          p_supplier_taxable_value: number
+          p_supplier_total: number
+        }
+        Returns: string
       }
     }
     Enums: {

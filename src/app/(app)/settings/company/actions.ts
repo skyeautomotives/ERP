@@ -62,6 +62,7 @@ export async function updateCompanySettings(
       bank_ifsc: String(formData.get("bank_ifsc") ?? "") || null,
       invoice_terms: String(formData.get("invoice_terms") ?? "") || null,
       invoice_prefix: String(formData.get("invoice_prefix") ?? "INV"),
+      purchase_ref_prefix: String(formData.get("purchase_ref_prefix") ?? "PUR"),
       updated_by: user!.id,
       ...(logoUrl ? { logo_url: logoUrl } : {}),
     })

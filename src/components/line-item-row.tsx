@@ -7,7 +7,7 @@ export type ProductOption = {
   id: string;
   code: string;
   name: string;
-  selling_rate: number | null;
+  default_rate: number | null;
   gst_percent: number;
 };
 
@@ -35,6 +35,8 @@ export function LineItemRow({
 }: {
   item: LineItem;
   products: ProductOption[];
+  /** Only sales invoices pass this - it powers the "last price sold to this
+   * customer" lookup (section 11). Purchases pass null and the lookup is skipped. */
   customerId: string | null;
   onChange: (item: LineItem) => void;
   onRemove: () => void;
@@ -69,7 +71,7 @@ export function LineItemRow({
     onChange({
       ...item,
       product_id: productId,
-      rate: selected?.selling_rate ?? 0,
+      rate: selected?.default_rate ?? 0,
     });
   }
 
