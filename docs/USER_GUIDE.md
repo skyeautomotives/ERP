@@ -132,6 +132,30 @@ Same as sales - no deleting. Open the purchase and click **Cancel invoice**; sto
 
 Purchase Returns and Purchase Reports aren't built yet (shown as "Coming soon" under Purchase).
 
+## Phase 5: Inventory
+
+### Stock Report
+
+**Inventory > Stock Report** is the live picture of what you have on hand - every product's current quantity and value, calculated automatically from every purchase, sale, and adjustment recorded so far. A total value card sits at the top.
+
+- **Search** by name or code, same as everywhere else.
+- **Low stock only** shows just the products at or below the minimum stock level you set on the product record.
+- **As of date** lets you see what stock looked like on any past date - useful for "what did we have at the start of the month," without needing a separate report.
+
+Click a product to see its full **stock movement** - every purchase, sale, and adjustment that has ever affected it, in order, with a running balance.
+
+### Stock Adjustment
+
+**Inventory > Stock Adjustment** is for correcting stock by hand - damage, loss, or a physical recount that doesn't match the system. Pick the product, whether you're increasing or decreasing stock, the quantity, and a reason. If you make a mistake, don't try to edit or delete it - just enter another adjustment that corrects it (the same "never delete, always add a correcting entry" rule used everywhere else in the system).
+
+### Movement Analysis
+
+**Inventory > Movement Analysis** ranks products by how much has sold over the last 30/60/90 days - fast movers at the top, and a separate list of products with zero sales in that window, so slow stock is easy to spot.
+
+### What's not here yet
+
+Stock Transfer between locations isn't built - the system doesn't currently track multiple warehouses/locations at all.
+
 ---
 
-*More sections will be added here as each phase of the build ships (Inventory, Accounts, GST, Staff & Incentives, Dashboard, and Mobile).*
+*More sections will be added here as each phase of the build ships (Accounts, GST, Staff & Incentives, Dashboard, and Mobile).*

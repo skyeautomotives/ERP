@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getCurrentUser, can, MODULES, type ModuleKey } from "@/lib/auth/permissions";
 import { logout } from "@/app/login/actions";
 
-const BUILT_MODULES: ModuleKey[] = ["dashboard", "masters", "sales", "purchase", "settings"];
+const BUILT_MODULES: ModuleKey[] = ["dashboard", "masters", "sales", "purchase", "inventory", "settings"];
 
 type SubLink = { href: string; label: string; comingSoon?: boolean };
 
@@ -26,6 +26,11 @@ const SUB_LINKS: Partial<Record<ModuleKey, SubLink[]>> = {
     { href: "/purchase/verification", label: "Bill Verification" },
     { href: "/purchase/returns", label: "Purchase Return", comingSoon: true },
     { href: "/purchase/reports", label: "Purchase Reports", comingSoon: true },
+  ],
+  inventory: [
+    { href: "/inventory/stock", label: "Stock Report" },
+    { href: "/inventory/adjustments", label: "Stock Adjustment" },
+    { href: "/inventory/analysis", label: "Movement Analysis" },
   ],
   settings: [
     { href: "/settings/company", label: "Company" },

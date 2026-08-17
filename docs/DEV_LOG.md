@@ -18,9 +18,9 @@ Internal progress/context log for continuing this build across sessions. Not use
 - [x] **Phase 2** - Customer/Supplier/Product/Route masters. Shipped 2026-08-17.
 - [x] **Phase 3** - Sales (credit, cash, sales orders). Shipped 2026-08-17.
 - [x] **Dark mode** - real `dark:` Tailwind support added across the whole app (not a spec phase, but a full pass). Shipped 2026-08-17.
-- [x] **Phase 4** - Purchase + Purchase Verification. Shipped and verified end-to-end 2026-08-17 (see below for what's left as a fast-follow, if any).
-- [ ] **Phase 5** - Inventory. **NEXT UP.**
-- [ ] Phase 6 - Cash/Bank Receipts + Cash/Bank Payments + Expenses
+- [x] **Phase 4** - Purchase + Purchase Verification. Shipped and verified end-to-end 2026-08-17.
+- [x] **Phase 5** - Inventory. Shipped and verified end-to-end 2026-08-17. **A cleanup-script mistake during this phase accidentally deleted one of the user's own real sales invoices (INV00001) - see Gotcha #9. Flagged to the user directly; not silently noted.**
+- [ ] **Phase 6** - Cash/Bank Receipts + Cash/Bank Payments + Expenses. **NEXT UP.**
 - [ ] Phase 7 - Accounting + Ledgers + Trial Balance + P&L + Balance Sheet
 - [ ] Phase 8 - GST
 - [ ] Phase 9 - Staff + Sales Performance + Collection Performance
@@ -48,6 +48,19 @@ Plan file used: `C:\Users\vjoel\.claude\plans\federated-popping-engelbart.md` (g
 
 **Fast-follow / not done (intentionally, matches spec's Phase 4 charter exactly):** Purchase Returns, Purchase Reports - shown as "Coming soon", same as every other unbuilt screen.
 
+## Phase 5 (Inventory) - COMPLETE, but read this before touching cleanup scripts again
+
+**What shipped:**
+- Migrations: `20260817400001_stock_view.sql` (`product_stock_levels`, a `security_invoker` view - current qty/value per product), `20260817400002_stock_adjustments.sql` (`stock_adjustments` table + `create_stock_adjustment` RPC), `20260817400003_stock_as_of.sql` (`get_stock_as_of(date)` RPC - same shape as the view, date-bounded, powers the "opening/closing stock" picker), `20260817400004_movement_analysis.sql` (`get_movement_analysis(days)` RPC - fast/slow moving ranking).
+- Nav: "inventory" module live (Stock Report, Stock Adjustment, Movement Analysis - nothing marked coming-soon, section 19's whole list is covered per the plan's "fold into existing pages" design).
+- Built: `inventory/page.tsx` (redirect), `inventory/stock/page.tsx` (main report: search, low-stock filter, as-of date, total value card), `inventory/stock/[productId]/page.tsx` (movement ledger with running balance), `inventory/adjustments/{actions.ts, adjustment-form.tsx, page.tsx}`, `inventory/analysis/page.tsx`.
+- Caught and fixed the same Server-Component-can't-take-onChange bug as Phase 2 (the "as of date" picker) before it shipped - used a plain submit button instead of auto-submit-on-change.
+- Full Playwright + direct-DB verification: opening/purchase/sale/adjustment math all correct (58 = 50 opening + 10 purchase - 5 sale + 3 adjustment, value 2900 = 58 x unit_cost 50), low-stock filter correctly included/excluded the right products, as-of-yesterday correctly excluded same-day transactions, movement analysis correctly ranked the sold product as fast-moving.
+
+**Incident during this phase's cleanup - read Gotcha #9 below.** The cleanup script used unfiltered `sales_invoices?id=not.is.null` / `sales_invoice_items?id=not.is.null` deletes (correct in Phase 3/4 because those tables were verified empty beforehand) and this time swept up the user's own pre-existing sales invoice (INV00001, for their "Test"/123 product) along with the test rows. The product itself was not deleted, only the invoice and its stock transaction. **This was reported to the user directly in the same turn it was discovered**, not silently absorbed - if you're resuming this project and don't see that conversation, ask the user whether they still need that invoice recreated (I have no way to reconstruct its exact original contents).
+
+**Fast-follow / not done:** "Stock Transfer" (section 19) skipped entirely - no warehouse/location concept exists anywhere in the spec's master data or what's been built; would require inventing a new master not requested elsewhere.
+
 ## Established architecture / conventions (apply to every future phase)
 
 - **RBAC**: `public.has_permission(module_key, action)` and `public.is_admin()` Postgres functions (Phase 1). Module keys currently seeded: dashboard, sales, purchase, inventory, accounts, gst, staff, reports, masters, settings - each with view/create/edit/delete/export actions. `src/lib/auth/permissions.ts` has the client-side `can(user, module, action)` mirror and `getCurrentUser()`.
@@ -74,6 +87,7 @@ Plan file used: `C:\Users\vjoel\.claude\plans\federated-popping-engelbart.md` (g
 6. **Supabase-js RPC arg types are stricter than the actual DB function** when a plpgsql function parameter has no SQL `DEFAULT` - generated `Args` types mark nullable-in-practice params as required non-null strings. Cast the call's argument object to `Database["public"]["Functions"]["fn_name"]["Args"]` (or `as unknown as ...` when a literal `null` is involved and TS complains about "insufficient overlap").
 7. **create-next-app scaffolds a `.claude/` dir with local session settings** - gitignored, not committed. Also Next.js 16 deprecated the `middleware.ts` convention in favor of `proxy.ts` (rename the file, rename the exported function from `middleware` to `proxy`, functionally identical) - already done, just don't reintroduce a `middleware.ts`.
 8. **Not all data in the dev database is test data I created** - the user has their own login and has been exploring the live dev server directly in their browser (asked for the admin password more than once, reported a UI bug via screenshot). Before any test-data cleanup pass, check `created_at` timestamps and cross-reference against what your own scripts actually created - don't assume everything matching a loose pattern is yours to delete. When in doubt, leave it.
+9. **CRITICAL, learned the hard way in Phase 5**: cleanup deletes on *transactional* tables (`sales_invoices`, `purchase_invoices`, their `_items`, `stock_transactions`, etc.) were written as blanket `?id=not.is.null` deletes - correct in Phase 3/4 because those tables were verified empty before the test run started, so "everything in the table" and "everything my script made" were the same set. In Phase 5 that assumption silently broke: the user had their own real sales invoice (INV00001, for the "Test"/123 product) sitting in `sales_invoices`, and the blanket delete wiped it along with the test rows. **Never use an unfiltered delete on a transactional table again.** Before any cleanup pass: (a) query the table's count/contents *first* and note which rows predate your test run, (b) delete only by the specific IDs your script actually created (capture them as you go), never by "delete everything in this table." This applies even when a table looked empty last time you checked - re-verify every time, don't rely on memory of a prior phase's state.
 
 ## Tokens / access (for reference, already used this session - handle carefully, don't display back to the user again)
 

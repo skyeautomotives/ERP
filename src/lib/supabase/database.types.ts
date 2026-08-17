@@ -400,6 +400,13 @@ export type Database = {
             foreignKeyName: "purchase_invoice_items_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
+            referencedRelation: "product_stock_levels"
+            referencedColumns: ["product_id"]
+          },
+          {
+            foreignKeyName: "purchase_invoice_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
@@ -700,6 +707,13 @@ export type Database = {
             foreignKeyName: "sales_invoice_items_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
+            referencedRelation: "product_stock_levels"
+            referencedColumns: ["product_id"]
+          },
+          {
+            foreignKeyName: "sales_invoice_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
@@ -851,6 +865,13 @@ export type Database = {
             foreignKeyName: "sales_order_items_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
+            referencedRelation: "product_stock_levels"
+            referencedColumns: ["product_id"]
+          },
+          {
+            foreignKeyName: "sales_order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
@@ -927,6 +948,51 @@ export type Database = {
           },
         ]
       }
+      stock_adjustments: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          notes: string | null
+          product_id: string
+          quantity_change: number
+          reason: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          product_id: string
+          quantity_change: number
+          reason: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          product_id?: string
+          quantity_change?: number
+          reason?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_adjustments_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "product_stock_levels"
+            referencedColumns: ["product_id"]
+          },
+          {
+            foreignKeyName: "stock_adjustments_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stock_transactions: {
         Row: {
           created_at: string
@@ -959,6 +1025,13 @@ export type Database = {
           transaction_type?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "stock_transactions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "product_stock_levels"
+            referencedColumns: ["product_id"]
+          },
           {
             foreignKeyName: "stock_transactions_product_id_fkey"
             columns: ["product_id"]
@@ -1077,7 +1150,25 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      product_stock_levels: {
+        Row: {
+          brand: string | null
+          code: string | null
+          current_qty: number | null
+          is_active: boolean | null
+          max_stock_level: number | null
+          min_stock_level: number | null
+          name: string | null
+          opening_qty: number | null
+          product_group: string | null
+          product_id: string | null
+          product_sub_group: string | null
+          stock_value: number | null
+          unit: string | null
+          unit_cost: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       admin_list_users: {
@@ -1124,6 +1215,15 @@ export type Database = {
         }
         Returns: string
       }
+      create_stock_adjustment: {
+        Args: {
+          p_notes: string
+          p_product_id: string
+          p_quantity_change: number
+          p_reason: string
+        }
+        Returns: string
+      }
       current_role_name: { Args: never; Returns: string }
       get_last_price: {
         Args: { p_customer_id: string; p_product_id: string }
@@ -1133,6 +1233,34 @@ export type Database = {
           invoice_number: string
           quantity: number
           rate: number
+        }[]
+      }
+      get_movement_analysis: {
+        Args: { p_days: number }
+        Returns: {
+          code: string
+          name: string
+          product_id: string
+          total_sold: number
+        }[]
+      }
+      get_stock_as_of: {
+        Args: { p_as_of_date: string }
+        Returns: {
+          brand: string
+          code: string
+          current_qty: number
+          is_active: boolean
+          max_stock_level: number
+          min_stock_level: number
+          name: string
+          opening_qty: number
+          product_group: string
+          product_id: string
+          product_sub_group: string
+          stock_value: number
+          unit: string
+          unit_cost: number
         }[]
       }
       has_permission: {
