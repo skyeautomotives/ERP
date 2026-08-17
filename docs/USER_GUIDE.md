@@ -189,6 +189,42 @@ Same rule as everywhere else - no deleting. Cancelling a receipt or payment that
 
 Customer Ledger, Supplier Ledger, and Journal aren't built yet (shown as "Coming soon" under Accounts) - full running-balance ledgers are the next phase. What exists now (outstanding balances per invoice) is exactly what those ledgers will be built on top of.
 
+## Phase 7: Accounting, Ledgers, Trial Balance, Profit & Loss, Balance Sheet
+
+Everything in this section works automatically - every sale, purchase, receipt, and payment you record now quietly keeps a proper set of books behind the scenes. You don't need to do anything extra; these are all read-only reports.
+
+### Chart of Accounts (Masters > Chart of Accounts)
+
+The fixed list of accounts (Cash, Bank, Accounts Receivable, Inventory, and so on) that every transaction posts to. This screen just shows each account's current balance - there's nothing to fill in here.
+
+### Journal (Accounts > Journal)
+
+A complete list of every accounting entry the system has posted, automatically, from your sales, purchases, receipts, and payments. Use the **Account** filter to see only Cash movements or only Bank movements - the quick links at the top do this for you ("Cash Book", "Bank Book"). Use the date filters (or the "Day Book" quick link) to see everything for one day.
+
+### Customer Ledger and Supplier Ledger (Accounts > Customer Ledger / Supplier Ledger)
+
+Pick a customer or supplier to see their entire history - every invoice and every payment, in order, with a running balance. "Billed" is money added to what they owe; "Received"/"Paid" is money that reduced it. The balance at the bottom tells you exactly where you stand with them today (or as of any past date you choose).
+
+### Bill-wise Outstanding (Accounts > Bill-wise Outstanding)
+
+Every unpaid invoice, across every customer or every supplier, sorted by how overdue it is. The colored bands (0-15 days, 16-30 days, and so on) make it easy to spot who to chase for payment first, or which supplier bills are due soonest.
+
+### Trial Balance (Accounts > Trial Balance)
+
+A technical check that the books are internally consistent - every account's total debits should equal its total credits. Pick a date and it shows you the running totals up to that point. If it ever says "Not balanced," something needs investigating (this should never normally happen, since every entry is posted automatically in matching pairs).
+
+### Profit & Loss (Accounts > Profit & Loss)
+
+Pick a date range (defaults to the current month) and see your total income, total expenses, and what's left over - your net profit (or loss) for that period.
+
+### Balance Sheet (Accounts > Balance Sheet)
+
+A snapshot, as of one date, of what the business owns (assets like Cash, Bank, Inventory, and money customers owe you), what it owes (Accounts Payable, GST Payable), and what it's worth (equity, including all profit earned to date).
+
+### What's not here yet
+
+There's no screen yet for adding a manual accounting adjustment that isn't tied to a sale, purchase, receipt, or payment - if that's ever needed, it's a future addition. The Chart of Accounts screen is view-only for the same reason.
+
 ---
 
-*More sections will be added here as each phase of the build ships (Accounting/Ledgers, GST, Staff & Incentives, Dashboard, and Mobile).*
+*More sections will be added here as each phase of the build ships (GST, Staff & Incentives, Dashboard, and Mobile).*

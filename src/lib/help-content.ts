@@ -229,4 +229,68 @@ export const HELP_CONTENT: Record<string, HelpContent> = {
       { label: "Category totals", text: "Sum of all active (non-cancelled) expenses, grouped by category." },
     ],
   },
+  "chart-of-accounts": {
+    title: "Chart of Accounts",
+    description: "The accounts that every sale, purchase, receipt, payment, and adjustment automatically posts to behind the scenes - this is what makes the Trial Balance, Profit & Loss, and Balance Sheet possible without you entering anything by hand.",
+    fields: [
+      { label: "Balance", text: "The account's running total, cumulative up to today. Asset and expense accounts show their debit-side balance; liability, equity, and income accounts show their credit-side balance." },
+    ],
+  },
+  journal: {
+    title: "Journal",
+    description: "Every accounting entry the system has posted automatically, in one filterable list. The same data doubles as a Cash Book, Bank Book, or Day Book depending on how you filter it.",
+    fields: [
+      { label: "Account filter", text: "Narrow the list to just one account - pick Cash for a Cash Book, Bank for a Bank Book." },
+      { label: "From / To", text: "Narrow the list to a date range - set both to today for a Day Book." },
+    ],
+  },
+  "customer-ledger": {
+    title: "Customer Ledger",
+    description: "One customer's complete history - every sales invoice and every receipt from them, in date order, with a running balance.",
+    fields: [
+      { label: "Billed", text: "Amount added to what this customer owes you (a sales invoice, or their opening balance if they had one)." },
+      { label: "Received", text: "Amount that reduced what this customer owes you (a receipt)." },
+      { label: "Balance", text: "Running total after each row. Positive means the customer still owes you money." },
+    ],
+  },
+  "supplier-ledger": {
+    title: "Supplier Ledger",
+    description: "One supplier's complete history - every purchase and every payment to them, in date order, with a running balance.",
+    fields: [
+      { label: "Billed", text: "Amount added to what you owe this supplier (a purchase, or their opening balance if they had one)." },
+      { label: "Paid", text: "Amount that reduced what you owe this supplier (a payment)." },
+      { label: "Balance", text: "Running total after each row. Positive means you still owe the supplier money." },
+    ],
+  },
+  outstanding: {
+    title: "Bill-wise Outstanding",
+    description: "Every unpaid invoice across all customers or all suppliers, sorted by how overdue it is - useful for deciding who to chase for payment, or who to pay first.",
+    fields: [
+      { label: "Due date", text: "Sales invoices use their own due date. Purchase invoices don't store one, so it's worked out from the supplier's invoice date plus their credit period." },
+      { label: "Ageing", text: "How many days past the due date this invoice is, grouped into bands (0-15, 16-30, 31-45, 46-60, 61-90, 90+)." },
+    ],
+  },
+  "trial-balance": {
+    title: "Trial Balance",
+    description: "Every account's total debits and credits, cumulative up to the date you pick. If the books are correct, the two totals always match - that's the whole point of double-entry accounting.",
+    fields: [
+      { label: "As of date", text: "Shows the accumulated balance of every account from the very beginning up to this date." },
+    ],
+  },
+  "profit-and-loss": {
+    title: "Profit & Loss",
+    description: "Income and expenses for a period of your choosing, and what's left over after subtracting one from the other.",
+    fields: [
+      { label: "From / To", text: "The period this report covers - defaults to the current month." },
+      { label: "Net profit", text: "Total income minus total expenses for the period. Negative means a loss." },
+    ],
+  },
+  "balance-sheet": {
+    title: "Balance Sheet",
+    description: "A snapshot of what the business owns (assets), owes (liabilities), and is worth (equity) as of one date.",
+    fields: [
+      { label: "Current Earnings", text: "All-time income minus all-time expenses up to the date you picked - this is what keeps Assets equal to Liabilities plus Equity." },
+      { label: "As of date", text: "Everything on this report is cumulative from the very beginning up to this date, not just a single period." },
+    ],
+  },
 };

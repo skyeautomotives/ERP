@@ -72,6 +72,42 @@ export type Database = {
         }
         Relationships: []
       }
+      chart_of_accounts: {
+        Row: {
+          account_type: string
+          code: string
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          account_type: string
+          code: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          account_type?: string
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       company_settings: {
         Row: {
           address: string | null
@@ -281,6 +317,86 @@ export type Database = {
           updated_by?: string | null
         }
         Relationships: []
+      }
+      journal_entries: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string
+          entry_date: string
+          id: string
+          reversed_entry_id: string | null
+          source_id: string
+          source_table: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description: string
+          entry_date: string
+          id?: string
+          reversed_entry_id?: string | null
+          source_id: string
+          source_table: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          entry_date?: string
+          id?: string
+          reversed_entry_id?: string | null
+          source_id?: string
+          source_table?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "journal_entries_reversed_entry_id_fkey"
+            columns: ["reversed_entry_id"]
+            isOneToOne: false
+            referencedRelation: "journal_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      journal_entry_lines: {
+        Row: {
+          account_id: string
+          credit_amount: number
+          debit_amount: number
+          entry_id: string
+          id: string
+        }
+        Insert: {
+          account_id: string
+          credit_amount?: number
+          debit_amount?: number
+          entry_id: string
+          id?: string
+        }
+        Update: {
+          account_id?: string
+          credit_amount?: number
+          debit_amount?: number
+          entry_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "journal_entry_lines_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "chart_of_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "journal_entry_lines_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "journal_entries"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       payment_allocations: {
         Row: {
@@ -1525,6 +1641,7 @@ export type Database = {
         Args: { p_invoice_id: string }
         Returns: undefined
       }
+      coa_id: { Args: { p_code: string }; Returns: string }
       create_payment: {
         Args: {
           p_allocations: Json
@@ -1588,6 +1705,30 @@ export type Database = {
         Returns: string
       }
       current_role_name: { Args: never; Returns: string }
+      get_account_balances: {
+        Args: { p_from_date?: string; p_to_date?: string }
+        Returns: {
+          account_id: string
+          account_type: string
+          balance: number
+          code: string
+          name: string
+          total_credit: number
+          total_debit: number
+        }[]
+      }
+      get_customer_ledger: {
+        Args: { p_as_of_date?: string; p_customer_id: string }
+        Returns: {
+          billed: number
+          particulars: string
+          received: number
+          ref_id: string
+          ref_type: string
+          running_balance: number
+          txn_date: string
+        }[]
+      }
       get_last_price: {
         Args: { p_customer_id: string; p_product_id: string }
         Returns: {
@@ -1624,6 +1765,18 @@ export type Database = {
           stock_value: number
           unit: string
           unit_cost: number
+        }[]
+      }
+      get_supplier_ledger: {
+        Args: { p_as_of_date?: string; p_supplier_id: string }
+        Returns: {
+          billed: number
+          paid: number
+          particulars: string
+          ref_id: string
+          ref_type: string
+          running_balance: number
+          txn_date: string
         }[]
       }
       has_permission: {
