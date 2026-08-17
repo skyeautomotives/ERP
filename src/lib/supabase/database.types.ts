@@ -116,6 +116,10 @@ export type Database = {
           bank_name: string | null
           created_at: string
           created_by: string | null
+          credit_note_padding: number
+          credit_note_prefix: string
+          debit_note_padding: number
+          debit_note_prefix: string
           email: string | null
           gstin: string | null
           id: string
@@ -124,6 +128,8 @@ export type Database = {
           invoice_terms: string | null
           logo_url: string | null
           name: string
+          next_credit_note_number: number
+          next_debit_note_number: number
           next_invoice_number: number
           next_payment_number: number
           next_purchase_ref_number: number
@@ -146,6 +152,10 @@ export type Database = {
           bank_name?: string | null
           created_at?: string
           created_by?: string | null
+          credit_note_padding?: number
+          credit_note_prefix?: string
+          debit_note_padding?: number
+          debit_note_prefix?: string
           email?: string | null
           gstin?: string | null
           id?: string
@@ -154,6 +164,8 @@ export type Database = {
           invoice_terms?: string | null
           logo_url?: string | null
           name: string
+          next_credit_note_number?: number
+          next_debit_note_number?: number
           next_invoice_number?: number
           next_payment_number?: number
           next_purchase_ref_number?: number
@@ -176,6 +188,10 @@ export type Database = {
           bank_name?: string | null
           created_at?: string
           created_by?: string | null
+          credit_note_padding?: number
+          credit_note_prefix?: string
+          debit_note_padding?: number
+          debit_note_prefix?: string
           email?: string | null
           gstin?: string | null
           id?: string
@@ -184,6 +200,8 @@ export type Database = {
           invoice_terms?: string | null
           logo_url?: string | null
           name?: string
+          next_credit_note_number?: number
+          next_debit_note_number?: number
           next_invoice_number?: number
           next_payment_number?: number
           next_purchase_ref_number?: number
@@ -200,6 +218,168 @@ export type Database = {
           updated_by?: string | null
         }
         Relationships: []
+      }
+      credit_note_items: {
+        Row: {
+          cgst: number
+          credit_note_id: string
+          discount_percent: number
+          gst_percent: number
+          id: string
+          igst: number
+          line_total: number
+          product_id: string
+          quantity: number
+          rate: number
+          sales_invoice_item_id: string
+          sgst: number
+          taxable_value: number
+        }
+        Insert: {
+          cgst?: number
+          credit_note_id: string
+          discount_percent?: number
+          gst_percent?: number
+          id?: string
+          igst?: number
+          line_total?: number
+          product_id: string
+          quantity: number
+          rate: number
+          sales_invoice_item_id: string
+          sgst?: number
+          taxable_value?: number
+        }
+        Update: {
+          cgst?: number
+          credit_note_id?: string
+          discount_percent?: number
+          gst_percent?: number
+          id?: string
+          igst?: number
+          line_total?: number
+          product_id?: string
+          quantity?: number
+          rate?: number
+          sales_invoice_item_id?: string
+          sgst?: number
+          taxable_value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_note_items_credit_note_id_fkey"
+            columns: ["credit_note_id"]
+            isOneToOne: false
+            referencedRelation: "credit_notes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_note_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "product_stock_levels"
+            referencedColumns: ["product_id"]
+          },
+          {
+            foreignKeyName: "credit_note_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_note_items_sales_invoice_item_id_fkey"
+            columns: ["sales_invoice_item_id"]
+            isOneToOne: false
+            referencedRelation: "sales_invoice_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      credit_notes: {
+        Row: {
+          cgst_total: number
+          created_at: string
+          created_by: string | null
+          credit_note_date: string
+          credit_note_number: string
+          customer_id: string
+          discount_total: number
+          id: string
+          igst_total: number
+          reason: string
+          sales_invoice_id: string
+          sgst_total: number
+          status: string
+          subtotal: number
+          taxable_total: number
+          total_amount: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          cgst_total?: number
+          created_at?: string
+          created_by?: string | null
+          credit_note_date?: string
+          credit_note_number: string
+          customer_id: string
+          discount_total?: number
+          id?: string
+          igst_total?: number
+          reason: string
+          sales_invoice_id: string
+          sgst_total?: number
+          status?: string
+          subtotal?: number
+          taxable_total?: number
+          total_amount?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          cgst_total?: number
+          created_at?: string
+          created_by?: string | null
+          credit_note_date?: string
+          credit_note_number?: string
+          customer_id?: string
+          discount_total?: number
+          id?: string
+          igst_total?: number
+          reason?: string
+          sales_invoice_id?: string
+          sgst_total?: number
+          status?: string
+          subtotal?: number
+          taxable_total?: number
+          total_amount?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_notes_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_notes_sales_invoice_id_fkey"
+            columns: ["sales_invoice_id"]
+            isOneToOne: false
+            referencedRelation: "sales_invoice_outstanding"
+            referencedColumns: ["invoice_id"]
+          },
+          {
+            foreignKeyName: "credit_notes_sales_invoice_id_fkey"
+            columns: ["sales_invoice_id"]
+            isOneToOne: false
+            referencedRelation: "sales_invoices"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       customers: {
         Row: {
@@ -288,6 +468,168 @@ export type Database = {
           },
         ]
       }
+      debit_note_items: {
+        Row: {
+          cgst: number
+          debit_note_id: string
+          discount_percent: number
+          gst_percent: number
+          id: string
+          igst: number
+          line_total: number
+          product_id: string
+          purchase_invoice_item_id: string
+          quantity: number
+          rate: number
+          sgst: number
+          taxable_value: number
+        }
+        Insert: {
+          cgst?: number
+          debit_note_id: string
+          discount_percent?: number
+          gst_percent?: number
+          id?: string
+          igst?: number
+          line_total?: number
+          product_id: string
+          purchase_invoice_item_id: string
+          quantity: number
+          rate: number
+          sgst?: number
+          taxable_value?: number
+        }
+        Update: {
+          cgst?: number
+          debit_note_id?: string
+          discount_percent?: number
+          gst_percent?: number
+          id?: string
+          igst?: number
+          line_total?: number
+          product_id?: string
+          purchase_invoice_item_id?: string
+          quantity?: number
+          rate?: number
+          sgst?: number
+          taxable_value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "debit_note_items_debit_note_id_fkey"
+            columns: ["debit_note_id"]
+            isOneToOne: false
+            referencedRelation: "debit_notes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "debit_note_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "product_stock_levels"
+            referencedColumns: ["product_id"]
+          },
+          {
+            foreignKeyName: "debit_note_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "debit_note_items_purchase_invoice_item_id_fkey"
+            columns: ["purchase_invoice_item_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_invoice_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      debit_notes: {
+        Row: {
+          cgst_total: number
+          created_at: string
+          created_by: string | null
+          debit_note_date: string
+          debit_note_number: string
+          discount_total: number
+          id: string
+          igst_total: number
+          purchase_invoice_id: string
+          reason: string
+          sgst_total: number
+          status: string
+          subtotal: number
+          supplier_id: string
+          taxable_total: number
+          total_amount: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          cgst_total?: number
+          created_at?: string
+          created_by?: string | null
+          debit_note_date?: string
+          debit_note_number: string
+          discount_total?: number
+          id?: string
+          igst_total?: number
+          purchase_invoice_id: string
+          reason: string
+          sgst_total?: number
+          status?: string
+          subtotal?: number
+          supplier_id: string
+          taxable_total?: number
+          total_amount?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          cgst_total?: number
+          created_at?: string
+          created_by?: string | null
+          debit_note_date?: string
+          debit_note_number?: string
+          discount_total?: number
+          id?: string
+          igst_total?: number
+          purchase_invoice_id?: string
+          reason?: string
+          sgst_total?: number
+          status?: string
+          subtotal?: number
+          supplier_id?: string
+          taxable_total?: number
+          total_amount?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "debit_notes_purchase_invoice_id_fkey"
+            columns: ["purchase_invoice_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_invoice_outstanding"
+            referencedColumns: ["invoice_id"]
+          },
+          {
+            foreignKeyName: "debit_notes_purchase_invoice_id_fkey"
+            columns: ["purchase_invoice_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "debit_notes_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       expense_categories: {
         Row: {
           created_at: string
@@ -315,6 +657,48 @@ export type Database = {
           name?: string
           updated_at?: string
           updated_by?: string | null
+        }
+        Relationships: []
+      }
+      gst_return_periods: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          filed_reference_number: string | null
+          id: string
+          notes: string | null
+          period_month: number
+          period_year: number
+          return_type: string
+          status: string
+          status_updated_at: string
+          status_updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          filed_reference_number?: string | null
+          id?: string
+          notes?: string | null
+          period_month: number
+          period_year: number
+          return_type: string
+          status?: string
+          status_updated_at?: string
+          status_updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          filed_reference_number?: string | null
+          id?: string
+          notes?: string | null
+          period_month?: number
+          period_year?: number
+          return_type?: string
+          status?: string
+          status_updated_at?: string
+          status_updated_by?: string | null
         }
         Relationships: []
       }
@@ -1631,6 +2015,14 @@ export type Database = {
           role_name: string
         }[]
       }
+      cancel_credit_note: {
+        Args: { p_credit_note_id: string }
+        Returns: undefined
+      }
+      cancel_debit_note: {
+        Args: { p_debit_note_id: string }
+        Returns: undefined
+      }
       cancel_payment: { Args: { p_payment_id: string }; Returns: undefined }
       cancel_purchase_invoice: {
         Args: { p_invoice_id: string }
@@ -1642,6 +2034,14 @@ export type Database = {
         Returns: undefined
       }
       coa_id: { Args: { p_code: string }; Returns: string }
+      create_credit_note: {
+        Args: { p_items: Json; p_reason: string; p_sales_invoice_id: string }
+        Returns: string
+      }
+      create_debit_note: {
+        Args: { p_items: Json; p_purchase_invoice_id: string; p_reason: string }
+        Returns: string
+      }
       create_payment: {
         Args: {
           p_allocations: Json
@@ -1729,6 +2129,48 @@ export type Database = {
           txn_date: string
         }[]
       }
+      get_gstr1_b2b: {
+        Args: { p_from: string; p_to: string }
+        Returns: {
+          cgst_total: number
+          customer_gstin: string
+          customer_name: string
+          igst_total: number
+          invoice_date: string
+          invoice_id: string
+          invoice_number: string
+          sgst_total: number
+          taxable_total: number
+          total_amount: number
+        }[]
+      }
+      get_gstr1_b2c_summary: {
+        Args: { p_from: string; p_to: string }
+        Returns: {
+          cgst_total: number
+          gst_percent: number
+          igst_total: number
+          invoice_count: number
+          sgst_total: number
+          taxable_total: number
+          total_amount: number
+        }[]
+      }
+      get_hsn_summary: {
+        Args: { p_from: string; p_to: string; p_type: string }
+        Returns: {
+          cgst_total: number
+          description: string
+          gst_percent: number
+          hsn_code: string
+          igst_total: number
+          sgst_total: number
+          taxable_total: number
+          total_amount: number
+          total_quantity: number
+          unit: string
+        }[]
+      }
       get_last_price: {
         Args: { p_customer_id: string; p_product_id: string }
         Returns: {
@@ -1746,6 +2188,22 @@ export type Database = {
           name: string
           product_id: string
           total_sold: number
+        }[]
+      }
+      get_purchase_register: {
+        Args: { p_from: string; p_to: string }
+        Returns: {
+          cgst_total: number
+          igst_total: number
+          invoice_date: string
+          invoice_id: string
+          our_reference_number: string
+          sgst_total: number
+          supplier_gstin: string
+          supplier_invoice_number: string
+          supplier_name: string
+          taxable_total: number
+          total_amount: number
         }[]
       }
       get_stock_as_of: {

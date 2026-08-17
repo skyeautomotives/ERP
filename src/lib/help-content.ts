@@ -293,4 +293,61 @@ export const HELP_CONTENT: Record<string, HelpContent> = {
       { label: "As of date", text: "Everything on this report is cumulative from the very beginning up to this date, not just a single period." },
     ],
   },
+  "credit-notes": {
+    title: "Sales Return (Credit Note)",
+    description: "Recording goods a customer returned, or a price correction on a sale already billed. Reverses the exact stock, revenue, and GST from the original invoice, and reduces what the customer owes.",
+    fields: [
+      { label: "Sales invoice", text: "The original credit sale this return is against - you can't create a credit note without one." },
+      { label: "Return qty", text: "How much of each line you're taking back. Can't exceed what's left after any earlier credit notes against the same invoice line." },
+      { label: "Reason", text: "Free text - why the goods came back or the price was corrected." },
+      { label: "Cancel credit note", text: "Reverses the credit note itself - stock and balances go back to how they were before it was recorded." },
+    ],
+  },
+  "debit-notes": {
+    title: "Purchase Return (Debit Note)",
+    description: "Recording goods sent back to a supplier, or a price correction on a purchase already recorded. Reverses the exact stock, cost, and GST from the original purchase, and reduces what you owe the supplier.",
+    fields: [
+      { label: "Purchase invoice", text: "The original purchase this return is against." },
+      { label: "Return qty", text: "How much of each line is going back. Can't exceed what's left after any earlier debit notes against the same purchase line." },
+      { label: "Reason", text: "Free text - why the goods went back or the price was corrected." },
+      { label: "Cancel debit note", text: "Reverses the debit note itself." },
+    ],
+  },
+  gstr1: {
+    title: "GSTR-1",
+    description: "The two tables you need to prepare your outward-supply GST return for a period: B2B (customers with a GSTIN, listed invoice by invoice) and B2C (everyone else, summarized by GST rate).",
+    fields: [
+      { label: "B2B", text: "One row per invoice billed to a customer who has a GSTIN on file." },
+      { label: "B2C", text: "Everything else, added up by GST rate rather than listed invoice by invoice." },
+      { label: "Export CSV", text: "Download either table to hand to your accountant or GST filing software." },
+    ],
+  },
+  "hsn-summary": {
+    title: "HSN Summary",
+    description: "Sales or purchases for a period, grouped by each product's HSN code and GST rate - the format GST returns need for the HSN-wise summary table.",
+    fields: [
+      { label: "HSN", text: "Comes from the product's own HSN code (Masters > Products). Products without one are grouped under \"N/A\" - worth fixing before filing." },
+    ],
+  },
+  "purchase-register": {
+    title: "Purchase Register",
+    description: "Every purchase for a period with its GST breakup - this is your input tax credit claim for the period.",
+    fields: [
+      { label: "GSTIN", text: "The supplier's GST number on file. Blank means the supplier record has no GSTIN saved." },
+    ],
+  },
+  "gst-reconciliation": {
+    title: "GST Reconciliation",
+    description: "A sanity check that the GST reports and the accounting ledger agree with each other for the same period - they're computed from the same underlying transactions, so they should always match.",
+    fields: [
+      { label: "Mismatch", text: "If this ever shows Mismatch, something is wrong and worth investigating before filing - it should not normally happen." },
+    ],
+  },
+  "gst-returns": {
+    title: "GST Returns",
+    description: "A checklist for tracking each period's GSTR-1/GSTR-3B through Draft, Verified, Ready for filing, and Filed. This app does not file anything with the government - you still do the actual filing yourself on the GST portal; this is only a record of where things stand.",
+    fields: [
+      { label: "Reference #", text: "Optional - the acknowledgement or reference number you get after filing, for your own records." },
+    ],
+  },
 };

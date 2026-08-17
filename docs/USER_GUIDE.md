@@ -225,6 +225,44 @@ A snapshot, as of one date, of what the business owns (assets like Cash, Bank, I
 
 There's no screen yet for adding a manual accounting adjustment that isn't tied to a sale, purchase, receipt, or payment - if that's ever needed, it's a future addition. The Chart of Accounts screen is view-only for the same reason.
 
+## Phase 8: GST - Credit Notes, Debit Notes, and GST Reports
+
+### Sales Return (Credit Note) and Purchase Return (Debit Note)
+
+**Sales > Sales Return** and **Purchase > Purchase Return** now work - these are what "Sales Returns" and "Purchase Returns" turned into once GST rules came into scope, since a GST credit/debit note *is* the compliance document for a return.
+
+To record one: click **New credit note** (or **New debit note**), pick the original invoice it's against, then for each product line enter how much you're returning. You can't return more than what's left after any earlier returns against the same line - the screen shows you exactly how much is still returnable. Enter a reason and save. Stock goes back up (credit note) or down (debit note) automatically, and the customer's/supplier's balance adjusts to match.
+
+Credit notes can only be raised against invoices billed to a known customer - a walk-in cash sale with no customer on record can't have one (there's nowhere to attach it to).
+
+Cancelling a credit or debit note reverses it completely, same as everywhere else - no deleting.
+
+### GSTR-1 (Accounts... GST > GSTR-1)
+
+Pick a date range and see your outward-supply GST return data in the two tables you need for filing: **B2B** (every invoice billed to a customer who has a GSTIN on file, listed one by one) and **B2C** (everything else, added up by GST rate). Each table has an **Export CSV** button to hand off to your accountant or GST software.
+
+### HSN Summary (GST > HSN Summary)
+
+Sales or purchases for a period, grouped by each product's HSN code and GST rate. Products missing an HSN code show up under "N/A" - worth fixing on the product record before filing season.
+
+### Purchase Register (GST > Purchase Register)
+
+Every purchase in a period with its GST breakup and the supplier's GSTIN - this is your input tax credit claim for the period.
+
+### GST Reconciliation (GST > GST Reconciliation)
+
+A sanity check that the GST reports above and the accounting ledger (from Phase 7) agree with each other. It should always say "Matched" - if it ever doesn't, something needs looking into before you file.
+
+### GST Returns (GST > GST Returns)
+
+A simple checklist for tracking each month's GSTR-1 and GSTR-3B through **Draft**, **Verified**, **Ready for filing**, and **Filed**. Add a period, then click the button to move it to the next stage as you work through it. There's a spot to note the filing reference number once you've actually filed it.
+
+**Important: this app does not file anything with the government.** You still have to file GSTR-1/GSTR-3B yourself on the official GST portal - this screen just keeps a record of where each period stands.
+
+### What's not here yet
+
+Credit and debit notes aren't yet merged into a combined table inside the GSTR-1 report itself (they show up correctly in their own screens and in your account balances, just not folded into that one report yet).
+
 ---
 
-*More sections will be added here as each phase of the build ships (GST, Staff & Incentives, Dashboard, and Mobile).*
+*More sections will be added here as each phase of the build ships (Staff & Incentives, Dashboard, and Mobile).*

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getCurrentUser, can, MODULES, type ModuleKey } from "@/lib/auth/permissions";
 import { logout } from "@/app/login/actions";
 
-const BUILT_MODULES: ModuleKey[] = ["dashboard", "masters", "sales", "purchase", "inventory", "accounts", "settings"];
+const BUILT_MODULES: ModuleKey[] = ["dashboard", "masters", "sales", "purchase", "inventory", "accounts", "gst", "settings"];
 
 type SubLink = { href: string; label: string; comingSoon?: boolean };
 
@@ -20,13 +20,13 @@ const SUB_LINKS: Partial<Record<ModuleKey, SubLink[]>> = {
     { href: "/sales/credit", label: "Credit Sales" },
     { href: "/sales/cash", label: "Cash Sales" },
     { href: "/sales/orders", label: "Sales Orders" },
-    { href: "/sales/returns", label: "Sales Return", comingSoon: true },
+    { href: "/sales/returns", label: "Sales Return" },
     { href: "/sales/reports", label: "Sales Reports", comingSoon: true },
   ],
   purchase: [
     { href: "/purchase/entries", label: "Purchase Entry" },
     { href: "/purchase/verification", label: "Bill Verification" },
-    { href: "/purchase/returns", label: "Purchase Return", comingSoon: true },
+    { href: "/purchase/returns", label: "Purchase Return" },
     { href: "/purchase/reports", label: "Purchase Reports", comingSoon: true },
   ],
   inventory: [
@@ -47,6 +47,13 @@ const SUB_LINKS: Partial<Record<ModuleKey, SubLink[]>> = {
     { href: "/accounts/trial-balance", label: "Trial Balance" },
     { href: "/accounts/profit-and-loss", label: "Profit & Loss" },
     { href: "/accounts/balance-sheet", label: "Balance Sheet" },
+  ],
+  gst: [
+    { href: "/gst/gstr1", label: "GSTR-1" },
+    { href: "/gst/hsn-summary", label: "HSN Summary" },
+    { href: "/gst/purchase-register", label: "Purchase Register" },
+    { href: "/gst/reconciliation", label: "GST Reconciliation" },
+    { href: "/gst/returns", label: "GST Returns" },
   ],
   settings: [
     { href: "/settings/company", label: "Company" },
