@@ -63,6 +63,8 @@ export async function updateCompanySettings(
       invoice_terms: String(formData.get("invoice_terms") ?? "") || null,
       invoice_prefix: String(formData.get("invoice_prefix") ?? "INV"),
       purchase_ref_prefix: String(formData.get("purchase_ref_prefix") ?? "PUR"),
+      receipt_prefix: String(formData.get("receipt_prefix") ?? "RCPT"),
+      payment_prefix: String(formData.get("payment_prefix") ?? "PAY"),
       updated_by: user!.id,
       ...(logoUrl ? { logo_url: logoUrl } : {}),
     })

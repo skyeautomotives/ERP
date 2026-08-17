@@ -89,10 +89,16 @@ export type Database = {
           logo_url: string | null
           name: string
           next_invoice_number: number
+          next_payment_number: number
           next_purchase_ref_number: number
+          next_receipt_number: number
+          payment_padding: number
+          payment_prefix: string
           phone: string | null
           purchase_ref_padding: number
           purchase_ref_prefix: string
+          receipt_padding: number
+          receipt_prefix: string
           state: string | null
           updated_at: string
           updated_by: string | null
@@ -113,10 +119,16 @@ export type Database = {
           logo_url?: string | null
           name: string
           next_invoice_number?: number
+          next_payment_number?: number
           next_purchase_ref_number?: number
+          next_receipt_number?: number
+          payment_padding?: number
+          payment_prefix?: string
           phone?: string | null
           purchase_ref_padding?: number
           purchase_ref_prefix?: string
+          receipt_padding?: number
+          receipt_prefix?: string
           state?: string | null
           updated_at?: string
           updated_by?: string | null
@@ -137,10 +149,16 @@ export type Database = {
           logo_url?: string | null
           name?: string
           next_invoice_number?: number
+          next_payment_number?: number
           next_purchase_ref_number?: number
+          next_receipt_number?: number
+          payment_padding?: number
+          payment_prefix?: string
           phone?: string | null
           purchase_ref_padding?: number
           purchase_ref_prefix?: string
+          receipt_padding?: number
+          receipt_prefix?: string
           state?: string | null
           updated_at?: string
           updated_by?: string | null
@@ -230,6 +248,151 @@ export type Database = {
             columns: ["route_id"]
             isOneToOne: false
             referencedRelation: "routes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      expense_categories: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      payment_allocations: {
+        Row: {
+          amount_allocated: number
+          id: string
+          payment_id: string
+          purchase_invoice_id: string
+        }
+        Insert: {
+          amount_allocated: number
+          id?: string
+          payment_id: string
+          purchase_invoice_id: string
+        }
+        Update: {
+          amount_allocated?: number
+          id?: string
+          payment_id?: string
+          purchase_invoice_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_allocations_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_allocations_purchase_invoice_id_fkey"
+            columns: ["purchase_invoice_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_invoice_outstanding"
+            referencedColumns: ["invoice_id"]
+          },
+          {
+            foreignKeyName: "payment_allocations_purchase_invoice_id_fkey"
+            columns: ["purchase_invoice_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string | null
+          expense_category_id: string | null
+          id: string
+          method: string
+          notes: string | null
+          paid_to: string | null
+          payment_date: string
+          payment_number: string
+          purpose: string
+          reference_number: string | null
+          status: string
+          supplier_id: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by?: string | null
+          expense_category_id?: string | null
+          id?: string
+          method: string
+          notes?: string | null
+          paid_to?: string | null
+          payment_date?: string
+          payment_number: string
+          purpose: string
+          reference_number?: string | null
+          status?: string
+          supplier_id?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string | null
+          expense_category_id?: string | null
+          id?: string
+          method?: string
+          notes?: string | null
+          paid_to?: string | null
+          payment_date?: string
+          payment_number?: string
+          purpose?: string
+          reference_number?: string | null
+          status?: string
+          supplier_id?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_expense_category_id_fkey"
+            columns: ["expense_category_id"]
+            isOneToOne: false
+            referencedRelation: "expense_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
             referencedColumns: ["id"]
           },
         ]
@@ -393,6 +556,13 @@ export type Database = {
             foreignKeyName: "purchase_invoice_items_invoice_id_fkey"
             columns: ["invoice_id"]
             isOneToOne: false
+            referencedRelation: "purchase_invoice_outstanding"
+            referencedColumns: ["invoice_id"]
+          },
+          {
+            foreignKeyName: "purchase_invoice_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
             referencedRelation: "purchase_invoices"
             referencedColumns: ["id"]
           },
@@ -537,7 +707,116 @@ export type Database = {
             foreignKeyName: "purchase_verifications_purchase_invoice_id_fkey"
             columns: ["purchase_invoice_id"]
             isOneToOne: true
+            referencedRelation: "purchase_invoice_outstanding"
+            referencedColumns: ["invoice_id"]
+          },
+          {
+            foreignKeyName: "purchase_verifications_purchase_invoice_id_fkey"
+            columns: ["purchase_invoice_id"]
+            isOneToOne: true
             referencedRelation: "purchase_invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      receipt_allocations: {
+        Row: {
+          amount_allocated: number
+          id: string
+          receipt_id: string
+          sales_invoice_id: string
+        }
+        Insert: {
+          amount_allocated: number
+          id?: string
+          receipt_id: string
+          sales_invoice_id: string
+        }
+        Update: {
+          amount_allocated?: number
+          id?: string
+          receipt_id?: string
+          sales_invoice_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "receipt_allocations_receipt_id_fkey"
+            columns: ["receipt_id"]
+            isOneToOne: false
+            referencedRelation: "receipts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "receipt_allocations_sales_invoice_id_fkey"
+            columns: ["sales_invoice_id"]
+            isOneToOne: false
+            referencedRelation: "sales_invoice_outstanding"
+            referencedColumns: ["invoice_id"]
+          },
+          {
+            foreignKeyName: "receipt_allocations_sales_invoice_id_fkey"
+            columns: ["sales_invoice_id"]
+            isOneToOne: false
+            referencedRelation: "sales_invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      receipts: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string | null
+          customer_id: string
+          id: string
+          method: string
+          mode: string
+          notes: string | null
+          receipt_date: string
+          receipt_number: string
+          reference_number: string | null
+          status: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by?: string | null
+          customer_id: string
+          id?: string
+          method: string
+          mode: string
+          notes?: string | null
+          receipt_date?: string
+          receipt_number: string
+          reference_number?: string | null
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string
+          id?: string
+          method?: string
+          mode?: string
+          notes?: string | null
+          receipt_date?: string
+          receipt_number?: string
+          reference_number?: string | null
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "receipts_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
             referencedColumns: ["id"]
           },
         ]
@@ -696,6 +975,13 @@ export type Database = {
           taxable_value?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "sales_invoice_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "sales_invoice_outstanding"
+            referencedColumns: ["invoice_id"]
+          },
           {
             foreignKeyName: "sales_invoice_items_invoice_id_fkey"
             columns: ["invoice_id"]
@@ -918,6 +1204,13 @@ export type Database = {
           updated_by?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "sales_orders_converted_invoice_id_fkey"
+            columns: ["converted_invoice_id"]
+            isOneToOne: false
+            referencedRelation: "sales_invoice_outstanding"
+            referencedColumns: ["invoice_id"]
+          },
           {
             foreignKeyName: "sales_orders_converted_invoice_id_fkey"
             columns: ["converted_invoice_id"]
@@ -1169,6 +1462,46 @@ export type Database = {
         }
         Relationships: []
       }
+      purchase_invoice_outstanding: {
+        Row: {
+          invoice_id: string | null
+          our_reference_number: string | null
+          outstanding_amount: number | null
+          paid_amount: number | null
+          status: string | null
+          supplier_id: string | null
+          total_amount: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_invoices_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales_invoice_outstanding: {
+        Row: {
+          customer_id: string | null
+          invoice_id: string | null
+          invoice_number: string | null
+          outstanding_amount: number | null
+          paid_amount: number | null
+          status: string | null
+          total_amount: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_invoices_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       admin_list_users: {
@@ -1182,13 +1515,30 @@ export type Database = {
           role_name: string
         }[]
       }
+      cancel_payment: { Args: { p_payment_id: string }; Returns: undefined }
       cancel_purchase_invoice: {
         Args: { p_invoice_id: string }
         Returns: undefined
       }
+      cancel_receipt: { Args: { p_receipt_id: string }; Returns: undefined }
       cancel_sales_invoice: {
         Args: { p_invoice_id: string }
         Returns: undefined
+      }
+      create_payment: {
+        Args: {
+          p_allocations: Json
+          p_amount: number
+          p_expense_category_id: string
+          p_method: string
+          p_notes: string
+          p_paid_to: string
+          p_payment_date: string
+          p_purpose: string
+          p_reference_number: string
+          p_supplier_id: string
+        }
+        Returns: string
       }
       create_purchase_invoice: {
         Args: {
@@ -1198,6 +1548,19 @@ export type Database = {
           p_supplier_id: string
           p_supplier_invoice_date: string
           p_supplier_invoice_number: string
+        }
+        Returns: string
+      }
+      create_receipt: {
+        Args: {
+          p_allocations: Json
+          p_amount: number
+          p_customer_id: string
+          p_method: string
+          p_mode: string
+          p_notes: string
+          p_receipt_date: string
+          p_reference_number: string
         }
         Returns: string
       }

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getCurrentUser, can, MODULES, type ModuleKey } from "@/lib/auth/permissions";
 import { logout } from "@/app/login/actions";
 
-const BUILT_MODULES: ModuleKey[] = ["dashboard", "masters", "sales", "purchase", "inventory", "settings"];
+const BUILT_MODULES: ModuleKey[] = ["dashboard", "masters", "sales", "purchase", "inventory", "accounts", "settings"];
 
 type SubLink = { href: string; label: string; comingSoon?: boolean };
 
@@ -13,6 +13,7 @@ const SUB_LINKS: Partial<Record<ModuleKey, SubLink[]>> = {
     { href: "/masters/suppliers", label: "Suppliers" },
     { href: "/masters/products", label: "Products" },
     { href: "/masters/routes", label: "Routes" },
+    { href: "/masters/expense-categories", label: "Expense Categories" },
   ],
   sales: [
     { href: "/sales/credit", label: "Credit Sales" },
@@ -31,6 +32,16 @@ const SUB_LINKS: Partial<Record<ModuleKey, SubLink[]>> = {
     { href: "/inventory/stock", label: "Stock Report" },
     { href: "/inventory/adjustments", label: "Stock Adjustment" },
     { href: "/inventory/analysis", label: "Movement Analysis" },
+  ],
+  accounts: [
+    { href: "/accounts/receipts/cash", label: "Cash Receipt" },
+    { href: "/accounts/receipts/bank", label: "Bank Receipt" },
+    { href: "/accounts/payments/cash", label: "Cash Payment" },
+    { href: "/accounts/payments/bank", label: "Bank Payment" },
+    { href: "/accounts/expenses", label: "Expenses" },
+    { href: "/accounts/customer-ledger", label: "Customer Ledger", comingSoon: true },
+    { href: "/accounts/supplier-ledger", label: "Supplier Ledger", comingSoon: true },
+    { href: "/accounts/journal", label: "Journal", comingSoon: true },
   ],
   settings: [
     { href: "/settings/company", label: "Company" },

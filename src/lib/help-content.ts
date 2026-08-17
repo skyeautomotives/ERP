@@ -195,4 +195,38 @@ export const HELP_CONTENT: Record<string, HelpContent> = {
       { label: "Slow moving", text: "Products with zero recorded sales in the window - candidates for a closer look." },
     ],
   },
+  "expense-categories": {
+    title: "Expense Categories",
+    description: "The categories available when recording an expense payment - e.g. Fuel, Electricity, Rent. Add as many as you need.",
+    fields: [{ label: "Name", text: "Must be unique - the system will reject a duplicate category name." }],
+  },
+  receipts: {
+    title: "Cash / Bank Receipt",
+    description: "Recording money coming in from a customer. Every receipt is either matched against specific bills, or recorded as a general advance.",
+    fields: [
+      { label: "Mode: Against bill(s)", text: "Pick one or more of this customer's outstanding invoices and allocate how much of the receipt pays off each one. The amounts allocated must add up exactly to the receipt amount." },
+      { label: "Mode: On account", text: "Use when the customer pays without specifying which invoice it's for - recorded as a general advance, not yet matched to any bill." },
+      { label: "Reference / UTR number", text: "Bank receipts only - the transaction reference from the bank statement." },
+      { label: "Cancel receipt", text: "Reverses the receipt - any invoices it was paying off become outstanding again." },
+    ],
+  },
+  payments: {
+    title: "Cash / Bank Payment",
+    description: "Recording money going out - to a supplier, as an advance, or as a business expense.",
+    fields: [
+      { label: "Supplier bill payment", text: "Pick a supplier and allocate the amount across their outstanding purchase invoices - must add up exactly to the payment amount." },
+      { label: "On account", text: "An advance to a supplier not yet matched to a specific bill." },
+      { label: "Expense", text: "A business expense (fuel, rent, etc.) - pick a category instead of a supplier. This is what makes it show up on the Expenses screen." },
+      { label: "Paid to", text: "Optional free text - who physically received the money, useful for expenses without a formal supplier record." },
+      { label: "Reference / UTR number", text: "Bank payments only - the transaction reference from the bank statement." },
+      { label: "Cancel payment", text: "Reverses the payment - any invoices it was paying off become outstanding again." },
+    ],
+  },
+  expenses: {
+    title: "Expenses",
+    description: "Every expense payment recorded through Cash Payment or Bank Payment, in one place - there's no separate expense entry screen, recording the payment is what creates the expense record.",
+    fields: [
+      { label: "Category totals", text: "Sum of all active (non-cancelled) expenses, grouped by category." },
+    ],
+  },
 };

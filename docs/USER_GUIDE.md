@@ -156,6 +156,39 @@ Click a product to see its full **stock movement** - every purchase, sale, and a
 
 Stock Transfer between locations isn't built - the system doesn't currently track multiple warehouses/locations at all.
 
+## Phase 6: Cash/Bank Receipts, Cash/Bank Payments, Expenses
+
+Before using this section, add your expense types under **Masters > Expense Categories** (e.g. Fuel, Rent, Electricity) - you'll need at least one to record an expense payment.
+
+### Recording money coming in
+
+**Accounts > Cash Receipt** or **Bank Receipt > New...**. Pick the customer and a mode:
+
+- **Against bill(s)** - pick which of their outstanding invoices this payment covers, and type how much goes to each. The amounts you allocate must add up exactly to the receipt total. Overpaid by mistake? Record the extra separately as an on-account receipt rather than trying to force it onto one invoice.
+- **On account** - the customer paid without saying which invoice it's for. Recorded as a general credit; matching it to a specific bill later isn't built yet.
+
+Bank receipts also ask for the transaction/UTR reference number.
+
+### Recording money going out
+
+**Accounts > Cash Payment** or **Bank Payment > New...**. Pick a purpose:
+
+- **Supplier bill payment** - same idea as receipts, allocate the amount across the supplier's outstanding purchase invoices.
+- **On account** - an advance to a supplier, not yet matched to a bill.
+- **Expense** - pick a category instead of a supplier. This is the only way to record an expense - there's no separate "add expense" screen, recording the payment *is* the expense entry.
+
+### Expenses
+
+**Accounts > Expenses** shows every expense payment ever recorded, with totals by category - it's a live report over your Cash/Bank Payment entries, not a separate list you maintain.
+
+### Cancelling a receipt or payment
+
+Same rule as everywhere else - no deleting. Cancelling a receipt or payment that was allocated to an invoice makes that invoice outstanding again automatically.
+
+### What's not here yet
+
+Customer Ledger, Supplier Ledger, and Journal aren't built yet (shown as "Coming soon" under Accounts) - full running-balance ledgers are the next phase. What exists now (outstanding balances per invoice) is exactly what those ledgers will be built on top of.
+
 ---
 
-*More sections will be added here as each phase of the build ships (Accounts, GST, Staff & Incentives, Dashboard, and Mobile).*
+*More sections will be added here as each phase of the build ships (Accounting/Ledgers, GST, Staff & Incentives, Dashboard, and Mobile).*

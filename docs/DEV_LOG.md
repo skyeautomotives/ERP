@@ -20,8 +20,8 @@ Internal progress/context log for continuing this build across sessions. Not use
 - [x] **Dark mode** - real `dark:` Tailwind support added across the whole app (not a spec phase, but a full pass). Shipped 2026-08-17.
 - [x] **Phase 4** - Purchase + Purchase Verification. Shipped and verified end-to-end 2026-08-17.
 - [x] **Phase 5** - Inventory. Shipped and verified end-to-end 2026-08-17. **A cleanup-script mistake during this phase accidentally deleted one of the user's own real sales invoices (INV00001) - see Gotcha #9. Flagged to the user directly; not silently noted.**
-- [ ] **Phase 6** - Cash/Bank Receipts + Cash/Bank Payments + Expenses. **NEXT UP.**
-- [ ] Phase 7 - Accounting + Ledgers + Trial Balance + P&L + Balance Sheet
+- [x] **Phase 6** - Cash/Bank Receipts + Cash/Bank Payments + Expenses. Shipped and verified end-to-end 2026-08-17.
+- [ ] **Phase 7** - Accounting + Ledgers + Trial Balance + P&L + Balance Sheet. **NEXT UP.**
 - [ ] Phase 8 - GST
 - [ ] Phase 9 - Staff + Sales Performance + Collection Performance
 - [ ] Phase 10 - Incentive Engine
@@ -76,6 +76,20 @@ User asked (2026-08-17) for a detailed field-by-field user guide plus in-app "?"
 Verified with Playwright in dark color scheme across 5 representative screens (Company Setup, New Customer, Credit Sales, Purchase Verification, Stock Report): panel opens with real content, closes on Escape, renders cleanly. Screenshot-checked visually too - clean and readable.
 
 **Standing convention now**: every future phase's new pages get a `HELP_CONTENT` entry in `src/lib/help-content.ts` + `<HelpButton>` next to the `<h1>` from the start, same as `dark:` variants and `autoComplete="off"` already are.
+
+## Phase 6 (Cash/Bank Receipts + Payments + Expenses) - COMPLETE
+
+**What shipped:**
+- Migrations: `20260817500001_accounts_prep.sql` (receipt/payment numbering columns on company_settings + `expense_categories` master), `20260817500002_receipts_payments.sql` (`receipts`/`receipt_allocations`, `payments`/`payment_allocations` - cash/bank unified via a `method` column, same simplification as `sales_invoices.sale_type`), `20260817500003_outstanding_views.sql` (`sales_invoice_outstanding`/`purchase_invoice_outstanding` - the data Phase 7's ledgers will read from), `20260817500004_receipt_rpcs.sql`, `20260817500005_payment_rpcs.sql` (create_/cancel_ for both, same atomic-numbering + validation pattern as create_sales_invoice).
+- Key design point: **no separate `expenses` table** - an expense is just a `payments` row with `purpose='expense'` + `expense_category_id`; `/accounts/expenses` is a filtered report over `payments`, not its own data source.
+- Nav: "accounts" module live (Cash/Bank Receipt, Cash/Bank Payment, Expenses real; Customer Ledger/Supplier Ledger/Journal coming-soon for Phase 7). "Expense Categories" added under Masters.
+- Built: `masters/expense-categories/{actions.ts,category-form.tsx,page.tsx}` (Users-page-style inline-form pattern, no separate detail page needed for a one-field master), `accounts/receipts/{actions.ts,receipt-form.tsx,cash/,bank/,[id]/page.tsx}`, `accounts/payments/{actions.ts,payment-form.tsx,cash/,bank/,[id]/page.tsx}`, `accounts/expenses/page.tsx`, `accounts/page.tsx` (redirect).
+- `ReceiptForm`/`PaymentForm` are the biggest new UI pieces: bill-mode allocation is a live table of the counterparty's outstanding invoices (queried client-side from the outstanding views as soon as a customer/supplier is picked), with per-invoice amount inputs that must sum exactly to the receipt/payment total - enforced client-side for UX and server-side in the RPC for real (the RPC is the actual authority, never trust the client).
+- Full Playwright + direct-DB verification: intra-flow math confirmed correct via the outstanding views (sales invoice outstanding went from 1180 -> 0 after a full bill-mode receipt, purchase invoice outstanding 1180 -> 0 after a full bill-mode payment), on-account receipt/payment recorded without needing an invoice, expense payment showed up correctly on the Expenses report with category totals, cancelling a receipt correctly put the invoice back to fully outstanding (the outstanding views only sum `status='active'` allocations, so cancellation "just works" without extra logic).
+- **One verification gap, noted honestly rather than silently skipped**: didn't get an independent UI-driven confirmation that the RPC's "allocation exceeds outstanding balance" server-side guard actually fires - the input's HTML `max` attribute pre-empted the browser's form submission before it could be tested that way. The guard is in the RPC (`if v_alloc_amount > v_invoice.outstanding_amount + 0.01 then raise exception`) and was code-reviewed, but not independently exercised. Worth a real test if this becomes load-bearing later.
+- Test data cleanup this time **followed the Phase 5 lesson properly**: queried every transactional table's exact contents first, found a real pre-existing customer ("Vishnumaya Automobiles") the user had created that a blind delete would have caught, and deleted only the specific IDs created during this test run (confirmed via per-call response counts, not assumed).
+
+**Fast-follow / not done:** Customer Ledger, Supplier Ledger, Journal - explicitly Phase 7 per the spec's own phase list. Re-allocating an old on-account receipt/payment to a later invoice isn't built (recording on-account is in scope, applying it afterward is not).
 
 ## Established architecture / conventions (apply to every future phase)
 

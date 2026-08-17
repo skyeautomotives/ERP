@@ -118,6 +118,20 @@ export function CompanyForm({ company, canEdit }: { company: Company | null; can
           disabled={!canEdit}
         />
       </div>
+      <div className="grid grid-cols-2 gap-4">
+        <Field
+          label="Receipt number prefix"
+          name="receipt_prefix"
+          defaultValue={company.receipt_prefix}
+          disabled={!canEdit}
+        />
+        <Field
+          label="Payment number prefix"
+          name="payment_prefix"
+          defaultValue={company.payment_prefix}
+          disabled={!canEdit}
+        />
+      </div>
 
       {state.error && <p className="rounded-md bg-red-50 dark:bg-red-950/40 px-3 py-2 text-sm text-red-700 dark:text-red-400">{state.error}</p>}
       {state.success && (
