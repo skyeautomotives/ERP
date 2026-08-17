@@ -65,6 +65,7 @@ export async function updateCompanySettings(
       purchase_ref_prefix: String(formData.get("purchase_ref_prefix") ?? "PUR"),
       receipt_prefix: String(formData.get("receipt_prefix") ?? "RCPT"),
       payment_prefix: String(formData.get("payment_prefix") ?? "PAY"),
+      sales_incentive_rate: Number(formData.get("sales_incentive_rate") ?? 0) || 0,
       updated_by: user!.id,
       ...(logoUrl ? { logo_url: logoUrl } : {}),
     })

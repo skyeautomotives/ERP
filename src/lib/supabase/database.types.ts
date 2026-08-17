@@ -108,6 +108,48 @@ export type Database = {
         }
         Relationships: []
       }
+      collection_incentive_slabs: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          display_order: number
+          id: string
+          incentive_rate: number
+          is_active: boolean
+          max_days: number | null
+          min_days: number
+          slab_label: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          display_order: number
+          id?: string
+          incentive_rate: number
+          is_active?: boolean
+          max_days?: number | null
+          min_days: number
+          slab_label: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          display_order?: number
+          id?: string
+          incentive_rate?: number
+          is_active?: boolean
+          max_days?: number | null
+          min_days?: number
+          slab_label?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       company_settings: {
         Row: {
           address: string | null
@@ -141,6 +183,7 @@ export type Database = {
           purchase_ref_prefix: string
           receipt_padding: number
           receipt_prefix: string
+          sales_incentive_rate: number
           state: string | null
           updated_at: string
           updated_by: string | null
@@ -177,6 +220,7 @@ export type Database = {
           purchase_ref_prefix?: string
           receipt_padding?: number
           receipt_prefix?: string
+          sales_incentive_rate?: number
           state?: string | null
           updated_at?: string
           updated_by?: string | null
@@ -213,6 +257,7 @@ export type Database = {
           purchase_ref_prefix?: string
           receipt_padding?: number
           receipt_prefix?: string
+          sales_incentive_rate?: number
           state?: string | null
           updated_at?: string
           updated_by?: string | null
@@ -1741,6 +1786,50 @@ export type Database = {
           },
         ]
       }
+      staff_sales_targets: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          period_month: number
+          period_year: number
+          staff_id: string
+          target_amount: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          period_month: number
+          period_year: number
+          staff_id: string
+          target_amount: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          period_month?: number
+          period_year?: number
+          staff_id?: string
+          target_amount?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_sales_targets_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stock_adjustments: {
         Row: {
           created_at: string
@@ -2190,6 +2279,24 @@ export type Database = {
           total_amount: number
           total_quantity: number
           unit: string
+        }[]
+      }
+      get_incentive_dashboard: {
+        Args: { p_from: string; p_to: string }
+        Returns: {
+          achievement_percent: number
+          avg_collection_days: number
+          collection_incentive: number
+          collection_percent: number
+          outstanding_90_plus: number
+          outstanding_collected: number
+          outstanding_generated: number
+          sales_incentive: number
+          staff_id: string
+          staff_name: string
+          target: number
+          total_incentive: number
+          total_sales: number
         }[]
       }
       get_last_price: {

@@ -283,6 +283,33 @@ Sales, collection, outstanding, customer count, and profit for each delivery rou
 
 While building this section, a real issue was found and fixed: cash sales were incorrectly being counted as "outstanding" everywhere in the app (Bill-wise Outstanding, Customer Ledger, and these new staff reports), even though a cash sale is paid in full on the spot. That's fixed now - only credit sales carry an outstanding balance. Bill-wise Outstanding was also silently showing "Nothing outstanding" at all times due to a technical query bug - that's fixed too, and it now correctly lists real outstanding invoices.
 
+## Phase 10: Incentive Engine
+
+Before using this section, set your **Sales incentive rate** on **Settings > Company** (defaults to 0% until you set it), and add at least one entry on **Staff > Sales Targets** if you want to see "Achievement" figures.
+
+### Incentive Slabs (Staff > Incentive Slabs)
+
+The rate table that decides how much incentive a collected payment earns, based on how many days after the invoice date it was actually collected - same-day ("Ready Cash") earns the most, slower collection earns less, down to nothing past 90 days. These rates aren't fixed in the code - click into any rate and **Save** to change it.
+
+### Sales Targets (Staff > Sales Targets)
+
+Set a monthly sales target for each staff member. Pick the staff member, month, year, and target amount, then **Set target**. Setting a new target for a month that already has one replaces it.
+
+### Incentive Dashboard (Staff > Incentive Dashboard)
+
+For each staff member, over the period you pick (Today / This Week / This Month, or a custom range):
+
+- **Sales incentive** - total sales for the period times your configured sales incentive rate.
+- **Collection incentive** - each payment they collected, valued at whatever slab rate matches how quickly it came in.
+- **Total incentive** - the two added together.
+- **Target / Achievement** - their configured monthly target, and sales as a percentage of it.
+- **Collection %** - how much of their credit sales billed this period has actually been collected.
+- **Average collection days**, **Outstanding generated**, **Outstanding collected**, **90+ day outstanding** - the same collection-speed picture as Staff Performance, alongside the incentive figures.
+
+### What's not here yet
+
+Sales incentive is a single flat rate for everyone, not a tiered structure - only collection incentive uses tiers (slabs). There's no separate approval/payout workflow; this is a live calculation, not a record you lock in for payroll.
+
 ---
 
-*More sections will be added here as each phase of the build ships (Incentive Engine, Dashboard, and Mobile).*
+*More sections will be added here as each phase of the build ships (Dashboard and Mobile).*

@@ -374,4 +374,30 @@ export const HELP_CONTENT: Record<string, HelpContent> = {
       { label: "Route-wise staff breakdown", text: "Since a route isn't always worked by exactly one staff member, this table shows sales split by both route and staff for the period." },
     ],
   },
+  "incentive-dashboard": {
+    title: "Incentive Dashboard",
+    description: "How much incentive each staff member has earned for the period - from sales, from collection, and combined - alongside their target, achievement, and collection speed.",
+    fields: [
+      { label: "Sales incentive", text: "Total sales for the period x the sales incentive rate set on Settings > Company." },
+      { label: "Collection incentive", text: "Each payment collected earns incentive at the rate for how quickly it was collected (see Incentive Slabs) - faster collection earns more." },
+      { label: "Target / Achievement", text: "Target comes from Sales Targets. Achievement is sales as a percentage of target. Shows \"-\" if no target is set for the period." },
+      { label: "Collection %", text: "How much of the credit sales billed this period has actually been collected." },
+      { label: "90+ day outstanding", text: "How much this staff's customers currently owe on invoices more than 90 days past due - as of today, not limited to this period." },
+    ],
+  },
+  "incentive-slabs": {
+    title: "Collection Incentive Slabs",
+    description: "The configurable rate table that decides how much collection incentive a payment earns, based on the actual number of days between the invoice date and the day it was collected. Admins can change the rates here at any time - nothing is hard-coded.",
+    fields: [
+      { label: "Days", text: "The day-range this slab covers, fixed to keep coverage from having gaps or overlaps." },
+      { label: "Incentive rate", text: "The percentage applied to the amount collected in this slab. Click Save after changing a rate." },
+    ],
+  },
+  "sales-targets": {
+    title: "Sales Targets",
+    description: "A monthly sales target per staff member, used by the Incentive Dashboard to show achievement against target.",
+    fields: [
+      { label: "Setting a target again", text: "Setting a new target for a staff member and month that already has one replaces the old value." },
+    ],
+  },
 };
