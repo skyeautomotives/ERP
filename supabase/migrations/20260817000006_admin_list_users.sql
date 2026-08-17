@@ -1,5 +1,5 @@
 -- Phase 1: admin-only RPC to list users with their auth email (user_profiles has no
--- email column — email only lives in auth.users, which client code can't query directly).
+-- email column - email only lives in auth.users, which client code can't query directly).
 
 create or replace function public.admin_list_users()
 returns table (

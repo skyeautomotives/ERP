@@ -3,14 +3,23 @@ import Link from "next/link";
 import { getCurrentUser, can, MODULES, type ModuleKey } from "@/lib/auth/permissions";
 import { logout } from "@/app/login/actions";
 
-const BUILT_MODULES: ModuleKey[] = ["dashboard", "masters", "settings"];
+const BUILT_MODULES: ModuleKey[] = ["dashboard", "masters", "sales", "settings"];
 
-const SUB_LINKS: Partial<Record<ModuleKey, { href: string; label: string }[]>> = {
+type SubLink = { href: string; label: string; comingSoon?: boolean };
+
+const SUB_LINKS: Partial<Record<ModuleKey, SubLink[]>> = {
   masters: [
     { href: "/masters/customers", label: "Customers" },
     { href: "/masters/suppliers", label: "Suppliers" },
     { href: "/masters/products", label: "Products" },
     { href: "/masters/routes", label: "Routes" },
+  ],
+  sales: [
+    { href: "/sales/credit", label: "Credit Sales" },
+    { href: "/sales/cash", label: "Cash Sales" },
+    { href: "/sales/orders", label: "Sales Orders" },
+    { href: "/sales/returns", label: "Sales Return", comingSoon: true },
+    { href: "/sales/reports", label: "Sales Reports", comingSoon: true },
   ],
   settings: [
     { href: "/settings/company", label: "Company" },
@@ -63,15 +72,28 @@ export default async function AppLayout({ children }: { children: React.ReactNod
                   <p className="px-3 text-xs font-semibold uppercase tracking-wide text-gray-400">
                     {mod.label}
                   </p>
-                  {subLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
+                  {subLinks.map((link) =>
+                    link.comingSoon ? (
+                      <div
+                        key={link.href}
+                        className="flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium text-gray-400"
+                        title="This screen hasn't been built yet"
+                      >
+                        <span>{link.label}</span>
+                        <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-400">
+                          Coming soon
+                        </span>
+                      </div>
+                    ) : (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                      >
+                        {link.label}
+                      </Link>
+                    ),
+                  )}
                 </div>
               );
             }

@@ -25,7 +25,7 @@ export async function proxy(request: NextRequest) {
     },
   );
 
-  // Refreshes the session cookie if needed. Do not remove — required by @supabase/ssr.
+  // Refreshes the session cookie if needed. Do not remove - required by @supabase/ssr.
   const {
     data: { user },
   } = await supabase.auth.getUser();

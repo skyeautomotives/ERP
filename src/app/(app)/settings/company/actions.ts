@@ -54,6 +54,7 @@ export async function updateCompanySettings(
       name,
       address: String(formData.get("address") ?? "") || null,
       gstin: String(formData.get("gstin") ?? "") || null,
+      state: String(formData.get("state") ?? "") || null,
       phone: String(formData.get("phone") ?? "") || null,
       email: String(formData.get("email") ?? "") || null,
       bank_name: String(formData.get("bank_name") ?? "") || null,

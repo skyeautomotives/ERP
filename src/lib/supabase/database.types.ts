@@ -90,6 +90,7 @@ export type Database = {
           name: string
           next_invoice_number: number
           phone: string | null
+          state: string | null
           updated_at: string
           updated_by: string | null
         }
@@ -110,6 +111,7 @@ export type Database = {
           name: string
           next_invoice_number?: number
           phone?: string | null
+          state?: string | null
           updated_at?: string
           updated_by?: string | null
         }
@@ -130,6 +132,7 @@ export type Database = {
           name?: string
           next_invoice_number?: number
           phone?: string | null
+          state?: string | null
           updated_at?: string
           updated_by?: string | null
         }
@@ -431,6 +434,335 @@ export type Database = {
           },
         ]
       }
+      sales_invoice_items: {
+        Row: {
+          cgst: number
+          cost_price: number
+          discount_percent: number
+          gst_percent: number
+          id: string
+          igst: number
+          invoice_id: string
+          line_total: number
+          product_id: string
+          profit_amount: number
+          quantity: number
+          rate: number
+          sgst: number
+          taxable_value: number
+        }
+        Insert: {
+          cgst?: number
+          cost_price?: number
+          discount_percent?: number
+          gst_percent?: number
+          id?: string
+          igst?: number
+          invoice_id: string
+          line_total: number
+          product_id: string
+          profit_amount?: number
+          quantity: number
+          rate: number
+          sgst?: number
+          taxable_value: number
+        }
+        Update: {
+          cgst?: number
+          cost_price?: number
+          discount_percent?: number
+          gst_percent?: number
+          id?: string
+          igst?: number
+          invoice_id?: string
+          line_total?: number
+          product_id?: string
+          profit_amount?: number
+          quantity?: number
+          rate?: number
+          sgst?: number
+          taxable_value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_invoice_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "sales_invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_invoice_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales_invoices: {
+        Row: {
+          cash_customer_name: string | null
+          cash_customer_phone: string | null
+          cgst_total: number
+          cost_total: number
+          created_at: string
+          created_by: string | null
+          credit_period_days: number
+          customer_id: string | null
+          discount_total: number
+          due_date: string | null
+          id: string
+          igst_total: number
+          invoice_date: string
+          invoice_number: string
+          notes: string | null
+          profit_total: number
+          route_id: string | null
+          sale_type: string
+          sgst_total: number
+          staff_id: string | null
+          status: string
+          subtotal: number
+          taxable_total: number
+          total_amount: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          cash_customer_name?: string | null
+          cash_customer_phone?: string | null
+          cgst_total?: number
+          cost_total?: number
+          created_at?: string
+          created_by?: string | null
+          credit_period_days?: number
+          customer_id?: string | null
+          discount_total?: number
+          due_date?: string | null
+          id?: string
+          igst_total?: number
+          invoice_date?: string
+          invoice_number: string
+          notes?: string | null
+          profit_total?: number
+          route_id?: string | null
+          sale_type: string
+          sgst_total?: number
+          staff_id?: string | null
+          status?: string
+          subtotal?: number
+          taxable_total?: number
+          total_amount?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          cash_customer_name?: string | null
+          cash_customer_phone?: string | null
+          cgst_total?: number
+          cost_total?: number
+          created_at?: string
+          created_by?: string | null
+          credit_period_days?: number
+          customer_id?: string | null
+          discount_total?: number
+          due_date?: string | null
+          id?: string
+          igst_total?: number
+          invoice_date?: string
+          invoice_number?: string
+          notes?: string | null
+          profit_total?: number
+          route_id?: string | null
+          sale_type?: string
+          sgst_total?: number
+          staff_id?: string | null
+          status?: string
+          subtotal?: number
+          taxable_total?: number
+          total_amount?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_invoices_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_invoices_route_id_fkey"
+            columns: ["route_id"]
+            isOneToOne: false
+            referencedRelation: "routes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_invoices_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales_order_items: {
+        Row: {
+          discount_percent: number
+          id: string
+          order_id: string
+          product_id: string
+          quantity: number
+          rate: number
+        }
+        Insert: {
+          discount_percent?: number
+          id?: string
+          order_id: string
+          product_id: string
+          quantity: number
+          rate: number
+        }
+        Update: {
+          discount_percent?: number
+          id?: string
+          order_id?: string
+          product_id?: string
+          quantity?: number
+          rate?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "sales_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales_orders: {
+        Row: {
+          converted_invoice_id: string | null
+          created_at: string
+          created_by: string | null
+          customer_id: string | null
+          id: string
+          notes: string | null
+          route_id: string | null
+          staff_id: string | null
+          status: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          converted_invoice_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          id?: string
+          notes?: string | null
+          route_id?: string | null
+          staff_id?: string | null
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          converted_invoice_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          id?: string
+          notes?: string | null
+          route_id?: string | null
+          staff_id?: string | null
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_orders_converted_invoice_id_fkey"
+            columns: ["converted_invoice_id"]
+            isOneToOne: false
+            referencedRelation: "sales_invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_orders_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_orders_route_id_fkey"
+            columns: ["route_id"]
+            isOneToOne: false
+            referencedRelation: "routes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_orders_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stock_transactions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          product_id: string
+          quantity_change: number
+          reference_id: string | null
+          reference_table: string | null
+          transaction_type: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          product_id: string
+          quantity_change: number
+          reference_id?: string | null
+          reference_table?: string | null
+          transaction_type: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          product_id?: string
+          quantity_change?: number
+          reference_id?: string | null
+          reference_table?: string | null
+          transaction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_transactions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suppliers: {
         Row: {
           address: string | null
@@ -554,7 +886,35 @@ export type Database = {
           role_name: string
         }[]
       }
+      cancel_sales_invoice: {
+        Args: { p_invoice_id: string }
+        Returns: undefined
+      }
+      create_sales_invoice: {
+        Args: {
+          p_cash_customer_name: string
+          p_cash_customer_phone: string
+          p_credit_period_days: number
+          p_customer_id: string
+          p_items: Json
+          p_notes: string
+          p_route_id: string
+          p_sale_type: string
+          p_staff_id: string
+        }
+        Returns: string
+      }
       current_role_name: { Args: never; Returns: string }
+      get_last_price: {
+        Args: { p_customer_id: string; p_product_id: string }
+        Returns: {
+          discount_percent: number
+          invoice_date: string
+          invoice_number: string
+          quantity: number
+          rate: number
+        }[]
+      }
       has_permission: {
         Args: { p_action: string; p_module: string }
         Returns: boolean

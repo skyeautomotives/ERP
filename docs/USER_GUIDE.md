@@ -77,6 +77,32 @@ The product page's history panel doubles as a **price history** - any time you c
 
 None of the masters can be permanently deleted from the app - this is intentional, so nothing important disappears by accident and so history/reports never break. Instead, use **Deactivate** on a record's page. Deactivated customers/suppliers/products/routes won't show up as options elsewhere (e.g. a deactivated route won't appear when creating a new customer), but their history is preserved. **Activate** brings a record back at any time.
 
+## Phase 3: Sales (Credit, Cash, Sales Orders)
+
+Before creating your first sale, set your company's **State** on **Settings > Company** - this is required to correctly split GST into CGST+SGST (same state as the customer) versus IGST (different state). Without it, GST amounts on invoices will be wrong.
+
+### Credit Sales and Cash Sales
+
+**Sales > Credit Sales** or **Sales > Cash Sales > New...**. Pick a customer (for cash sales, you can also leave it as a walk-in and just type a name), route, and the sales staff member. Add one or more product lines - pick a product, enter quantity, rate, and any discount %.
+
+As soon as you pick a product for a customer who's bought it before, the screen shows **what that customer was last charged** for it - the price, date, and invoice number - so you always know the previous price before typing in today's price.
+
+GST, totals, and (for Admin/Accountant/Management users) profit are calculated automatically. Sales Staff accounts don't see cost/profit figures, by design.
+
+Invoice numbers are assigned automatically and never repeat, even if two people are billing at the same time.
+
+### Sales Orders
+
+**Sales > Sales Orders > New sales order**. Use this for a customer's order that isn't a final bill yet - same product-line entry as above, but nothing is charged and stock isn't affected until you convert it. Open a pending order and click **Convert to invoice** to turn it into a real credit sale (this is when stock actually decreases and GST/profit are calculated).
+
+### Cancelling an invoice
+
+Invoices are never deleted - open the invoice and click **Cancel invoice** instead. This marks it cancelled and puts the stock back, while keeping the record for your history/audit trail.
+
+### What's not here yet
+
+Sales Returns and Sales Reports aren't built yet (shown as "Coming soon" under Sales). "Customer outstanding" isn't a full ledger yet either - that arrives once Receipts (a later phase) exist; for now, every credit sale is simply unpaid until that phase ships.
+
 ---
 
-*More sections will be added here as each phase of the build ships (Sales, Purchase, Inventory, Accounts, GST, Staff & Incentives, Dashboard, and Mobile).*
+*More sections will be added here as each phase of the build ships (Purchase, Inventory, Accounts, GST, Staff & Incentives, Dashboard, and Mobile).*

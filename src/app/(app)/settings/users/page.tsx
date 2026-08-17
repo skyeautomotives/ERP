@@ -22,7 +22,7 @@ export default async function UsersSettingsPage() {
         <div>
           <h1 className="text-lg font-semibold text-gray-900">Users</h1>
           <p className="mt-1 text-sm text-gray-500">
-            Only Admins can create accounts or change access — self sign-up is disabled.
+            Only Admins can create accounts or change access - self sign-up is disabled.
           </p>
         </div>
         {currentUser?.roleName === "Admin" && <UserForm roles={roles ?? []} />}

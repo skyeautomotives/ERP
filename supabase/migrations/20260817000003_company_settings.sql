@@ -1,4 +1,4 @@
--- Phase 1: company_settings — single-agency company profile (Settings > Company, section 55).
+-- Phase 1: company_settings - single-agency company profile (Settings > Company, section 55).
 -- Feeds printable invoices later (section 50).
 
 create table public.company_settings (

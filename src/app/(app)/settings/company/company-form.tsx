@@ -70,8 +70,9 @@ export function CompanyForm({ company, canEdit }: { company: Company | null; can
 
       <Field label="Company name" name="name" defaultValue={company.name} disabled={!canEdit} />
       <Field label="Address" name="address" defaultValue={company.address} disabled={!canEdit} />
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <Field label="GSTIN" name="gstin" defaultValue={company.gstin} disabled={!canEdit} />
+        <Field label="State" name="state" defaultValue={company.state} disabled={!canEdit} />
         <Field label="Phone" name="phone" defaultValue={company.phone} disabled={!canEdit} />
       </div>
       <Field label="Email" name="email" type="email" defaultValue={company.email} disabled={!canEdit} />

@@ -55,7 +55,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
   };
 }
 
-/** Admin implicitly has every permission — mirrors public.has_permission()'s DB-side behaviour. */
+/** Admin implicitly has every permission - mirrors public.has_permission()'s DB-side behaviour. */
 export function can(user: CurrentUser | null, module: ModuleKey, action: PermissionAction) {
   if (!user) return false;
   if (user.roleName === "Admin") return true;
