@@ -73,9 +73,9 @@ export async function createSalesOrder(
   return { error: null, id: order.id };
 }
 
-export async function cancelSalesOrder(orderId: string) {
+export async function cancelSalesOrder(orderId: string): Promise<{ error: string | null }> {
   const user = await getCurrentUser();
-  if (!can(user, "sales", "edit")) throw new Error("Not authorized.");
+  if (!can(user, "sales", "edit")) return { error: "Not authorized." };
 
   const supabase = await createClient();
   const { error } = await supabase
@@ -83,8 +83,9 @@ export async function cancelSalesOrder(orderId: string) {
     .update({ status: "cancelled", updated_by: user!.id })
     .eq("id", orderId);
 
-  if (error) throw new Error(error.message);
+  if (error) return { error: error.message };
   revalidatePath(`/sales/orders/${orderId}`);
+  return { error: null };
 }
 
 export async function convertSalesOrder(orderId: string): Promise<{ error: string | null; invoiceId?: string }> {

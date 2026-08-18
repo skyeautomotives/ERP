@@ -50,13 +50,14 @@ export async function createReceipt(
   return { error: null, id: data ?? undefined };
 }
 
-export async function cancelReceipt(receiptId: string) {
+export async function cancelReceipt(receiptId: string): Promise<{ error: string | null }> {
   const user = await getCurrentUser();
-  if (!can(user, "accounts", "delete")) throw new Error("Not authorized.");
+  if (!can(user, "accounts", "delete")) return { error: "Not authorized." };
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("cancel_receipt", { p_receipt_id: receiptId });
-  if (error) throw new Error(error.message);
+  if (error) return { error: error.message };
 
   revalidatePath(`/accounts/receipts/${receiptId}`);
+  return { error: null };
 }

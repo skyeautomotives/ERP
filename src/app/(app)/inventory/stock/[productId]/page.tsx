@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
@@ -39,10 +40,37 @@ export default async function StockMovementPage({
 
   return (
     <div>
-      <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-        {product.code} - {product.name}
-      </h1>
-      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Stock movement history</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            {product.code} - {product.name}
+          </h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Stock movement history</p>
+        </div>
+        <div className="flex gap-2">
+          {can(user, "masters", "view") && (
+            <Link
+              href={`/masters/products/${product.id}`}
+              className="rounded-md border border-gray-300 dark:border-gray-700 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+            >
+              Edit product details
+            </Link>
+          )}
+          {can(user, "inventory", "create") && (
+            <Link
+              href="/inventory/adjustments"
+              className="rounded-md border border-gray-300 dark:border-gray-700 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+            >
+              Record adjustment
+            </Link>
+          )}
+        </div>
+      </div>
+      <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
+        Stock quantity isn&apos;t edited directly - it&apos;s the running total of opening stock plus every
+        purchase, sale, and adjustment below. To correct a wrong count, record an adjustment instead of
+        editing history.
+      </p>
 
       <div className="mt-6 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
         <table className="w-full text-left text-sm">

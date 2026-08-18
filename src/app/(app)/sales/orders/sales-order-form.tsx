@@ -12,7 +12,7 @@ import { quickCreateCustomer } from "@/app/(app)/masters/customers/quick-create"
 type CustomerOption = { id: string; name: string; route_id: string | null; assigned_user_id: string | null };
 type Option = { id: string; label: string };
 
-const emptyItem = (): LineItem => ({ product_id: "", quantity: 0, rate: 0, discount_percent: 0 });
+const emptyItem = (): LineItem => ({ product_id: "", quantity: 0, rate: 0, discount_percent: 0, gst_percent: 0 });
 
 export function SalesOrderForm({
   customers,
@@ -73,6 +73,7 @@ export function SalesOrderForm({
         quantity: it.quantity,
         rate: it.rate,
         discount_percent: it.discount_percent || 0,
+        gst_percent: it.gst_percent || 0,
       }));
     if (validItems.length === 0) {
       setError("Add at least one product line with a quantity.");

@@ -36,13 +36,14 @@ export async function createCreditNote(payload: {
   redirect(`/sales/returns/${data}`);
 }
 
-export async function cancelCreditNote(id: string) {
+export async function cancelCreditNote(id: string): Promise<{ error: string | null }> {
   const user = await getCurrentUser();
-  if (!can(user, "sales", "delete")) throw new Error("Not authorized.");
+  if (!can(user, "sales", "delete")) return { error: "Not authorized." };
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("cancel_credit_note", { p_credit_note_id: id });
-  if (error) throw new Error(error.message);
+  if (error) return { error: error.message };
 
   revalidatePath(`/sales/returns/${id}`);
+  return { error: null };
 }

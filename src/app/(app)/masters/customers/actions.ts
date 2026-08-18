@@ -78,6 +78,29 @@ export async function updateCustomer(
   return { error: null };
 }
 
+export async function deleteCustomer(customerId: string): Promise<{ error: string | null }> {
+  const user = await getCurrentUser();
+  if (!can(user, "masters", "delete")) {
+    return { error: "You don't have permission to delete customers." };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("customers").delete().eq("id", customerId).select("id");
+
+  if (error) {
+    if (error.code === "23503") {
+      return { error: "This customer has existing transactions - deactivate it instead of deleting." };
+    }
+    return { error: error.message };
+  }
+  if (!data || data.length === 0) {
+    return { error: "Delete failed - record not found or not permitted." };
+  }
+
+  revalidatePath("/masters/customers");
+  return { error: null };
+}
+
 export async function setCustomerActive(customerId: string, isActive: boolean) {
   const user = await getCurrentUser();
   if (!can(user, "masters", "edit")) throw new Error("Not authorized.");

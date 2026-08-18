@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
-import { CancelInvoiceButton } from "@/components/cancel-invoice-button";
+import { ConfirmButton } from "@/components/confirm-button";
 import { cancelSalesInvoice } from "../actions";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
@@ -45,7 +45,14 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
           </p>
         </div>
         {invoice.status === "active" && can(user, "sales", "delete") && (
-          <CancelInvoiceButton invoiceId={invoice.id} action={cancelSalesInvoice} />
+          <ConfirmButton
+            id={invoice.id}
+            label="Cancel invoice"
+            confirmTitle="Cancel this invoice?"
+            confirmBody="Stock quantities will be restored and the invoice will be marked cancelled."
+            confirmLabel="Cancel invoice"
+            action={cancelSalesInvoice}
+          />
         )}
         {invoice.status === "cancelled" && (
           <span className="rounded bg-gray-100 dark:bg-gray-800 px-2 py-1 text-xs font-medium text-gray-500 dark:text-gray-400">Cancelled</span>

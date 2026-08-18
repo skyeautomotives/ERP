@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { convertSalesOrder, cancelSalesOrder } from "./actions";
+import { ConfirmButton } from "@/components/confirm-button";
 
 export function OrderActions({ orderId }: { orderId: string }) {
   const router = useRouter();
@@ -28,19 +29,14 @@ export function OrderActions({ orderId }: { orderId: string }) {
         >
           {pending ? "Converting..." : "Convert to invoice"}
         </button>
-        <button
-          disabled={pending}
-          onClick={() => {
-            if (!confirm("Cancel this order?")) return;
-            startTransition(async () => {
-              await cancelSalesOrder(orderId);
-              router.refresh();
-            });
-          }}
-          className="rounded-md border border-red-200 dark:border-red-900 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950 disabled:opacity-60"
-        >
-          Cancel order
-        </button>
+        <ConfirmButton
+          id={orderId}
+          label="Cancel order"
+          confirmTitle="Cancel this order?"
+          confirmBody="This order will be marked cancelled."
+          confirmLabel="Cancel order"
+          action={cancelSalesOrder}
+        />
       </div>
       {error && <p className="text-sm text-red-700 dark:text-red-400">{error}</p>}
     </div>

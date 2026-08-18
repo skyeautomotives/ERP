@@ -30,6 +30,29 @@ export async function createExpenseCategory(
   return { error: null };
 }
 
+export async function deleteExpenseCategory(categoryId: string): Promise<{ error: string | null }> {
+  const user = await getCurrentUser();
+  if (!can(user, "masters", "delete")) {
+    return { error: "You don't have permission to delete expense categories." };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("expense_categories").delete().eq("id", categoryId).select("id");
+
+  if (error) {
+    if (error.code === "23503") {
+      return { error: "This category has existing payments recorded against it - deactivate it instead of deleting." };
+    }
+    return { error: error.message };
+  }
+  if (!data || data.length === 0) {
+    return { error: "Delete failed - record not found or not permitted." };
+  }
+
+  revalidatePath("/masters/expense-categories");
+  return { error: null };
+}
+
 export async function setExpenseCategoryActive(categoryId: string, isActive: boolean) {
   const user = await getCurrentUser();
   if (!can(user, "masters", "edit")) throw new Error("Not authorized.");

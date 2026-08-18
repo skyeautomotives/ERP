@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
-import { CancelInvoiceButton } from "@/components/cancel-invoice-button";
+import { ConfirmButton } from "@/components/confirm-button";
 import { cancelDebitNote } from "../actions";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
@@ -36,7 +36,14 @@ export default async function DebitNoteDetailPage({ params }: { params: Promise<
           </p>
         </div>
         {note.status === "active" && can(user, "purchase", "delete") && (
-          <CancelInvoiceButton invoiceId={note.id} action={cancelDebitNote} label="Cancel debit note" />
+          <ConfirmButton
+            id={note.id}
+            label="Cancel debit note"
+            confirmTitle="Cancel this debit note?"
+            confirmBody="Stock and the supplier's balance will be reversed."
+            confirmLabel="Cancel debit note"
+            action={cancelDebitNote}
+          />
         )}
         {note.status === "cancelled" && (
           <span className="rounded bg-gray-100 dark:bg-gray-800 px-2 py-1 text-xs font-medium text-gray-500 dark:text-gray-400">

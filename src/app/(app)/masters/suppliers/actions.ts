@@ -75,6 +75,29 @@ export async function updateSupplier(
   return { error: null };
 }
 
+export async function deleteSupplier(supplierId: string): Promise<{ error: string | null }> {
+  const user = await getCurrentUser();
+  if (!can(user, "masters", "delete")) {
+    return { error: "You don't have permission to delete suppliers." };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("suppliers").delete().eq("id", supplierId).select("id");
+
+  if (error) {
+    if (error.code === "23503") {
+      return { error: "This supplier has existing transactions - deactivate it instead of deleting." };
+    }
+    return { error: error.message };
+  }
+  if (!data || data.length === 0) {
+    return { error: "Delete failed - record not found or not permitted." };
+  }
+
+  revalidatePath("/masters/suppliers");
+  return { error: null };
+}
+
 export async function setSupplierActive(supplierId: string, isActive: boolean) {
   const user = await getCurrentUser();
   if (!can(user, "masters", "edit")) throw new Error("Not authorized.");

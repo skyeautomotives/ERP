@@ -13,6 +13,7 @@ export type PurchaseLineInput = {
   quantity: number;
   rate: number;
   discount_percent: number;
+  gst_percent: number;
 };
 
 export type CreatePurchasePayload = {
@@ -59,15 +60,16 @@ export async function createPurchaseInvoice(
   redirect(`/purchase/entries/${data}`);
 }
 
-export async function cancelPurchaseInvoice(invoiceId: string) {
+export async function cancelPurchaseInvoice(invoiceId: string): Promise<{ error: string | null }> {
   const user = await getCurrentUser();
-  if (!can(user, "purchase", "delete")) throw new Error("Not authorized.");
+  if (!can(user, "purchase", "delete")) return { error: "Not authorized." };
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("cancel_purchase_invoice", { p_invoice_id: invoiceId });
-  if (error) throw new Error(error.message);
+  if (error) return { error: error.message };
 
   revalidatePath(`/purchase/entries/${invoiceId}`);
+  return { error: null };
 }
 
 export async function recordPurchaseVerification(

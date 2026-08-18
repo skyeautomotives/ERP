@@ -52,14 +52,15 @@ export async function createPayment(
   redirect(`/accounts/payments/${data}`);
 }
 
-export async function cancelPayment(paymentId: string) {
+export async function cancelPayment(paymentId: string): Promise<{ error: string | null }> {
   const user = await getCurrentUser();
-  if (!can(user, "accounts", "delete")) throw new Error("Not authorized.");
+  if (!can(user, "accounts", "delete")) return { error: "Not authorized." };
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("cancel_payment", { p_payment_id: paymentId });
-  if (error) throw new Error(error.message);
+  if (error) return { error: error.message };
 
   revalidatePath(`/accounts/payments/${paymentId}`);
   revalidatePath("/accounts/expenses");
+  return { error: null };
 }

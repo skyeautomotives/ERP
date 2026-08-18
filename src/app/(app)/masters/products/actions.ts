@@ -97,6 +97,29 @@ export async function updateProduct(
   return { error: null };
 }
 
+export async function deleteProduct(productId: string): Promise<{ error: string | null }> {
+  const user = await getCurrentUser();
+  if (!can(user, "masters", "delete")) {
+    return { error: "You don't have permission to delete products." };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("products").delete().eq("id", productId).select("id");
+
+  if (error) {
+    if (error.code === "23503") {
+      return { error: "This product has existing transactions - deactivate it instead of deleting." };
+    }
+    return { error: error.message };
+  }
+  if (!data || data.length === 0) {
+    return { error: "Delete failed - record not found or not permitted." };
+  }
+
+  revalidatePath("/masters/products");
+  return { error: null };
+}
+
 export async function setProductActive(productId: string, isActive: boolean) {
   const user = await getCurrentUser();
   if (!can(user, "masters", "edit")) throw new Error("Not authorized.");

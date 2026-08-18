@@ -3,10 +3,11 @@ import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { StatusBadge } from "@/components/status-badge";
 import { DeactivateButton } from "@/components/deactivate-button";
+import { ConfirmButton } from "@/components/confirm-button";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
 import { CategoryForm } from "./category-form";
-import { setExpenseCategoryActive } from "./actions";
+import { setExpenseCategoryActive, deleteExpenseCategory } from "./actions";
 
 export default async function ExpenseCategoriesPage() {
   const user = await getCurrentUser();
@@ -45,9 +46,21 @@ export default async function ExpenseCategoriesPage() {
                   <StatusBadge active={c.is_active} />
                 </td>
                 <td className="px-4 py-2 text-right">
-                  {can(user, "masters", "edit") && (
-                    <DeactivateButton id={c.id} isActive={c.is_active} action={setExpenseCategoryActive} />
-                  )}
+                  <div className="flex justify-end gap-2">
+                    {can(user, "masters", "edit") && (
+                      <DeactivateButton id={c.id} isActive={c.is_active} action={setExpenseCategoryActive} />
+                    )}
+                    {can(user, "masters", "delete") && (
+                      <ConfirmButton
+                        id={c.id}
+                        label="Delete"
+                        confirmTitle="Delete this category?"
+                        confirmBody="This permanently removes the category. If any payments reference it, the delete will be blocked - deactivate it instead in that case."
+                        confirmLabel="Delete category"
+                        action={deleteExpenseCategory}
+                      />
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}

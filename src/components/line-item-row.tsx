@@ -18,6 +18,7 @@ export type LineItem = {
   quantity: number;
   rate: number;
   discount_percent: number;
+  gst_percent: number;
 };
 
 type LastPrice = {
@@ -101,6 +102,7 @@ export function LineItemRow({
       ...item,
       product_id: productId,
       rate: selected?.default_rate ?? 0,
+      gst_percent: selected?.gst_percent ?? 0,
     });
   }
 
@@ -113,11 +115,23 @@ export function LineItemRow({
       gst_percent: Number(result.gst_percent ?? 0),
     };
     onProductCreated?.(newProduct);
-    onChange({ ...item, product_id: newProduct.id, rate: newProduct.default_rate ?? 0 });
+    onChange({
+      ...item,
+      product_id: newProduct.id,
+      rate: newProduct.default_rate ?? 0,
+      gst_percent: newProduct.gst_percent ?? 0,
+    });
   }
 
   return (
     <div className="rounded-md border border-gray-200 dark:border-gray-800 p-3">
+      <div className="mb-1 grid grid-cols-12 gap-2 text-[11px] font-medium text-gray-400 dark:text-gray-500">
+        <span className="col-span-4">Product</span>
+        <span className="col-span-2">Qty</span>
+        <span className="col-span-2">Rate</span>
+        <span className="col-span-2">Disc %</span>
+        <span className="col-span-1">GST %</span>
+      </div>
       <div className="grid grid-cols-12 gap-2">
         <select
           name="line_product_id"
@@ -161,9 +175,19 @@ export function LineItemRow({
           onChange={(e) => onChange({ ...item, discount_percent: Number(e.target.value) })}
           className="col-span-2 rounded-md border border-gray-300 dark:border-gray-700 px-2 py-1.5 text-sm"
         />
-        <span className="col-span-1 self-center text-sm text-gray-500 dark:text-gray-400">
-          GST {product?.gst_percent ?? 0}%
-        </span>
+        <div className="col-span-1">
+          <input
+            type="number"
+            min="0"
+            max="100"
+            step="0.01"
+            title="GST %"
+            placeholder="GST %"
+            value={item.gst_percent ?? ""}
+            onChange={(e) => onChange({ ...item, gst_percent: Number(e.target.value) })}
+            className="w-full rounded-md border border-gray-300 dark:border-gray-700 px-2 py-1.5 text-sm"
+          />
+        </div>
         <button
           type="button"
           onClick={onRemove}
@@ -172,6 +196,11 @@ export function LineItemRow({
           Remove
         </button>
       </div>
+      {product && Number(item.gst_percent) !== Number(product.gst_percent) && (
+        <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
+          Overridden from this product&apos;s usual {product.gst_percent}% GST.
+        </p>
+      )}
 
       <div className="mt-1 flex items-center gap-3">
         <QuickAddButton

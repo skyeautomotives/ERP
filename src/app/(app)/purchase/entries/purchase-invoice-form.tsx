@@ -7,7 +7,7 @@ import { QuickAddButton } from "@/components/quick-add-button";
 import { quickCreateSupplier } from "@/app/(app)/masters/suppliers/quick-create";
 
 type Option = { id: string; label: string };
-const emptyItem = (): LineItem => ({ product_id: "", quantity: 0, rate: 0, discount_percent: 0 });
+const emptyItem = (): LineItem => ({ product_id: "", quantity: 0, rate: 0, discount_percent: 0, gst_percent: 0 });
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
 export function PurchaseInvoiceForm({
@@ -37,17 +37,16 @@ export function PurchaseInvoiceForm({
     let taxable = 0;
     let gst = 0;
     for (const item of items) {
-      const product = productOptions.find((p) => p.id === item.product_id);
-      if (!product || !item.quantity || !item.rate) continue;
+      if (!item.product_id || !item.quantity || !item.rate) continue;
       const lineSubtotal = item.quantity * item.rate;
       const lineTaxable = lineSubtotal * (1 - (item.discount_percent || 0) / 100);
-      const lineGst = lineTaxable * (product.gst_percent / 100);
+      const lineGst = lineTaxable * ((item.gst_percent || 0) / 100);
       subtotal += lineSubtotal;
       taxable += lineTaxable;
       gst += lineGst;
     }
     return { subtotal, taxable, gst, total: taxable + gst };
-  }, [items, productOptions]);
+  }, [items]);
 
   function updateItem(index: number, updated: LineItem) {
     setItems((prev) => prev.map((it, i) => (i === index ? updated : it)));
@@ -65,6 +64,7 @@ export function PurchaseInvoiceForm({
         quantity: it.quantity,
         rate: it.rate,
         discount_percent: it.discount_percent || 0,
+        gst_percent: it.gst_percent || 0,
       }));
   }
 

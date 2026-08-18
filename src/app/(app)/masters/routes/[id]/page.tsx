@@ -4,8 +4,9 @@ import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { getStaffOptions } from "@/lib/masters/staff-options";
 import { RecordHistory } from "@/components/record-history";
 import { DeactivateButton } from "@/components/deactivate-button";
+import { ConfirmButton } from "@/components/confirm-button";
 import { RouteForm } from "../route-form";
-import { updateRoute, setRouteActive } from "../actions";
+import { updateRoute, setRouteActive, deleteRoute } from "../actions";
 
 export default async function RouteDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -22,18 +23,32 @@ export default async function RouteDetailPage({ params }: { params: Promise<{ id
 
   const boundUpdate = updateRoute.bind(null, id);
   const canEdit = can(user, "masters", "edit");
+  const canDelete = can(user, "masters", "delete");
 
   return (
     <div>
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{route.name}</h1>
-        {canEdit && (
-          <DeactivateButton
-            id={route.id}
-            isActive={route.is_active}
-            action={setRouteActive}
-          />
-        )}
+        <div className="flex gap-2">
+          {canEdit && (
+            <DeactivateButton
+              id={route.id}
+              isActive={route.is_active}
+              action={setRouteActive}
+            />
+          )}
+          {canDelete && (
+            <ConfirmButton
+              id={route.id}
+              label="Delete"
+              confirmTitle="Delete this route?"
+              confirmBody="This permanently removes the route. If any customers or invoices are linked to it, the delete will be blocked - deactivate it instead in that case."
+              confirmLabel="Delete route"
+              action={deleteRoute}
+              redirectTo="/masters/routes"
+            />
+          )}
+        </div>
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">

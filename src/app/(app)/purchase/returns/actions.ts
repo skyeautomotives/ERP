@@ -36,13 +36,14 @@ export async function createDebitNote(payload: {
   redirect(`/purchase/returns/${data}`);
 }
 
-export async function cancelDebitNote(id: string) {
+export async function cancelDebitNote(id: string): Promise<{ error: string | null }> {
   const user = await getCurrentUser();
-  if (!can(user, "purchase", "delete")) throw new Error("Not authorized.");
+  if (!can(user, "purchase", "delete")) return { error: "Not authorized." };
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("cancel_debit_note", { p_debit_note_id: id });
-  if (error) throw new Error(error.message);
+  if (error) return { error: error.message };
 
   revalidatePath(`/purchase/returns/${id}`);
+  return { error: null };
 }

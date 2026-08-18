@@ -74,6 +74,29 @@ export async function updateRoute(
   return { error: null };
 }
 
+export async function deleteRoute(routeId: string): Promise<{ error: string | null }> {
+  const user = await getCurrentUser();
+  if (!can(user, "masters", "delete")) {
+    return { error: "You don't have permission to delete routes." };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("routes").delete().eq("id", routeId).select("id");
+
+  if (error) {
+    if (error.code === "23503") {
+      return { error: "This route has existing customers or transactions - deactivate it instead of deleting." };
+    }
+    return { error: error.message };
+  }
+  if (!data || data.length === 0) {
+    return { error: "Delete failed - record not found or not permitted." };
+  }
+
+  revalidatePath("/masters/routes");
+  return { error: null };
+}
+
 export async function setRouteActive(routeId: string, isActive: boolean) {
   const user = await getCurrentUser();
   if (!can(user, "masters", "edit")) throw new Error("Not authorized.");
