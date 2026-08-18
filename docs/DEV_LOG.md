@@ -25,8 +25,8 @@ Internal progress/context log for continuing this build across sessions. Not use
 - [x] **Phase 8** - GST Module + GSTR Reports. Shipped and verified end-to-end 2026-08-17.
 - [x] **Phase 9** - Staff + Sales Performance + Collection Performance. Shipped and verified end-to-end 2026-08-17.
 - [x] **Phase 10** - Incentive Engine. Shipped and verified end-to-end 2026-08-17.
-- [ ] **Phase 11** - Dashboard + Analytics. **NEXT UP.**
-- [ ] Phase 12 - Mobile Application (likely mostly covered already since the app is responsive/PWA - revisit what's actually missing when we get there)
+- [x] **Phase 11** - Dashboard + Analytics. Shipped and verified end-to-end 2026-08-18.
+- [ ] **Phase 12** - Mobile Application (likely mostly covered already since the app is responsive/PWA - revisit what's actually missing when we get there). **NEXT UP.**
 - [ ] Phase 13 - Realtime Sync + Offline Queue
 - [ ] Phase 14 - Security Audit + Testing + Performance Optimization
 
@@ -152,6 +152,20 @@ Verified with Playwright in dark color scheme across 5 representative screens (C
 - Test data cleanup followed the Gotcha #9 process; also reset `company_settings.sales_incentive_rate` back to 0 afterward since it's a real (if currently unset) business setting, not disposable test data, unlike the throwaway customer/product/invoice rows.
 
 **Fast-follow / not done:** No tiered/achievement-based sales incentive (flat rate only, matching what the spec actually specifies for sales vs. the explicit slab structure it only gives for collection).
+
+## Phase 11 (Dashboard + Analytics) - COMPLETE
+
+**Confirmed against the actual spec text** (sections 40-41): a professional management dashboard with 12 "today"/current figures (Today's Sales/Purchase/Collection/Expenses, Cash/Bank Balance, Customer/Supplier Outstanding, Stock Value, Low Stock, Gross Profit, Profit Percentage, Staff Sales, Staff Collection), plus four Monday-to-Sunday weekly graphs (Sales/Collection/Purchase/Profit) with a previous-week comparison. The `/dashboard` page had been an explicit "Coming soon" placeholder since Phase 1 with a comment pointing at these exact two sections.
+
+**What shipped:**
+- Two migrations, `20260818000001`/`20260818000002` - pure reporting, no new tables: `get_dashboard_summary(p_date)` (single-row aggregate - today's flow figures filtered to `p_date`, point-in-time figures like Cash/Bank balance, outstanding, and stock value always current since the UI never exposes a past-date picker for the dashboard), `get_weekly_metrics(p_week_start)` (7 rows, Monday-Sunday, called twice from the page for this-week/last-week comparison).
+- **No new charting dependency** - `src/components/weekly-bar-chart.tsx` is a small hand-rolled SVG grouped-bar-chart component (two series, day labels, legend, hover tooltips via `<title>`), avoiding any React-19-compatibility risk from a third-party charting library for what's a simple enough visual.
+- Rewrote `dashboard/page.tsx` entirely: a 12-card metric grid (every card links through to its real source report - Today's Sales to Credit Sales, Customer Outstanding to Bill-wise Outstanding, Stock Value to Stock Report, etc.), two compact staff leaderboards (reusing Phase 9's `get_staff_performance(today,today)` directly rather than new SQL, top 5 by sales/collection), and the four weekly graphs in a responsive grid. Profit figures (Gross Profit, Profit Percentage, Weekly Profit graph) gated by the same `PROFIT_VISIBLE_ROLES` array used everywhere else profit appears.
+- Applied the Phase 10 lesson from the start: sanity-called both new RPCs directly via REST immediately after pushing the migrations, before writing any UI code against them - both worked correctly on the first try, no repeat of Phase 10's ambiguous-column bug.
+- Full Playwright + direct-DB verification: created a purchase, a credit sale, a cash sale, a full receipt against the credit sale, and an expense payment, all dated today. Every dashboard figure cross-checked directly against `get_dashboard_summary` in the database (not just the UI): today's sales 1770.00 (1180 credit + 590 cash), today's purchase 1416.00, today's collection 1180.00, today's expenses 250.00, customer outstanding 0.00 (fully paid), supplier outstanding 1416.00 (unpaid), gross profit 600.00, cost total 900.00, stock value 40300.00 (40000 pre-existing + 300 for 5 remaining units). Cash balance came out to 1520.00, not the naively-expected 930.00 (1180 receipt - 250 expense) - correctly reflects Phase 9's cash-sale fix, since a cash sale posts directly to the Cash account (590) independent of any receipt, so 590 + 1180 - 250 = 1520 is actually right. All four weekly graphs rendered with no console errors.
+- Test data cleanup followed the Gotcha #9 process throughout.
+
+**Fast-follow / not done:** None specific to this phase.
 
 ## Established architecture / conventions (apply to every future phase)
 

@@ -400,4 +400,13 @@ export const HELP_CONTENT: Record<string, HelpContent> = {
       { label: "Setting a target again", text: "Setting a new target for a staff member and month that already has one replaces the old value." },
     ],
   },
+  dashboard: {
+    title: "Dashboard",
+    description: "Today's business at a glance, plus the last four weeks' trend. Every card links through to the full report behind it.",
+    fields: [
+      { label: "Customer / Supplier Outstanding, Stock Value, Cash / Bank Balance", text: "Current figures as of right now, not limited to today's activity." },
+      { label: "Weekly graphs", text: "Monday through Sunday, with this week's bars next to the same day last week for comparison." },
+      { label: "Gross Profit / Profit Percentage", text: "Only visible to Admin, Accountant, and Management roles, same as everywhere else profit appears in the app." },
+    ],
+  },
 };

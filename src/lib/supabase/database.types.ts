@@ -2239,6 +2239,23 @@ export type Database = {
           txn_date: string
         }[]
       }
+      get_dashboard_summary: {
+        Args: { p_date?: string }
+        Returns: {
+          bank_balance: number
+          cash_balance: number
+          cost_total: number
+          customer_outstanding: number
+          gross_profit: number
+          low_stock_count: number
+          stock_value: number
+          supplier_outstanding: number
+          today_collection: number
+          today_expenses: number
+          today_purchase: number
+          today_sales: number
+        }[]
+      }
       get_gstr1_b2b: {
         Args: { p_from: string; p_to: string }
         Returns: {
@@ -2405,6 +2422,16 @@ export type Database = {
           ref_type: string
           running_balance: number
           txn_date: string
+        }[]
+      }
+      get_weekly_metrics: {
+        Args: { p_week_start: string }
+        Returns: {
+          collection_total: number
+          day_date: string
+          profit_total: number
+          purchase_total: number
+          sales_total: number
         }[]
       }
       has_permission: {

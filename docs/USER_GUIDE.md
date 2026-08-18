@@ -310,6 +310,26 @@ For each staff member, over the period you pick (Today / This Week / This Month,
 
 Sales incentive is a single flat rate for everyone, not a tiered structure - only collection incentive uses tiers (slabs). There's no separate approval/payout workflow; this is a live calculation, not a record you lock in for payroll.
 
+## Phase 11: Dashboard
+
+The **Dashboard** (the first screen you land on after logging in) is now a real, live summary instead of a placeholder.
+
+### Today's figures
+
+A row of cards showing today's sales, purchase, collection, and expenses; your current cash and bank balances; how much customers owe you and how much you owe suppliers; your current stock value and how many products are low on stock; and (for Admin/Accountant/Management only) today's gross profit and profit percentage. Click any card to jump straight to the full report behind it.
+
+### Staff leaderboards
+
+Two small lists showing which staff sold and collected the most today, with a link to the full Staff Performance / Collection Report screens for the complete picture.
+
+### Weekly graphs
+
+Four charts - Sales, Collection, Purchase, and Profit - each showing Monday through Sunday, with this week's bars next to last week's same day for an easy comparison. Profit is only shown to Admin/Accountant/Management, same as everywhere else.
+
+### What's not here yet
+
+Cash/Bank balance, outstanding, and stock value are always as of right now - there's no "view the dashboard as of a past date" option.
+
 ---
 
-*More sections will be added here as each phase of the build ships (Dashboard and Mobile).*
+*More sections will be added here as each phase of the build ships (Mobile).*
