@@ -411,4 +411,16 @@ Product lines also now show **In stock: N** once you pick a product, so you can 
 
 ---
 
+## Data Import / Export (Settings > Data Import / Export, Admin only)
+
+**Import**: upload the export file from your old system (an .xls or .xlsx file with Shop, Product, Receivables, Stock, and ProductPrice sheets) to add customers, products, and their opening stock in one go, instead of typing each one in by hand. After it finishes, you'll see how many were created and how many were updated on each sheet, plus a list of any rows it had to skip (and why - usually a missing name or code).
+
+It's safe to upload the same file again later, e.g. after adding more to it in the old system - a customer or product already in Skye ERP gets its details refreshed rather than being added a second time. One exception on purpose: stock quantity and opening balance only get set the *first* time a product or customer is created. Re-importing never resets them, since by then you may have already recorded real sales, purchases, or payments against them, and the old system's export doesn't know about those.
+
+**Export**: click **Export current data** to download everything currently in Skye ERP (customers, products, current stock, current outstanding) in this same file format - useful as a backup, or as a starting point you can edit and re-import.
+
+This is how the business's real customer/product list was first loaded into Skye ERP - all 382 customers and 397 products came in through this exact feature.
+
+---
+
 *All 14 planned phases are complete; this and future sections cover post-launch changes made at the user's request.*
