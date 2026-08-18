@@ -5,6 +5,27 @@ export type HelpContent = {
 };
 
 export const HELP_CONTENT: Record<string, HelpContent> = {
+  "settings-import": {
+    title: "Data Import / Export",
+    description:
+      "Import: upload a legacy-system export (.xls/.xlsx with Shop, Product, Receivables, Stock, and ProductPrice sheets) to add customers, products, and opening stock in bulk. Safe to run more than once with an updated file - existing customers/products are matched by their code from the old system and updated, not duplicated. Export: download everything currently in the system in this same format, as a backup or a starting point to edit and re-import.",
+    fields: [
+      { label: "Shop sheet", text: "Customers. Matched across imports by ThirdPartyShopCode." },
+      {
+        label: "Product sheet",
+        text: "Products, using the Third Party Product Code as the product code (unique, matched across imports).",
+      },
+      {
+        label: "Stock sheet",
+        text: "Opening stock quantity on import - only for products that are brand new in this import. Re-importing never changes stock for a product that already exists, since real sales/purchases may have moved it since. On export, this is the current stock, not the original opening figure.",
+      },
+      { label: "ProductPrice sheet", text: "Purchase rate." },
+      {
+        label: "Receivables sheet",
+        text: "On import, summed per customer into their opening balance (what they owed before this system started tracking it in detail). On export, each customer's current outstanding balance.",
+      },
+    ],
+  },
   "company-settings": {
     title: "Company Setup",
     description:

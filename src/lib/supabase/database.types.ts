@@ -437,6 +437,7 @@ export type Database = {
           credit_period_days: number
           district: string | null
           email: string | null
+          external_code: string | null
           gstin: string | null
           id: string
           is_active: boolean
@@ -460,6 +461,7 @@ export type Database = {
           credit_period_days?: number
           district?: string | null
           email?: string | null
+          external_code?: string | null
           gstin?: string | null
           id?: string
           is_active?: boolean
@@ -483,6 +485,7 @@ export type Database = {
           credit_period_days?: number
           district?: string | null
           email?: string | null
+          external_code?: string | null
           gstin?: string | null
           id?: string
           is_active?: boolean

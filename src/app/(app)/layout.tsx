@@ -37,6 +37,7 @@ const SUB_LINKS: Partial<Record<ModuleKey, SubLink[]>> = {
     { href: "/settings/company", label: "Company" },
     { href: "/settings/users", label: "Users" },
     { href: "/settings/roles", label: "Roles & Permissions" },
+    { href: "/settings/import", label: "Data Import / Export" },
   ],
 };
 
