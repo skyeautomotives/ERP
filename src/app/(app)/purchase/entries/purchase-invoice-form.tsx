@@ -3,6 +3,8 @@
 import { useMemo, useState, useTransition } from "react";
 import { createPurchaseInvoice, type PurchaseLineInput } from "./actions";
 import { LineItemRow, type LineItem, type ProductOption } from "@/components/line-item-row";
+import { QuickAddButton } from "@/components/quick-add-button";
+import { quickCreateSupplier } from "@/app/(app)/masters/suppliers/quick-create";
 
 type Option = { id: string; label: string };
 const emptyItem = (): LineItem => ({ product_id: "", quantity: 0, rate: 0, discount_percent: 0 });
@@ -16,6 +18,8 @@ export function PurchaseInvoiceForm({
   products: ProductOption[];
 }) {
   const [supplierId, setSupplierId] = useState("");
+  const [supplierOptions, setSupplierOptions] = useState<Option[]>(suppliers);
+  const [productOptions, setProductOptions] = useState<ProductOption[]>(products);
   const [supplierInvoiceNumber, setSupplierInvoiceNumber] = useState("");
   const [supplierInvoiceDate, setSupplierInvoiceDate] = useState(todayISO());
   const [notes, setNotes] = useState("");
@@ -24,12 +28,16 @@ export function PurchaseInvoiceForm({
   const [duplicateWarning, setDuplicateWarning] = useState(false);
   const [pending, startTransition] = useTransition();
 
+  function handleProductCreated(product: ProductOption) {
+    setProductOptions((prev) => [...prev, product]);
+  }
+
   const totals = useMemo(() => {
     let subtotal = 0;
     let taxable = 0;
     let gst = 0;
     for (const item of items) {
-      const product = products.find((p) => p.id === item.product_id);
+      const product = productOptions.find((p) => p.id === item.product_id);
       if (!product || !item.quantity || !item.rate) continue;
       const lineSubtotal = item.quantity * item.rate;
       const lineTaxable = lineSubtotal * (1 - (item.discount_percent || 0) / 100);
@@ -39,7 +47,7 @@ export function PurchaseInvoiceForm({
       gst += lineGst;
     }
     return { subtotal, taxable, gst, total: taxable + gst };
-  }, [items, products]);
+  }, [items, productOptions]);
 
   function updateItem(index: number, updated: LineItem) {
     setItems((prev) => prev.map((it, i) => (i === index ? updated : it)));
@@ -105,19 +113,35 @@ export function PurchaseInvoiceForm({
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Supplier</label>
-          <select
-            name="supplier_id"
-            value={supplierId}
-            onChange={(e) => setSupplierId(e.target.value)}
-            className="w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm"
-          >
-            <option value="">Select supplier...</option>
-            {suppliers.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.label}
-              </option>
-            ))}
-          </select>
+          <div className="flex items-center gap-2">
+            <select
+              name="supplier_id"
+              value={supplierId}
+              onChange={(e) => setSupplierId(e.target.value)}
+              className="flex-1 rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm"
+            >
+              <option value="">Select supplier...</option>
+              {supplierOptions.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+            <QuickAddButton
+              buttonLabel="+ New"
+              dialogTitle="New supplier"
+              fields={[
+                { name: "name", label: "Supplier name", required: true },
+                { name: "phone", label: "Phone" },
+              ]}
+              onSubmit={(values) => quickCreateSupplier({ name: values.name, phone: values.phone })}
+              onCreated={(result) => {
+                const newSupplier: Option = { id: result.id!, label: result.label ?? "" };
+                setSupplierOptions((prev) => [...prev, newSupplier]);
+                setSupplierId(newSupplier.id);
+              }}
+            />
+          </div>
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -161,10 +185,11 @@ export function PurchaseInvoiceForm({
             <LineItemRow
               key={i}
               item={item}
-              products={products}
+              products={productOptions}
               customerId={null}
               onChange={(updated) => updateItem(i, updated)}
               onRemove={() => removeItem(i)}
+              onProductCreated={handleProductCreated}
             />
           ))}
         </div>

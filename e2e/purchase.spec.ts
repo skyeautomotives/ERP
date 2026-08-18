@@ -260,3 +260,42 @@ test("bill mismatch verification computes matched/partial/mismatch status correc
     .single();
   expect(mismatchRow!.status).toBe("mismatch");
 });
+
+test("a brand-new product can be created inline from Purchase Entry and used in the same submission", async ({ page }) => {
+  const db = await dbClient();
+  const newCode = tag(`InlineSKU-${Date.now()}`);
+
+  await page.goto("/purchase/entries/new");
+  await page.selectOption('select[name="supplier_id"]', supplierId);
+  await page.fill('input[name="supplier_invoice_number"]', tag(`INLINE-${Date.now()}`));
+
+  await page.getByRole("button", { name: "+ New product" }).click();
+  await page.fill('label:has-text("Product code") + input', newCode);
+  await page.fill('label:has-text("Product name") + input', tag("Inline Product"));
+  await page.fill('label:has-text("Unit") + input', "pcs");
+  await page.fill('label:has-text("GST %") + input', "18");
+  await page.fill('label:has-text("Rate") + input', "200");
+  await page.getByRole("button", { name: "Create", exact: true }).click();
+
+  // The new product should now be selected on the line automatically -
+  // confirm by checking the rate auto-filled from the quick-create dialog,
+  // then just set a quantity and submit.
+  await expect(page.locator('input[placeholder="Rate"]')).toHaveValue("200", { timeout: 10_000 });
+  await page.fill('input[name="line_quantity"]', "3");
+
+  await page.getByRole("button", { name: /create purchase/i }).click();
+  await page.waitForURL(/\/purchase\/entries\/[0-9a-f-]{36}$/, { timeout: 15_000 });
+  const invoiceId = page.url().split("/").pop()!;
+  createdInvoiceIds.push(invoiceId);
+
+  const { data: product } = await db.from("products").select("id").eq("code", newCode).single();
+  expect(product).not.toBeNull();
+
+  const { data: items } = await db
+    .from("purchase_invoice_items")
+    .select("product_id, quantity")
+    .eq("invoice_id", invoiceId)
+    .single();
+  expect(items!.product_id).toBe(product!.id);
+  expect(Number(items!.quantity)).toBe(3);
+});

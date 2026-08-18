@@ -3,6 +3,8 @@
 import { useMemo, useState, useTransition } from "react";
 import { createSalesInvoice, type InvoiceLineInput } from "./actions";
 import { LineItemRow, type LineItem, type ProductOption } from "@/components/line-item-row";
+import { QuickAddButton } from "@/components/quick-add-button";
+import { quickCreateCustomer } from "@/app/(app)/masters/customers/quick-create";
 
 type CustomerOption = {
   id: string;
@@ -29,6 +31,8 @@ export function SalesInvoiceForm({
   products: ProductOption[];
 }) {
   const [customerId, setCustomerId] = useState<string>("");
+  const [customerOptions, setCustomerOptions] = useState<CustomerOption[]>(customers);
+  const [productOptions, setProductOptions] = useState<ProductOption[]>(products);
   const [cashCustomerName, setCashCustomerName] = useState("");
   const [cashCustomerPhone, setCashCustomerPhone] = useState("");
   const [routeId, setRouteId] = useState("");
@@ -41,7 +45,7 @@ export function SalesInvoiceForm({
 
   function handleCustomerChange(id: string) {
     setCustomerId(id);
-    const customer = customers.find((c) => c.id === id);
+    const customer = customerOptions.find((c) => c.id === id);
     if (customer) {
       if (customer.route_id) setRouteId(customer.route_id);
       if (customer.assigned_user_id) setStaffId(customer.assigned_user_id);
@@ -49,12 +53,16 @@ export function SalesInvoiceForm({
     }
   }
 
+  function handleProductCreated(product: ProductOption) {
+    setProductOptions((prev) => [...prev, product]);
+  }
+
   const totals = useMemo(() => {
     let subtotal = 0;
     let taxable = 0;
     let gst = 0;
     for (const item of items) {
-      const product = products.find((p) => p.id === item.product_id);
+      const product = productOptions.find((p) => p.id === item.product_id);
       if (!product || !item.quantity || !item.rate) continue;
       const lineSubtotal = item.quantity * item.rate;
       const lineTaxable = lineSubtotal * (1 - (item.discount_percent || 0) / 100);
@@ -64,7 +72,7 @@ export function SalesInvoiceForm({
       gst += lineGst;
     }
     return { subtotal, taxable, gst, total: taxable + gst };
-  }, [items, products]);
+  }, [items, productOptions]);
 
   function updateItem(index: number, updated: LineItem) {
     setItems((prev) => prev.map((it, i) => (i === index ? updated : it)));
@@ -124,19 +132,41 @@ export function SalesInvoiceForm({
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Customer</label>
-          <select
-            name="customer_id"
-            value={customerId}
-            onChange={(e) => handleCustomerChange(e.target.value)}
-            className="w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm"
-          >
-            <option value="">{saleType === "cash" ? "Walk-in (no customer record)" : "Select customer..."}</option>
-            {customers.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+          <div className="flex items-center gap-2">
+            <select
+              name="customer_id"
+              value={customerId}
+              onChange={(e) => handleCustomerChange(e.target.value)}
+              className="flex-1 rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm"
+            >
+              <option value="">{saleType === "cash" ? "Walk-in (no customer record)" : "Select customer..."}</option>
+              {customerOptions.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            <QuickAddButton
+              buttonLabel="+ New"
+              dialogTitle="New customer"
+              fields={[
+                { name: "name", label: "Customer name", required: true },
+                { name: "phone", label: "Phone" },
+              ]}
+              onSubmit={(values) => quickCreateCustomer({ name: values.name, phone: values.phone })}
+              onCreated={(result) => {
+                const newCustomer: CustomerOption = {
+                  id: result.id!,
+                  name: result.label ?? "",
+                  route_id: null,
+                  assigned_user_id: null,
+                  credit_period_days: 0,
+                };
+                setCustomerOptions((prev) => [...prev, newCustomer]);
+                setCustomerId(newCustomer.id);
+              }}
+            />
+          </div>
         </div>
 
         {saleType === "cash" && !customerId && (
@@ -223,10 +253,11 @@ export function SalesInvoiceForm({
             <LineItemRow
               key={i}
               item={item}
-              products={products}
+              products={productOptions}
               customerId={customerId || null}
               onChange={(updated) => updateItem(i, updated)}
               onRemove={() => removeItem(i)}
+              onProductCreated={handleProductCreated}
             />
           ))}
         </div>

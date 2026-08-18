@@ -249,3 +249,32 @@ test("last price shows the previous sale of this product to this customer", asyn
   await expect(page.getByText(/Last sold to this customer: Rs\.175/)).toBeVisible({ timeout: 10_000 });
   await expect(page.getByText(/5% off/)).toBeVisible();
 });
+
+test("a brand-new customer can be created inline from Sales Entry and used in the same submission", async ({ page }) => {
+  const db = await dbClient();
+  const newName = tag(`Inline Customer ${Date.now()}`);
+
+  await page.goto("/sales/credit/new");
+  await page.selectOption('select[name="staff_id"]', staffId);
+
+  await page.getByRole("button", { name: "+ New", exact: true }).click();
+  await page.fill('label:has-text("Customer name") + input', newName);
+  await page.getByRole("button", { name: "Create", exact: true }).click();
+
+  // The new customer should now be selected on the form automatically.
+  await expect(page.locator('select[name="customer_id"]')).not.toHaveValue("", { timeout: 10_000 });
+
+  await page.selectOption('select[name="line_product_id"]', productId);
+  await page.fill('input[name="line_quantity"]', "1");
+  await page.fill('input[placeholder="Rate"]', "150");
+  await page.getByRole("button", { name: /create credit sale/i }).click();
+  await page.waitForURL(/\/sales\/[0-9a-f-]{36}$/, { timeout: 15_000 });
+  const invoiceId = page.url().split("/").pop()!;
+  createdInvoiceIds.push(invoiceId);
+
+  const { data: customer } = await db.from("customers").select("id").eq("name", newName).single();
+  expect(customer).not.toBeNull();
+
+  const { data: invoice } = await db.from("sales_invoices").select("customer_id").eq("id", invoiceId).single();
+  expect(invoice!.customer_id).toBe(customer!.id);
+});

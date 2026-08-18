@@ -6,6 +6,8 @@ import { createSalesOrder } from "./actions";
 import type { InvoiceLineInput } from "../actions";
 import { LineItemRow, type LineItem, type ProductOption } from "@/components/line-item-row";
 import { enqueue } from "@/lib/offline-queue";
+import { QuickAddButton } from "@/components/quick-add-button";
+import { quickCreateCustomer } from "@/app/(app)/masters/customers/quick-create";
 
 type CustomerOption = { id: string; name: string; route_id: string | null; assigned_user_id: string | null };
 type Option = { id: string; label: string };
@@ -27,6 +29,8 @@ export function SalesOrderForm({
 }) {
   const router = useRouter();
   const [customerId, setCustomerId] = useState("");
+  const [customerOptions, setCustomerOptions] = useState<CustomerOption[]>(customers);
+  const [productOptions, setProductOptions] = useState<ProductOption[]>(products);
   const [routeId, setRouteId] = useState("");
   const [staffId, setStaffId] = useState("");
   const [notes, setNotes] = useState("");
@@ -37,9 +41,13 @@ export function SalesOrderForm({
 
   function handleCustomerChange(id: string) {
     setCustomerId(id);
-    const customer = customers.find((c) => c.id === id);
+    const customer = customerOptions.find((c) => c.id === id);
     if (customer?.route_id) setRouteId(customer.route_id);
     if (customer?.assigned_user_id) setStaffId(customer.assigned_user_id);
+  }
+
+  function handleProductCreated(product: ProductOption) {
+    setProductOptions((prev) => [...prev, product]);
   }
 
   function updateItem(index: number, updated: LineItem) {
@@ -117,19 +125,40 @@ export function SalesOrderForm({
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Customer</label>
-          <select
-            name="customer_id"
-            value={customerId}
-            onChange={(e) => handleCustomerChange(e.target.value)}
-            className="w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm"
-          >
-            <option value="">Select customer...</option>
-            {customers.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+          <div className="flex items-center gap-2">
+            <select
+              name="customer_id"
+              value={customerId}
+              onChange={(e) => handleCustomerChange(e.target.value)}
+              className="flex-1 rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm"
+            >
+              <option value="">Select customer...</option>
+              {customerOptions.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            <QuickAddButton
+              buttonLabel="+ New"
+              dialogTitle="New customer"
+              fields={[
+                { name: "name", label: "Customer name", required: true },
+                { name: "phone", label: "Phone" },
+              ]}
+              onSubmit={(values) => quickCreateCustomer({ name: values.name, phone: values.phone })}
+              onCreated={(result) => {
+                const newCustomer: CustomerOption = {
+                  id: result.id!,
+                  name: result.label ?? "",
+                  route_id: null,
+                  assigned_user_id: null,
+                };
+                setCustomerOptions((prev) => [...prev, newCustomer]);
+                setCustomerId(newCustomer.id);
+              }}
+            />
+          </div>
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Route</label>
@@ -181,10 +210,11 @@ export function SalesOrderForm({
             <LineItemRow
               key={i}
               item={item}
-              products={products}
+              products={productOptions}
               customerId={customerId || null}
               onChange={(updated) => updateItem(i, updated)}
               onRemove={() => removeItem(i)}
+              onProductCreated={handleProductCreated}
             />
           ))}
         </div>

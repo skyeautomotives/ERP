@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { quickCreateProduct } from "@/app/(app)/masters/products/quick-create";
+import { QuickAddButton, type QuickAddResult } from "@/components/quick-add-button";
 
 export type ProductOption = {
   id: string;
@@ -32,6 +34,7 @@ export function LineItemRow({
   customerId,
   onChange,
   onRemove,
+  onProductCreated,
 }: {
   item: LineItem;
   products: ProductOption[];
@@ -40,9 +43,14 @@ export function LineItemRow({
   customerId: string | null;
   onChange: (item: LineItem) => void;
   onRemove: () => void;
+  /** Bubbles a quick-created product up to the parent form, which holds the
+   * shared product list for every line row (so creating one from any single
+   * row makes it available on all of them, not just this one). */
+  onProductCreated?: (product: ProductOption) => void;
 }) {
   const [lastPrice, setLastPrice] = useState<LastPrice | null>(null);
   const [loadingLastPrice, setLoadingLastPrice] = useState(false);
+  const [stockQty, setStockQty] = useState<number | null>(null);
 
   useEffect(() => {
     if (!customerId || !item.product_id) {
@@ -64,6 +72,27 @@ export function LineItemRow({
     };
   }, [customerId, item.product_id]);
 
+  useEffect(() => {
+    if (!item.product_id) {
+      setStockQty(null);
+      return;
+    }
+    let cancelled = false;
+    const supabase = createClient();
+    supabase
+      .from("product_stock_levels")
+      .select("current_qty")
+      .eq("product_id", item.product_id)
+      .single()
+      .then(({ data }) => {
+        if (cancelled) return;
+        setStockQty(data ? Number(data.current_qty) : null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [item.product_id]);
+
   const product = products.find((p) => p.id === item.product_id);
 
   function handleProductChange(productId: string) {
@@ -73,6 +102,18 @@ export function LineItemRow({
       product_id: productId,
       rate: selected?.default_rate ?? 0,
     });
+  }
+
+  function handleProductCreated(result: QuickAddResult) {
+    const newProduct: ProductOption = {
+      id: result.id!,
+      code: String(result.code ?? ""),
+      name: String(result.name ?? ""),
+      default_rate: (result.default_rate as number | null) ?? null,
+      gst_percent: Number(result.gst_percent ?? 0),
+    };
+    onProductCreated?.(newProduct);
+    onChange({ ...item, product_id: newProduct.id, rate: newProduct.default_rate ?? 0 });
   }
 
   return (
@@ -130,6 +171,35 @@ export function LineItemRow({
         >
           Remove
         </button>
+      </div>
+
+      <div className="mt-1 flex items-center gap-3">
+        <QuickAddButton
+          buttonLabel="+ New product"
+          dialogTitle="New product"
+          fields={[
+            { name: "code", label: "Product code", required: true },
+            { name: "name", label: "Product name", required: true },
+            { name: "unit", label: "Unit (e.g. pcs, box)" },
+            { name: "gst_percent", label: "GST %", type: "number" },
+            { name: "rate", label: "Rate", type: "number" },
+          ]}
+          onSubmit={(values) =>
+            quickCreateProduct({
+              code: values.code,
+              name: values.name,
+              unit: values.unit,
+              gst_percent: values.gst_percent ? Number(values.gst_percent) : undefined,
+              rate: values.rate ? Number(values.rate) : undefined,
+            })
+          }
+          onCreated={handleProductCreated}
+        />
+        {item.product_id && (
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            In stock: {stockQty === null ? "..." : stockQty}
+          </span>
+        )}
       </div>
 
       {customerId && item.product_id && (
