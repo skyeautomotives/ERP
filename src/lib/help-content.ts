@@ -409,4 +409,22 @@ export const HELP_CONTENT: Record<string, HelpContent> = {
       { label: "Gross Profit / Profit Percentage", text: "Only visible to Admin, Accountant, and Management roles, same as everywhere else profit appears in the app." },
     ],
   },
+  "my-dashboard": {
+    title: "My Workspace",
+    description: "Your own personal view - your sales, your route, your assigned customers, and your recent collections. Everyone sees only their own numbers here, regardless of what else they're permitted to see elsewhere in the app.",
+    fields: [
+      { label: "My route", text: "Shown if a route has been assigned to you on Masters > Routes. Blank means no route is assigned yet." },
+      { label: "My customers", text: "How many customers are assigned to you (Masters > Customers) - tap through to see the full list." },
+    ],
+  },
+  "my-customers": {
+    title: "My Customers",
+    description: "Every customer assigned to you, with their current outstanding balance. Tap into a customer to see their full ledger - every invoice and payment, in order.",
+    fields: [],
+  },
+  "my-collections": {
+    title: "My Collections",
+    description: "Every payment you've personally collected in the period you pick, with how many days it took from invoice to payment.",
+    fields: [],
+  },
 };

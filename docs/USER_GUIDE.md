@@ -330,6 +330,29 @@ Four charts - Sales, Collection, Purchase, and Profit - each showing Monday thro
 
 Cash/Bank balance, outstanding, and stock value are always as of right now - there's no "view the dashboard as of a past date" option.
 
+## Phase 12: Mobile
+
+This app has always been a single responsive web app rather than a separate phone app - it works in any mobile browser and can be "installed" to your home screen like a native app (your phone's browser menu will offer "Add to Home Screen" or "Install app"). This phase made the phone experience actually usable, and added a personal self-service view for field staff.
+
+### The menu on a phone
+
+On a narrow screen, the menu is now tucked behind a "hamburger" button (three lines) at the top of the screen instead of taking up half your screen permanently. Tap it to open the full menu, tap any item to go there (the menu closes automatically), or tap outside the menu to dismiss it. On a tablet or desktop, the menu stays visible on the left as before.
+
+### My Workspace
+
+A new menu item, right at the top, for anyone logged in - built especially for sales staff working out in the field.
+
+- **Today's/this week's sales, collection, and outstanding** - your own numbers only, not the whole company's.
+- **My customers** - only the customers assigned to you (set on their Masters > Customers record), with their current outstanding balance. Tap through to see a customer's full ledger.
+- **My route** - the delivery route(s) assigned to you.
+- **Recent collections**, with a link to **My Collections** for the complete history.
+
+Unlike the Staff Performance and Collection Report screens (which need broader permissions), My Workspace shows only your own data, so every logged-in user can see it regardless of role.
+
+### What's not here yet
+
+The product line entry (used when creating a sale, purchase, or return) is a bit cramped on the narrowest phone screens - still fully usable, just visually tight. There's no offline mode yet either - you need a working internet connection to use the app; that's covered in a later phase.
+
 ---
 
-*More sections will be added here as each phase of the build ships (Mobile).*
+*More sections will be added here as each phase of the build ships (Realtime Sync + Offline Queue, Security & Performance).*

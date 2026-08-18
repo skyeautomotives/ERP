@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getCurrentUser, can, MODULES, type ModuleKey } from "@/lib/auth/permissions";
 import { logout } from "@/app/login/actions";
+import { SidebarShell } from "@/components/sidebar-shell";
 
 const BUILT_MODULES: ModuleKey[] = ["dashboard", "masters", "sales", "purchase", "inventory", "accounts", "gst", "staff", "settings"];
 
@@ -83,8 +84,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const visibleModules = MODULES.filter((m) => can(user, m.key, "view"));
 
   return (
-    <div className="flex min-h-screen">
-      <aside className="flex w-60 shrink-0 flex-col border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+    <div className="flex min-h-screen flex-col lg:flex-row">
+      <SidebarShell>
+      <aside className="flex h-full w-60 shrink-0 flex-col border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
         <div className="border-b border-gray-200 dark:border-gray-800 px-4 py-4">
           <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Skye ERP</p>
           <p className="mt-0.5 truncate text-xs text-gray-500 dark:text-gray-400">{user.fullName}</p>
@@ -92,6 +94,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </div>
 
         <nav className="flex-1 space-y-1 overflow-y-auto px-2 py-3">
+          <Link
+            href="/my/dashboard"
+            className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+          >
+            My Workspace
+          </Link>
           {visibleModules.map((mod) => {
             const isBuilt = BUILT_MODULES.includes(mod.key);
 
@@ -166,8 +174,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </button>
         </form>
       </aside>
+      </SidebarShell>
 
-      <main className="flex-1 bg-gray-50 dark:bg-gray-950 p-6">{children}</main>
+      <main className="flex-1 bg-gray-50 dark:bg-gray-950 p-4 lg:p-6">{children}</main>
     </div>
   );
 }
