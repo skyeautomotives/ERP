@@ -397,4 +397,18 @@ That testing effort also caught and fixed two real problems along the way:
 
 ---
 
-*This is the last planned phase - all 14 phases of the build are complete.*
+## Add a new Vendor, Customer, or Product without leaving the screen
+
+On Purchase Entry, Sales Entry, and Sales Order, you no longer need to go to Masters first if the vendor, customer, or product you need doesn't exist yet:
+
+- **Purchase Entry**: click **+ New** next to Supplier to add one on the spot.
+- **Sales Entry / Sales Order**: click **+ New** next to Customer to add one on the spot.
+- **Any product line**: click **+ New product** below the line to add a product on the spot.
+
+Each one opens a small popup asking for just the essentials (name/phone, or code/name/unit/GST%/rate for a product) - everything else can be filled in later from Masters if needed. Once created, it's selected automatically and you can keep filling out the rest of the form without interruption.
+
+Product lines also now show **In stock: N** once you pick a product, so you can see what's available before entering a quantity.
+
+---
+
+*All 14 planned phases are complete; this and future sections cover post-launch changes made at the user's request.*
