@@ -10,6 +10,15 @@ const BUILT_MODULES: ModuleKey[] = ["dashboard", "masters", "sales", "purchase",
 
 type SubLink = { href: string; label: string; comingSoon?: boolean };
 
+// Modules whose sub-screens are switched via an in-page tab bar (ModuleTabs)
+// instead of a sidebar sub-list - the sidebar just links straight to the
+// default tab. Dashboard has always worked this way (a single screen, no
+// sub-nav at all); Sales joined it once its 4 list screens got tabs.
+const SINGLE_LINK_MODULES: Partial<Record<ModuleKey, string>> = {
+  dashboard: "/dashboard",
+  sales: "/sales/credit",
+};
+
 const SUB_LINKS: Partial<Record<ModuleKey, SubLink[]>> = {
   masters: [
     { href: "/masters/customers", label: "Customers" },
@@ -18,13 +27,6 @@ const SUB_LINKS: Partial<Record<ModuleKey, SubLink[]>> = {
     { href: "/masters/routes", label: "Routes" },
     { href: "/masters/expense-categories", label: "Expense Categories" },
     { href: "/masters/chart-of-accounts", label: "Chart of Accounts" },
-  ],
-  sales: [
-    { href: "/sales/credit", label: "Credit Sales" },
-    { href: "/sales/cash", label: "Cash Sales" },
-    { href: "/sales/orders", label: "Sales Orders" },
-    { href: "/sales/returns", label: "Sales Return" },
-    { href: "/sales/reports", label: "Sales Reports", comingSoon: true },
   ],
   purchase: [
     { href: "/purchase/entries", label: "Purchase Entry" },
@@ -107,11 +109,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           {visibleModules.map((mod) => {
             const isBuilt = BUILT_MODULES.includes(mod.key);
 
-            if (mod.key === "dashboard") {
+            const singleLinkHref = SINGLE_LINK_MODULES[mod.key];
+            if (singleLinkHref) {
               return (
                 <Link
                   key={mod.key}
-                  href="/dashboard"
+                  href={singleLinkHref}
                   className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                 >
                   {mod.label}

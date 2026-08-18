@@ -5,6 +5,8 @@ import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { Pagination } from "@/components/pagination";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
+import { ModuleTabs } from "@/components/module-tabs";
+import { SALES_TABS } from "../sales-tabs";
 
 const PAGE_SIZE = 20;
 const STATUS_STYLES: Record<string, string> = {
@@ -33,7 +35,8 @@ export default async function SalesOrdersPage({
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <ModuleTabs tabs={SALES_TABS} />
+      <div className="mt-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Sales Orders</h1>
           <HelpButton content={HELP_CONTENT["sales-orders"]} />
