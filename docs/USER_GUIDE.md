@@ -384,4 +384,17 @@ Cash/Bank Payments, and every back-office screen, still need a live connection -
 
 ---
 
-*More sections will be added here as each phase of the build ships (Security & Performance).*
+## Phase 14: Security Audit + Testing + Performance Optimization
+
+This was the final phase - a hardening pass, not a new feature, so there's nothing new to click through. It tightened account security (public sign-up is now switched off since every account is created by an Admin through Settings > Users, and the minimum password length was raised to match what the app already required), sped up a few screens that would have gotten slower as more data piles up (the Journal and Expenses pages now default to the current month instead of loading your entire history every time), and added an automated test suite that re-checks the whole app's core numbers - sales, purchase, stock, accounting, GST, staff performance, and mobile/offline - every time a change is made, so a future update is far less likely to quietly break something that used to work.
+
+That testing effort also caught and fixed two real problems along the way:
+
+- **A customer or supplier who had goods returned against a bill was shown as owing more than they actually did** on Bill-wise Outstanding and their Ledger (the running total simply never subtracted a Credit Note or Debit Note). Fixed - returns now correctly reduce what's shown as outstanding everywhere.
+- **The "screens update live" feature from Phase 13 wasn't actually working reliably** - it looked fine in testing at the time, but a deeper check found it was silently failing to receive updates in normal day-to-day use. Fixed - live updates now work as originally described above.
+
+**One thing worth doing yourself**: open **Settings > Company** and fill in your company's **State**, if it isn't set already. Without it, the app has no way to tell an in-state sale from an out-of-state one, so every sale has been calculating GST as CGST+SGST (in-state) even where IGST should apply. This is a one-time setup step, not a bug - just something that was never filled in.
+
+---
+
+*This is the last planned phase - all 14 phases of the build are complete.*

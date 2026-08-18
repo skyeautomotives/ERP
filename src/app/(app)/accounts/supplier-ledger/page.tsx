@@ -6,6 +6,11 @@ import { HELP_CONTENT } from "@/lib/help-content";
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
+// See the matching comment in accounts/customer-ledger/page.tsx - the running
+// balance depends on every prior row, so this caps what's rendered rather than
+// pushing pagination into the RPC.
+const MAX_DISPLAY_ROWS = 200;
+
 type LedgerRow = {
   txn_date: string;
   particulars: string;
@@ -41,6 +46,8 @@ export default async function SupplierLedgerPage({
 
   const closingBalance = rows.length > 0 ? rows[rows.length - 1].running_balance : 0;
   const selectedSupplier = suppliers?.find((s) => s.id === supplierId);
+  const truncated = rows.length > MAX_DISPLAY_ROWS;
+  const displayRows = truncated ? rows.slice(-MAX_DISPLAY_ROWS) : rows;
 
   return (
     <div>
@@ -97,6 +104,13 @@ export default async function SupplierLedgerPage({
             </p>
           </div>
 
+          {truncated && (
+            <p className="mt-4 text-sm text-amber-600 dark:text-amber-400">
+              Showing the most recent {MAX_DISPLAY_ROWS} of {rows.length} transactions up to {asOfDate}. Pick an
+              earlier "As of" date to see an earlier period.
+            </p>
+          )}
+
           <div className="mt-4 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
             <table className="w-full text-left text-sm">
               <thead className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 text-xs uppercase text-gray-500 dark:text-gray-400">
@@ -109,7 +123,7 @@ export default async function SupplierLedgerPage({
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                {rows.map((r, i) => (
+                {displayRows.map((r, i) => (
                   <tr key={`${r.ref_type}-${r.ref_id}-${i}`}>
                     <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{r.txn_date}</td>
                     <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{r.particulars}</td>

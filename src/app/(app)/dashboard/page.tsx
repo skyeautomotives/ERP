@@ -85,7 +85,10 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      <RealtimeRefresh tables={["sales_invoices", "receipts", "receipt_allocations", "payments", "journal_entries"]} />
+      {/* journal_entries deliberately left out - every journal_entries write is itself
+          triggered by a write to one of the tables below, so subscribing to it too
+          would just refresh this page again for the same underlying change (Phase 14). */}
+      <RealtimeRefresh tables={["sales_invoices", "receipts", "receipt_allocations", "payments"]} />
       <div className="flex items-center gap-2">
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Dashboard</h1>
         <HelpButton content={HELP_CONTENT["dashboard"]} />

@@ -1,21 +1,64 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
+import { Pagination } from "@/components/pagination";
 
-export default async function ExpensesPage() {
+const todayISO = () => new Date().toISOString().slice(0, 10);
+const startOfWeekISO = () => {
+  const d = new Date();
+  const day = d.getDay();
+  const diff = day === 0 ? 6 : day - 1;
+  const monday = new Date(d);
+  monday.setDate(d.getDate() - diff);
+  return monday.toISOString().slice(0, 10);
+};
+const startOfMonthISO = () => {
+  const d = new Date();
+  return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0, 10);
+};
+
+const PAGE_SIZE = 20;
+
+export default async function ExpensesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ from?: string; to?: string; page?: string }>;
+}) {
   const user = await getCurrentUser();
   if (!can(user, "accounts", "view")) redirect("/unauthorized");
 
+  const { from, to, page: pageParam } = await searchParams;
+  // Defaults to the current month, not all-time - this table grows with every
+  // expense ever recorded and previously had no bound at all.
+  const fromDate = from || startOfMonthISO();
+  const toDate = to || todayISO();
+  const page = Math.max(1, Number(pageParam) || 1);
   const supabase = await createClient();
-  const { data: expenses } = await supabase
-    .from("payments")
-    .select("id, payment_number, payment_date, amount, method, status, paid_to, expense_categories(name)")
-    .eq("purpose", "expense")
-    .order("payment_date", { ascending: false });
 
-  const activeExpenses = (expenses ?? []).filter((e) => e.status === "active");
+  const [{ data: periodExpenses }, { data: pageExpenses, count }] = await Promise.all([
+    supabase
+      .from("payments")
+      .select("amount, status, expense_categories(name)")
+      .eq("purpose", "expense")
+      .gte("payment_date", fromDate)
+      .lte("payment_date", toDate),
+    supabase
+      .from("payments")
+      .select("id, payment_number, payment_date, amount, method, status, paid_to, expense_categories(name)", {
+        count: "exact",
+      })
+      .eq("purpose", "expense")
+      .gte("payment_date", fromDate)
+      .lte("payment_date", toDate)
+      .order("payment_date", { ascending: false })
+      .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1),
+  ]);
+  const expenses = pageExpenses;
+
+  const activeExpenses = (periodExpenses ?? []).filter((e) => e.status === "active");
   const total = activeExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
 
   const byCategory = new Map<string, number>();
@@ -24,6 +67,8 @@ export default async function ExpensesPage() {
     byCategory.set(key, (byCategory.get(key) ?? 0) + Number(e.amount));
   }
 
+  const qs = (f: string, t: string) => `?from=${f}&to=${t}`;
+
   return (
     <div>
       <div className="flex items-center gap-2">
@@ -31,8 +76,26 @@ export default async function ExpensesPage() {
         <HelpButton content={HELP_CONTENT["expenses"]} />
       </div>
       <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-        Every expense recorded through Cash Payment or Bank Payment.
+        Every expense recorded through Cash Payment or Bank Payment, {fromDate} to {toDate}.
       </p>
+
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <Link href={qs(todayISO(), todayISO())} className="rounded-full bg-gray-100 dark:bg-gray-800 px-3 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">Today</Link>
+        <Link href={qs(startOfWeekISO(), todayISO())} className="rounded-full bg-gray-100 dark:bg-gray-800 px-3 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">This Week</Link>
+        <Link href={qs(startOfMonthISO(), todayISO())} className="rounded-full bg-gray-100 dark:bg-gray-800 px-3 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">This Month</Link>
+      </div>
+
+      <form className="mt-3 flex flex-wrap items-end gap-3">
+        <div>
+          <label className="mb-1 block text-xs font-medium text-gray-700 dark:text-gray-300">From</label>
+          <input type="date" name="from" defaultValue={fromDate} max={todayISO()} className="rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100" />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-gray-700 dark:text-gray-300">To</label>
+          <input type="date" name="to" defaultValue={toDate} max={todayISO()} className="rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100" />
+        </div>
+        <button type="submit" className="rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">Apply</button>
+      </form>
 
       <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
@@ -91,12 +154,13 @@ export default async function ExpensesPage() {
             {(!expenses || expenses.length === 0) && (
               <tr>
                 <td colSpan={7} className="px-4 py-6 text-center text-gray-400 dark:text-gray-500">
-                  No expenses recorded yet.
+                  No expenses in this period.
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+        <Pagination page={page} pageSize={PAGE_SIZE} total={count ?? 0} />
       </div>
     </div>
   );

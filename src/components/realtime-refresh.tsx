@@ -15,20 +15,44 @@ export function RealtimeRefresh({ tables }: { tables: string[] }) {
 
   useEffect(() => {
     const supabase = createClient();
-    const channel = supabase.channel(`realtime-refresh-${tables.join("-")}`);
+    let cancelled = false;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
 
-    for (const table of tables) {
-      channel.on("postgres_changes", { event: "*", schema: "public", table }, () => {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        timeoutRef.current = setTimeout(() => router.refresh(), 500);
-      });
+    async function setup() {
+      // Every table this component subscribes to has RLS enabled, so Realtime
+      // only broadcasts a postgres_changes event to this socket if it can
+      // verify the caller's identity - it needs the user's JWT, not just the
+      // anon key on the connection URL. supabase-js is supposed to sync this
+      // automatically via onAuthStateChange, but on a session that was
+      // hydrated from cookies (the @supabase/ssr browser client used here,
+      // rather than an in-page sign-in call) that auto-sync can race this
+      // effect's channel.subscribe() below and lose - the channel joins
+      // before the token is attached, and nothing ever retries it. Setting
+      // it explicitly before subscribing closes that race.
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (cancelled) return;
+      if (session?.access_token) {
+        supabase.realtime.setAuth(session.access_token);
+      }
+
+      channel = supabase.channel(`realtime-refresh-${tables.join("-")}`);
+      for (const table of tables) {
+        channel.on("postgres_changes", { event: "*", schema: "public", table }, () => {
+          if (timeoutRef.current) clearTimeout(timeoutRef.current);
+          timeoutRef.current = setTimeout(() => router.refresh(), 500);
+        });
+      }
+      channel.subscribe();
     }
 
-    channel.subscribe();
+    setup();
 
     return () => {
+      cancelled = true;
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      supabase.removeChannel(channel);
+      if (channel) supabase.removeChannel(channel);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tables.join(",")]);

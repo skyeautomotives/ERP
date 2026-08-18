@@ -4,8 +4,15 @@ import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
+import { Pagination } from "@/components/pagination";
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
+const startOfMonthISO = () => {
+  const d = new Date();
+  return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0, 10);
+};
+
+const PAGE_SIZE = 30;
 
 type JournalEntryRow = { id: string; entry_date: string; description: string };
 type JournalLineRow = {
@@ -19,24 +26,29 @@ type JournalLineRow = {
 export default async function JournalPage({
   searchParams,
 }: {
-  searchParams: Promise<{ account?: string; from?: string; to?: string }>;
+  searchParams: Promise<{ account?: string; from?: string; to?: string; page?: string }>;
 }) {
   const user = await getCurrentUser();
   if (!can(user, "accounts", "view")) redirect("/unauthorized");
 
-  const { account, from, to } = await searchParams;
+  const { account, from, to, page: pageParam } = await searchParams;
+  // Defaults to the current month, not all-time - journal_entries is written by
+  // nearly every transaction in the app, so an unbounded fetch here grows without limit.
+  const fromDate = from || startOfMonthISO();
+  const toDate = to || todayISO();
+  const page = Math.max(1, Number(pageParam) || 1);
   const supabase = await createClient();
 
   const { data: accounts } = await supabase.from("chart_of_accounts").select("id, code, name").order("code");
 
-  let entriesQuery = supabase
+  const { data: entries, count } = await supabase
     .from("journal_entries")
-    .select("id, entry_date, description")
+    .select("id, entry_date, description", { count: "exact" })
+    .gte("entry_date", fromDate)
+    .lte("entry_date", toDate)
     .order("entry_date", { ascending: false })
-    .order("id", { ascending: false });
-  if (from) entriesQuery = entriesQuery.gte("entry_date", from);
-  if (to) entriesQuery = entriesQuery.lte("entry_date", to);
-  const { data: entries } = await entriesQuery;
+    .order("id", { ascending: false })
+    .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
   const entryRows = (entries ?? []) as JournalEntryRow[];
 
   const entryIds = entryRows.map((e) => e.id);
@@ -128,7 +140,7 @@ export default async function JournalPage({
           <input
             type="date"
             name="from"
-            defaultValue={from ?? ""}
+            defaultValue={fromDate}
             className="rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
           />
         </div>
@@ -137,7 +149,7 @@ export default async function JournalPage({
           <input
             type="date"
             name="to"
-            defaultValue={to ?? ""}
+            defaultValue={toDate}
             className="rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
           />
         </div>
@@ -196,6 +208,7 @@ export default async function JournalPage({
             </tfoot>
           )}
         </table>
+        <Pagination page={page} pageSize={PAGE_SIZE} total={count ?? 0} />
       </div>
     </div>
   );
