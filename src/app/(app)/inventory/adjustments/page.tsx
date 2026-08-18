@@ -4,6 +4,8 @@ import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { AdjustmentForm } from "./adjustment-form";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
+import { ModuleTabs } from "@/components/module-tabs";
+import { INVENTORY_TABS } from "../inventory-tabs";
 
 export default async function StockAdjustmentsPage() {
   const user = await getCurrentUser();
@@ -21,7 +23,8 @@ export default async function StockAdjustmentsPage() {
 
   return (
     <div>
-      <div className="flex items-center gap-2">
+      <ModuleTabs tabs={INVENTORY_TABS} />
+      <div className="mt-4 flex items-center gap-2">
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Stock Adjustment</h1>
         <HelpButton content={HELP_CONTENT["stock-adjustments"]} />
       </div>

@@ -4,6 +4,8 @@ import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
 import { ExportCsvButton } from "@/components/export-csv-button";
+import { ModuleTabs } from "@/components/module-tabs";
+import { GST_TABS } from "../gst-tabs";
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 const firstOfMonthISO = () => {
@@ -45,7 +47,8 @@ export default async function PurchaseRegisterPage({
 
   return (
     <div>
-      <div className="flex items-center gap-2">
+      <ModuleTabs tabs={GST_TABS} />
+      <div className="mt-4 flex items-center gap-2">
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Purchase Register</h1>
         <HelpButton content={HELP_CONTENT["purchase-register"]} />
       </div>

@@ -5,6 +5,8 @@ import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { SearchInput } from "@/components/search-input";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
+import { ModuleTabs } from "@/components/module-tabs";
+import { INVENTORY_TABS } from "../inventory-tabs";
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
@@ -40,7 +42,8 @@ export default async function StockReportPage({
 
   return (
     <div>
-      <div className="flex items-center gap-2">
+      <ModuleTabs tabs={INVENTORY_TABS} />
+      <div className="mt-4 flex items-center gap-2">
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Stock Report</h1>
         <HelpButton content={HELP_CONTENT["stock-report"]} />
       </div>

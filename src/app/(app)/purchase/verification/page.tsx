@@ -5,6 +5,8 @@ import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { Pagination } from "@/components/pagination";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
+import { ModuleTabs } from "@/components/module-tabs";
+import { PURCHASE_TABS } from "../purchase-tabs";
 
 const PAGE_SIZE = 20;
 
@@ -57,7 +59,8 @@ export default async function PurchaseVerificationPage({
 
   return (
     <div>
-      <div className="flex items-center gap-2">
+      <ModuleTabs tabs={PURCHASE_TABS} />
+      <div className="mt-4 flex items-center gap-2">
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Purchase Bill Verification</h1>
         <HelpButton content={HELP_CONTENT["purchase-verification"]} />
       </div>

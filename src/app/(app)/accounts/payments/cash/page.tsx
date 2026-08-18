@@ -5,6 +5,8 @@ import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { Pagination } from "@/components/pagination";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
+import { ModuleTabs } from "@/components/module-tabs";
+import { ACCOUNTS_TABS } from "../../accounts-tabs";
 
 const PAGE_SIZE = 20;
 const PURPOSE_LABELS: Record<string, string> = {
@@ -37,7 +39,8 @@ export default async function CashPaymentsPage({
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <ModuleTabs tabs={ACCOUNTS_TABS} />
+      <div className="mt-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Cash Payment</h1>
           <HelpButton content={HELP_CONTENT["payments"]} />

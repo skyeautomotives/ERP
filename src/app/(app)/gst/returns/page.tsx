@@ -5,6 +5,8 @@ import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
 import { NewPeriodForm } from "./new-period-form";
 import { GstReturnRow } from "./gst-return-row";
+import { ModuleTabs } from "@/components/module-tabs";
+import { GST_TABS } from "../gst-tabs";
 
 export default async function GstReturnsPage() {
   const user = await getCurrentUser();
@@ -20,7 +22,8 @@ export default async function GstReturnsPage() {
 
   return (
     <div>
-      <div className="flex items-center gap-2">
+      <ModuleTabs tabs={GST_TABS} />
+      <div className="mt-4 flex items-center gap-2">
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">GST Returns</h1>
         <HelpButton content={HELP_CONTENT["gst-returns"]} />
       </div>

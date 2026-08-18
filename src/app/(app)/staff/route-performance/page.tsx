@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
+import { ModuleTabs } from "@/components/module-tabs";
+import { STAFF_TABS } from "../staff-tabs";
 
 const PROFIT_VISIBLE_ROLES = ["Admin", "Accountant", "Management"];
 
@@ -63,7 +65,8 @@ export default async function RoutePerformancePage({
 
   return (
     <div>
-      <div className="flex items-center gap-2">
+      <ModuleTabs tabs={STAFF_TABS} />
+      <div className="mt-4 flex items-center gap-2">
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Route Performance</h1>
         <HelpButton content={HELP_CONTENT["route-performance"]} />
       </div>

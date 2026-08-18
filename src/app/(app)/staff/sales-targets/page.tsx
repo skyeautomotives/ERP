@@ -5,6 +5,8 @@ import { getStaffOptions } from "@/lib/masters/staff-options";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
 import { TargetForm } from "./target-form";
+import { ModuleTabs } from "@/components/module-tabs";
+import { STAFF_TABS } from "../staff-tabs";
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
@@ -27,7 +29,8 @@ export default async function SalesTargetsPage() {
 
   return (
     <div>
-      <div className="flex items-center gap-2">
+      <ModuleTabs tabs={STAFF_TABS} />
+      <div className="mt-4 flex items-center gap-2">
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Sales Targets</h1>
         <HelpButton content={HELP_CONTENT["sales-targets"]} />
       </div>

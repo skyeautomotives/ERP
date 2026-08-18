@@ -5,6 +5,8 @@ import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
 import { Pagination } from "@/components/pagination";
+import { ModuleTabs } from "@/components/module-tabs";
+import { ACCOUNTS_TABS } from "../accounts-tabs";
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 const startOfWeekISO = () => {
@@ -71,7 +73,8 @@ export default async function ExpensesPage({
 
   return (
     <div>
-      <div className="flex items-center gap-2">
+      <ModuleTabs tabs={ACCOUNTS_TABS} />
+      <div className="mt-4 flex items-center gap-2">
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Expenses</h1>
         <HelpButton content={HELP_CONTENT["expenses"]} />
       </div>

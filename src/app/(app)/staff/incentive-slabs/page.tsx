@@ -4,6 +4,8 @@ import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
 import { SlabRateCell } from "./slab-rate-cell";
+import { ModuleTabs } from "@/components/module-tabs";
+import { STAFF_TABS } from "../staff-tabs";
 
 export default async function IncentiveSlabsPage() {
   const user = await getCurrentUser();
@@ -19,7 +21,8 @@ export default async function IncentiveSlabsPage() {
 
   return (
     <div>
-      <div className="flex items-center gap-2">
+      <ModuleTabs tabs={STAFF_TABS} />
+      <div className="mt-4 flex items-center gap-2">
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Collection Incentive Slabs</h1>
         <HelpButton content={HELP_CONTENT["incentive-slabs"]} />
       </div>

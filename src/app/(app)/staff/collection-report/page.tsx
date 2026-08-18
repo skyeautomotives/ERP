@@ -5,6 +5,8 @@ import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
 import { RealtimeRefresh } from "@/components/realtime-refresh";
+import { ModuleTabs } from "@/components/module-tabs";
+import { STAFF_TABS } from "../staff-tabs";
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 const startOfWeekISO = () => {
@@ -63,8 +65,9 @@ export default async function CollectionReportPage({
 
   return (
     <div>
+      <ModuleTabs tabs={STAFF_TABS} />
       <RealtimeRefresh tables={["sales_invoices", "receipts", "receipt_allocations"]} />
-      <div className="flex items-center gap-2">
+      <div className="mt-4 flex items-center gap-2">
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Credit Collection Within 90 Days</h1>
         <HelpButton content={HELP_CONTENT["collection-report"]} />
       </div>

@@ -13,10 +13,15 @@ type SubLink = { href: string; label: string; comingSoon?: boolean };
 // Modules whose sub-screens are switched via an in-page tab bar (ModuleTabs)
 // instead of a sidebar sub-list - the sidebar just links straight to the
 // default tab. Dashboard has always worked this way (a single screen, no
-// sub-nav at all); Sales joined it once its 4 list screens got tabs.
+// sub-nav at all); every other built module now follows the same pattern.
 const SINGLE_LINK_MODULES: Partial<Record<ModuleKey, string>> = {
   dashboard: "/dashboard",
   sales: "/sales/credit",
+  purchase: "/purchase/entries",
+  inventory: "/inventory/stock",
+  accounts: "/accounts/receipts/cash",
+  gst: "/gst/gstr1",
+  staff: "/staff/performance",
 };
 
 const SUB_LINKS: Partial<Record<ModuleKey, SubLink[]>> = {
@@ -27,46 +32,6 @@ const SUB_LINKS: Partial<Record<ModuleKey, SubLink[]>> = {
     { href: "/masters/routes", label: "Routes" },
     { href: "/masters/expense-categories", label: "Expense Categories" },
     { href: "/masters/chart-of-accounts", label: "Chart of Accounts" },
-  ],
-  purchase: [
-    { href: "/purchase/entries", label: "Purchase Entry" },
-    { href: "/purchase/verification", label: "Bill Verification" },
-    { href: "/purchase/returns", label: "Purchase Return" },
-    { href: "/purchase/reports", label: "Purchase Reports", comingSoon: true },
-  ],
-  inventory: [
-    { href: "/inventory/stock", label: "Stock Report" },
-    { href: "/inventory/adjustments", label: "Stock Adjustment" },
-    { href: "/inventory/analysis", label: "Movement Analysis" },
-  ],
-  accounts: [
-    { href: "/accounts/receipts/cash", label: "Cash Receipt" },
-    { href: "/accounts/receipts/bank", label: "Bank Receipt" },
-    { href: "/accounts/payments/cash", label: "Cash Payment" },
-    { href: "/accounts/payments/bank", label: "Bank Payment" },
-    { href: "/accounts/expenses", label: "Expenses" },
-    { href: "/accounts/customer-ledger", label: "Customer Ledger" },
-    { href: "/accounts/supplier-ledger", label: "Supplier Ledger" },
-    { href: "/accounts/outstanding", label: "Bill-wise Outstanding" },
-    { href: "/accounts/journal", label: "Journal" },
-    { href: "/accounts/trial-balance", label: "Trial Balance" },
-    { href: "/accounts/profit-and-loss", label: "Profit & Loss" },
-    { href: "/accounts/balance-sheet", label: "Balance Sheet" },
-  ],
-  gst: [
-    { href: "/gst/gstr1", label: "GSTR-1" },
-    { href: "/gst/hsn-summary", label: "HSN Summary" },
-    { href: "/gst/purchase-register", label: "Purchase Register" },
-    { href: "/gst/reconciliation", label: "GST Reconciliation" },
-    { href: "/gst/returns", label: "GST Returns" },
-  ],
-  staff: [
-    { href: "/staff/performance", label: "Staff Performance" },
-    { href: "/staff/collection-report", label: "Collection Report" },
-    { href: "/staff/route-performance", label: "Route Performance" },
-    { href: "/staff/incentive-dashboard", label: "Incentive Dashboard" },
-    { href: "/staff/incentive-slabs", label: "Incentive Slabs" },
-    { href: "/staff/sales-targets", label: "Sales Targets" },
   ],
   settings: [
     { href: "/settings/company", label: "Company" },

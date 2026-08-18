@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
+import { ModuleTabs } from "@/components/module-tabs";
+import { INVENTORY_TABS } from "../inventory-tabs";
 
 const WINDOWS = [30, 60, 90];
 
@@ -27,7 +29,8 @@ export default async function MovementAnalysisPage({
 
   return (
     <div>
-      <div className="flex items-center gap-2">
+      <ModuleTabs tabs={INVENTORY_TABS} />
+      <div className="mt-4 flex items-center gap-2">
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Movement Analysis</h1>
         <HelpButton content={HELP_CONTENT["movement-analysis"]} />
       </div>
