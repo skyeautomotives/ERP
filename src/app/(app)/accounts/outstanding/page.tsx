@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
+import { RealtimeRefresh } from "@/components/realtime-refresh";
 
 const BUCKETS = ["Not yet due", "0-15 days", "16-30 days", "31-45 days", "46-60 days", "61-90 days", "90+ days"] as const;
 
@@ -100,6 +101,7 @@ export default async function OutstandingPage({
 
   return (
     <div>
+      <RealtimeRefresh tables={["sales_invoices", "purchase_invoices", "receipts", "receipt_allocations", "payments", "payment_allocations"]} />
       <div className="flex items-center gap-2">
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Bill-wise Outstanding</h1>
         <HelpButton content={HELP_CONTENT["outstanding"]} />

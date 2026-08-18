@@ -2141,6 +2141,7 @@ export type Database = {
         Args: {
           p_allocations: Json
           p_amount: number
+          p_client_id?: string
           p_expense_category_id: string
           p_method: string
           p_notes: string
@@ -2167,6 +2168,7 @@ export type Database = {
         Args: {
           p_allocations: Json
           p_amount: number
+          p_client_id?: string
           p_customer_id: string
           p_method: string
           p_mode: string

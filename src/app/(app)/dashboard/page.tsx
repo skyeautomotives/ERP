@@ -4,6 +4,7 @@ import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
 import { WeeklyBarChart } from "@/components/weekly-bar-chart";
+import { RealtimeRefresh } from "@/components/realtime-refresh";
 
 const PROFIT_VISIBLE_ROLES = ["Admin", "Accountant", "Management"];
 
@@ -84,6 +85,7 @@ export default async function DashboardPage() {
 
   return (
     <div>
+      <RealtimeRefresh tables={["sales_invoices", "receipts", "receipt_allocations", "payments", "journal_entries"]} />
       <div className="flex items-center gap-2">
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Dashboard</h1>
         <HelpButton content={HELP_CONTENT["dashboard"]} />

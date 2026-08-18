@@ -427,4 +427,14 @@ export const HELP_CONTENT: Record<string, HelpContent> = {
     description: "Every payment you've personally collected in the period you pick, with how many days it took from invoice to payment.",
     fields: [],
   },
+  "my-sync": {
+    title: "Sync Status",
+    description: "Sales Orders and Cash/Bank Receipts you entered while this device had no connection are saved right here on the device and sent automatically the next time it's online - nothing is ever silently lost.",
+    fields: [
+      { label: "Pending Sync", text: "Saved on this device, waiting for a connection." },
+      { label: "Uploading", text: "Connection found - sending it now." },
+      { label: "Synced", text: "Safely saved on the server. You can find it in its normal list (Sales Orders, or the Receipt list) from here on." },
+      { label: "Failed - will retry", text: "The upload hit a problem - it stays queued and tries again automatically. If it keeps failing, check the error shown underneath." },
+    ],
+  },
 };

@@ -23,7 +23,7 @@ export default async function NewBankReceiptPage() {
         <HelpButton content={HELP_CONTENT["receipts"]} />
       </div>
       <div className="mt-6 max-w-3xl rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6">
-        <ReceiptForm method="bank" customers={(customers ?? []).map((c) => ({ id: c.id, label: c.name }))} />
+        <ReceiptForm method="bank" customers={(customers ?? []).map((c) => ({ id: c.id, label: c.name }))} userId={user!.id} />
       </div>
     </div>
   );

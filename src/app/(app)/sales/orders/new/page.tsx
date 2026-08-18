@@ -38,6 +38,7 @@ export default async function NewSalesOrderPage() {
           routes={(routes ?? []).map((r) => ({ id: r.id, label: r.name }))}
           staff={staff.map((s) => ({ id: s.id, label: s.full_name }))}
           products={products ?? []}
+          userId={user!.id}
         />
       </div>
     </div>

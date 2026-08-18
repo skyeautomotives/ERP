@@ -3,6 +3,8 @@ import Link from "next/link";
 import { getCurrentUser, can, MODULES, type ModuleKey } from "@/lib/auth/permissions";
 import { logout } from "@/app/login/actions";
 import { SidebarShell } from "@/components/sidebar-shell";
+import { OfflineSyncManager } from "@/components/offline-sync-manager";
+import { SyncBadge } from "@/components/sync-badge";
 
 const BUILT_MODULES: ModuleKey[] = ["dashboard", "masters", "sales", "purchase", "inventory", "accounts", "gst", "staff", "settings"];
 
@@ -85,6 +87,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex min-h-screen flex-col lg:flex-row">
+      <OfflineSyncManager userId={user.id} />
       <SidebarShell>
       <aside className="flex h-full w-60 shrink-0 flex-col border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
         <div className="border-b border-gray-200 dark:border-gray-800 px-4 py-4">
@@ -96,9 +99,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <nav className="flex-1 space-y-1 overflow-y-auto px-2 py-3">
           <Link
             href="/my/dashboard"
-            className="block rounded-md px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+            className="flex items-center rounded-md px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             My Workspace
+            <SyncBadge userId={user.id} />
           </Link>
           {visibleModules.map((mod) => {
             const isBuilt = BUILT_MODULES.includes(mod.key);

@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth/permissions";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
+import { RealtimeRefresh } from "@/components/realtime-refresh";
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 const startOfWeekISO = () => {
@@ -61,6 +62,7 @@ export default async function MyDashboardPage() {
 
   return (
     <div>
+      <RealtimeRefresh tables={["sales_invoices", "receipts", "receipt_allocations"]} />
       <div className="flex items-center gap-2">
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">My Workspace</h1>
         <HelpButton content={HELP_CONTENT["my-dashboard"]} />
@@ -87,7 +89,7 @@ export default async function MyDashboardPage() {
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Link
           href="/my/customers"
           className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 hover:border-blue-300 dark:hover:border-blue-800"
@@ -95,6 +97,17 @@ export default async function MyDashboardPage() {
           <p className="text-xs text-gray-500 dark:text-gray-400">My customers</p>
           <p className="mt-1 text-lg font-semibold text-gray-900 dark:text-gray-100">{customers?.length ?? 0}</p>
           <p className="text-xs text-blue-600 dark:text-blue-400">View all &rarr;</p>
+        </Link>
+
+        <Link
+          href="/my/sync"
+          className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 hover:border-blue-300 dark:hover:border-blue-800"
+        >
+          <p className="text-xs text-gray-500 dark:text-gray-400">Sync status</p>
+          <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
+            Sales Orders and Receipts saved while offline on this device.
+          </p>
+          <p className="text-xs text-blue-600 dark:text-blue-400">View &rarr;</p>
         </Link>
 
         <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">

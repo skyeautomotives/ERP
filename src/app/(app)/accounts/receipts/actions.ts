@@ -1,6 +1,5 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
@@ -19,6 +18,9 @@ export type CreateReceiptPayload = {
   reference_number: string | null;
   notes: string | null;
   allocations: ReceiptAllocationInput[];
+  /** Client-generated UUID (Phase 13 offline queue) - lets a network-flaky
+   * retry return the already-created row instead of creating a duplicate. */
+  client_id?: string;
 };
 
 export async function createReceipt(
@@ -39,12 +41,13 @@ export async function createReceipt(
     p_reference_number: payload.reference_number,
     p_notes: payload.notes,
     p_allocations: payload.mode === "bill" ? payload.allocations : [],
+    p_client_id: payload.client_id ?? null,
   } as CreateReceiptArgs);
 
   if (error) return { error: error.message };
 
   revalidatePath(`/accounts/receipts/${payload.method}`);
-  redirect(`/accounts/receipts/${data}`);
+  return { error: null, id: data ?? undefined };
 }
 
 export async function cancelReceipt(receiptId: string) {

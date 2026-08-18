@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { createSalesOrder } from "./actions";
 import type { InvoiceLineInput } from "../actions";
 import { LineItemRow, type LineItem, type ProductOption } from "@/components/line-item-row";
+import { enqueue } from "@/lib/offline-queue";
 
 type CustomerOption = { id: string; name: string; route_id: string | null; assigned_user_id: string | null };
 type Option = { id: string; label: string };
@@ -15,18 +17,22 @@ export function SalesOrderForm({
   routes,
   staff,
   products,
+  userId,
 }: {
   customers: CustomerOption[];
   routes: Option[];
   staff: Option[];
   products: ProductOption[];
+  userId: string;
 }) {
+  const router = useRouter();
   const [customerId, setCustomerId] = useState("");
   const [routeId, setRouteId] = useState("");
   const [staffId, setStaffId] = useState("");
   const [notes, setNotes] = useState("");
   const [items, setItems] = useState<LineItem[]>([emptyItem()]);
   const [error, setError] = useState<string | null>(null);
+  const [offlineSaved, setOfflineSaved] = useState(false);
   const [pending, startTransition] = useTransition();
 
   function handleCustomerChange(id: string) {
@@ -65,16 +71,45 @@ export function SalesOrderForm({
       return;
     }
 
+    const payload = {
+      customer_id: customerId,
+      route_id: routeId || null,
+      staff_id: staffId || null,
+      notes: notes || null,
+      items: validItems,
+    };
+
     startTransition(async () => {
-      const result = await createSalesOrder({
-        customer_id: customerId,
-        route_id: routeId || null,
-        staff_id: staffId || null,
-        notes: notes || null,
-        items: validItems,
-      });
-      if (result?.error) setError(result.error);
+      if (typeof navigator !== "undefined" && !navigator.onLine) {
+        enqueue(userId, "sales_order", payload);
+        setOfflineSaved(true);
+        return;
+      }
+      try {
+        const clientId = crypto.randomUUID();
+        const result = await createSalesOrder({ ...payload, client_id: clientId });
+        if (result?.error) {
+          setError(result.error);
+          return;
+        }
+        router.push(`/sales/orders/${result.id}`);
+      } catch {
+        enqueue(userId, "sales_order", payload);
+        setOfflineSaved(true);
+      }
     });
+  }
+
+  if (offlineSaved) {
+    return (
+      <div className="rounded-md border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/40 p-4 text-sm text-amber-800 dark:text-amber-300">
+        <p className="font-medium">Saved offline</p>
+        <p className="mt-1">
+          No connection right now - this sales order is queued on this device and will sync automatically once
+          you&apos;re back online. You can check its status any time on My Workspace &gt; Sync Status.
+        </p>
+      </div>
+    );
   }
 
   return (

@@ -1,6 +1,5 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
@@ -15,6 +14,10 @@ export type CreateOrderPayload = {
   staff_id: string | null;
   notes: string | null;
   items: InvoiceLineInput[];
+  /** Client-generated UUID (Phase 13 offline queue) - used as the row's real
+   * id so a network-flaky retry hits the primary key constraint instead of
+   * creating a duplicate order. */
+  client_id?: string;
 };
 
 export async function createSalesOrder(
@@ -29,18 +32,26 @@ export async function createSalesOrder(
   }
 
   const supabase = await createClient();
+  const insertPayload: Record<string, unknown> = {
+    customer_id: payload.customer_id,
+    route_id: payload.route_id,
+    staff_id: payload.staff_id,
+    notes: payload.notes,
+    created_by: user!.id,
+  };
+  if (payload.client_id) insertPayload.id = payload.client_id;
+
   const { data: order, error: orderError } = await supabase
     .from("sales_orders")
-    .insert({
-      customer_id: payload.customer_id,
-      route_id: payload.route_id,
-      staff_id: payload.staff_id,
-      notes: payload.notes,
-      created_by: user!.id,
-    })
+    .insert(insertPayload)
     .select("id")
     .single();
 
+  if (orderError?.code === "23505" && payload.client_id) {
+    // Already synced by an earlier attempt - idempotent no-op.
+    revalidatePath("/sales/orders");
+    return { error: null, id: payload.client_id };
+  }
   if (orderError || !order) return { error: orderError?.message ?? "Failed to create order." };
 
   const { error: itemsError } = await supabase.from("sales_order_items").insert(
@@ -59,7 +70,7 @@ export async function createSalesOrder(
   }
 
   revalidatePath("/sales/orders");
-  redirect(`/sales/orders/${order.id}`);
+  return { error: null, id: order.id };
 }
 
 export async function cancelSalesOrder(orderId: string) {

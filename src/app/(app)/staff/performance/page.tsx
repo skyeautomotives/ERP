@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
+import { RealtimeRefresh } from "@/components/realtime-refresh";
 
 const PROFIT_VISIBLE_ROLES = ["Admin", "Accountant", "Management"];
 
@@ -61,6 +62,7 @@ export default async function StaffPerformancePage({
 
   return (
     <div>
+      <RealtimeRefresh tables={["sales_invoices", "receipts", "receipt_allocations"]} />
       <div className="flex items-center gap-2">
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Staff Performance</h1>
         <HelpButton content={HELP_CONTENT["staff-performance"]} />

@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { createReceipt } from "./actions";
+import { enqueue } from "@/lib/offline-queue";
 
 type Option = { id: string; label: string };
 type OutstandingInvoice = {
@@ -14,7 +16,8 @@ type OutstandingInvoice = {
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
-export function ReceiptForm({ method, customers }: { method: "cash" | "bank"; customers: Option[] }) {
+export function ReceiptForm({ method, customers, userId }: { method: "cash" | "bank"; customers: Option[]; userId: string }) {
+  const router = useRouter();
   const [customerId, setCustomerId] = useState("");
   const [mode, setMode] = useState<"bill" | "on_account">("bill");
   const [amount, setAmount] = useState("");
@@ -24,6 +27,7 @@ export function ReceiptForm({ method, customers }: { method: "cash" | "bank"; cu
   const [invoices, setInvoices] = useState<OutstandingInvoice[]>([]);
   const [allocations, setAllocations] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
+  const [offlineSaved, setOfflineSaved] = useState(false);
   const [pending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -72,19 +76,48 @@ export function ReceiptForm({ method, customers }: { method: "cash" | "bank"; cu
       }
     }
 
+    const payload = {
+      method,
+      customer_id: customerId,
+      mode,
+      amount: amt,
+      receipt_date: receiptDate,
+      reference_number: method === "bank" ? referenceNumber || null : null,
+      notes: notes || null,
+      allocations: allocationList,
+    };
+
     startTransition(async () => {
-      const result = await createReceipt({
-        method,
-        customer_id: customerId,
-        mode,
-        amount: amt,
-        receipt_date: receiptDate,
-        reference_number: method === "bank" ? referenceNumber || null : null,
-        notes: notes || null,
-        allocations: allocationList,
-      });
-      if (result?.error) setError(result.error);
+      if (typeof navigator !== "undefined" && !navigator.onLine) {
+        enqueue(userId, "receipt", payload);
+        setOfflineSaved(true);
+        return;
+      }
+      try {
+        const clientId = crypto.randomUUID();
+        const result = await createReceipt({ ...payload, client_id: clientId });
+        if (result?.error) {
+          setError(result.error);
+          return;
+        }
+        router.push(`/accounts/receipts/${result.id}`);
+      } catch {
+        enqueue(userId, "receipt", payload);
+        setOfflineSaved(true);
+      }
     });
+  }
+
+  if (offlineSaved) {
+    return (
+      <div className="rounded-md border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/40 p-4 text-sm text-amber-800 dark:text-amber-300">
+        <p className="font-medium">Saved offline</p>
+        <p className="mt-1">
+          No connection right now - this receipt is queued on this device and will sync automatically once you're
+          back online. You can check its status any time on My Workspace &gt; Sync Status.
+        </p>
+      </div>
+    );
   }
 
   return (

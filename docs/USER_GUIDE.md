@@ -351,8 +351,37 @@ Unlike the Staff Performance and Collection Report screens (which need broader p
 
 ### What's not here yet
 
-The product line entry (used when creating a sale, purchase, or return) is a bit cramped on the narrowest phone screens - still fully usable, just visually tight. There's no offline mode yet either - you need a working internet connection to use the app; that's covered in a later phase.
+The product line entry (used when creating a sale, purchase, or return) is a bit cramped on the narrowest phone screens - still fully usable, just visually tight. There's no offline mode yet either - you need a working internet connection to use the app; that's covered in the next phase.
 
 ---
 
-*More sections will be added here as each phase of the build ships (Realtime Sync + Offline Queue, Security & Performance).*
+## Phase 13: Realtime Sync + Offline Queue
+
+### Screens update live
+
+The main Dashboard, My Workspace, Customer Ledger, Bill-wise Outstanding, Staff Performance, and Collection Report now update on their own within a few seconds whenever someone enters a new sale, receipt, or payment - no need to refresh the page. If you're watching a customer's outstanding balance on one device while a field rep records a receipt against it on another, you'll see it change without doing anything.
+
+### Working with no signal
+
+If your connection drops while you're out on a route, you can still record a **Sales Order**, a **Cash Receipt**, or a **Bank Receipt** - the app saves it on your phone and shows a "Saved offline" message instead of the usual confirmation. As soon as your phone reconnects to the internet, it uploads automatically in the background - you don't need to do anything or resubmit it.
+
+It's safe to try submitting again if you're not sure whether something went through, or if you briefly lose signal mid-save - the app recognizes its own saved items and will never create a duplicate sale or receipt, even if the same one gets uploaded more than once.
+
+### My Workspace > Sync Status
+
+A new screen under My Workspace shows everything currently waiting to upload from your phone, with a status for each:
+
+- **Pending Sync** - saved on your phone, waiting for a connection.
+- **Uploading** - in progress right now.
+- **Synced** - safely saved to the company's records.
+- **Failed - will retry** - couldn't upload yet (rare); the app will keep trying automatically, nothing is lost.
+
+Whenever anything is waiting to sync, you'll also see a small badge with the count next to "My Workspace" in the menu.
+
+### What's not here yet
+
+Cash/Bank Payments, and every back-office screen, still need a live connection - offline saving only covers the three field flows above. You also still need a connection the first time you open a page; only what you submit afterward can be queued while offline.
+
+---
+
+*More sections will be added here as each phase of the build ships (Security & Performance).*
