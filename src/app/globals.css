@@ -18,6 +18,28 @@
     --background: #0a0a0a;
     --foreground: #ededed;
   }
+
+  /* Our <select> elements paint their own dark background/text via Tailwind
+     dark: classes, but that only reliably reaches the closed control - the
+     native dropdown popup (the <option> list) is rendered by the browser/OS
+     as its own layer, which `color-scheme: light dark` leaves ambiguous. The
+     result: light-colored text (styled for a dark control) landing on the
+     browser's default *light* popup background, unreadable. Pinning
+     color-scheme to dark for selects specifically makes the browser paint
+     the whole control - closed state AND popup - as one properly-contrasted
+     dark pair instead of two mismatched halves. */
+  select {
+    color-scheme: dark;
+  }
+
+  /* color-scheme alone isn't enough in every Chromium build to make the
+     native option-list popup itself dark - some still paint it with the
+     OS/browser default light background. Setting explicit colors on
+     <option> is what actually forces the popup to match. */
+  select option {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
 }
 
 body {
