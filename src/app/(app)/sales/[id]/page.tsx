@@ -6,9 +6,17 @@ import { cancelSalesInvoice } from "../actions";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
 import { PrintShareActions } from "@/components/print-share-actions";
-import { DocumentLetterhead } from "@/components/document-letterhead";
+import { TaxInvoiceHeader } from "@/components/tax-invoice-header";
+import { TaxInvoiceFooter } from "@/components/tax-invoice-footer";
+import { amountInWords } from "@/lib/number-to-words";
 
 const PROFIT_VISIBLE_ROLES = ["Admin", "Accountant", "Management"];
+
+function formatDate(iso: string | null): string {
+  if (!iso) return "-";
+  const [y, m, d] = iso.split("-");
+  return `${d}-${m}-${y}`;
+}
 
 export default async function InvoiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -19,15 +27,19 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
   const [{ data: invoice }, { data: items }, { data: company }] = await Promise.all([
     supabase
       .from("sales_invoices")
-      .select("*, customers(name, phone), routes(name), user_profiles(full_name)")
+      .select("*, customers(name, phone, address, state, gstin), routes(name), user_profiles(full_name)")
       .eq("id", id)
       .single(),
     supabase
       .from("sales_invoice_items")
-      .select("*, products(code, name)")
+      .select("*, products(code, name, hsn_code, unit)")
       .eq("invoice_id", id)
       .order("id"),
-    supabase.from("company_settings").select("name, address, gstin, phone, logo_url").limit(1).single(),
+    supabase
+      .from("company_settings")
+      .select("name, address, gstin, phone, state, logo_url, bank_name, bank_account_number, bank_ifsc, invoice_terms")
+      .limit(1)
+      .single(),
   ]);
 
   if (!invoice) notFound();
@@ -36,6 +48,18 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
   const customerLabel = invoice.customers?.name ?? invoice.cash_customer_name ?? "Walk-in";
   const customerPhone = invoice.customers?.phone ?? invoice.cash_customer_phone;
   const shareText = `Invoice ${invoice.invoice_number} for ${customerLabel} - Rs.${Number(invoice.total_amount).toFixed(2)}. Thank you for your business!`;
+  const isInterstate = Number(invoice.igst_total) > 0;
+
+  const gstBreakdown = Object.values(
+    (items ?? []).reduce<Record<string, { rate: number; taxable: number; tax: number }>>((acc, item) => {
+      const rate = Number(item.gst_percent);
+      const key = String(rate);
+      if (!acc[key]) acc[key] = { rate, taxable: 0, tax: 0 };
+      acc[key].taxable += Number(item.taxable_value);
+      acc[key].tax += Number(item.cgst) + Number(item.sgst) + Number(item.igst);
+      return acc;
+    }, {}),
+  ).sort((a, b) => a.rate - b.rate);
 
   return (
     <div>
@@ -51,7 +75,7 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
             {invoice.sale_type === "credit" ? "Credit Sale" : "Cash Sale"} - {invoice.invoice_date}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="no-print flex items-center gap-2">
           {invoice.status === "active" && can(user, "sales", "delete") && (
             <ConfirmButton
               id={invoice.id}
@@ -72,117 +96,127 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
         <PrintShareActions backHref={`/sales/${invoice.sale_type}`} shareText={shareText} phone={customerPhone} />
       </div>
 
-      <DocumentLetterhead company={company} />
-
-      <div className="mt-6 grid grid-cols-2 gap-6 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 text-sm">
-        <div>
-          <p className="text-gray-500 dark:text-gray-400">Customer</p>
-          <p className="font-medium text-gray-900 dark:text-gray-100">{customerLabel}</p>
-        </div>
-        <div>
-          <p className="text-gray-500 dark:text-gray-400">Route</p>
-          <p className="font-medium text-gray-900 dark:text-gray-100">{invoice.routes?.name ?? "-"}</p>
-        </div>
-        <div>
-          <p className="text-gray-500 dark:text-gray-400">Sales staff</p>
-          <p className="font-medium text-gray-900 dark:text-gray-100">{invoice.user_profiles?.full_name ?? "-"}</p>
-        </div>
+      {/* Internal-only info not part of the printed document */}
+      <div className="no-print mt-4 flex gap-6 text-sm text-gray-500 dark:text-gray-400">
+        <span>
+          Route: <span className="font-medium text-gray-900 dark:text-gray-100">{invoice.routes?.name ?? "-"}</span>
+        </span>
         {invoice.sale_type === "credit" && (
-          <div>
-            <p className="text-gray-500 dark:text-gray-400">Due date</p>
-            <p className="font-medium text-gray-900 dark:text-gray-100">{invoice.due_date ?? "-"}</p>
-          </div>
+          <span>
+            Due date: <span className="font-medium text-gray-900 dark:text-gray-100">{invoice.due_date ?? "-"}</span>
+          </span>
         )}
       </div>
 
-      <div className="mt-6 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-        <table className="w-full text-left text-sm">
-          <thead className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 text-xs uppercase text-gray-500 dark:text-gray-400">
+      <div className="mt-4">
+        <TaxInvoiceHeader
+          company={company}
+          docLabel="Tax Invoice"
+          docNumber={invoice.invoice_number}
+          docDate={formatDate(invoice.invoice_date)}
+          party={{
+            name: customerLabel,
+            address: invoice.customers?.address ?? null,
+            phone: customerPhone ?? null,
+            state: invoice.customers?.state ?? null,
+            gstin: invoice.customers?.gstin ?? null,
+          }}
+          staffName={invoice.user_profiles?.full_name}
+          remarks={invoice.notes}
+        />
+      </div>
+
+      <div className="mt-4 overflow-hidden rounded-lg border border-gray-300 bg-white">
+        <table className="w-full text-left text-xs">
+          <thead className="border-b border-gray-300 bg-gray-50 uppercase text-gray-600">
             <tr>
-              <th className="px-4 py-2 font-medium">Product</th>
-              <th className="px-4 py-2 font-medium">Qty</th>
-              <th className="px-4 py-2 font-medium">Rate</th>
-              <th className="px-4 py-2 font-medium">Disc %</th>
-              <th className="px-4 py-2 font-medium">Taxable</th>
-              <th className="px-4 py-2 font-medium">GST</th>
-              <th className="px-4 py-2 font-medium">Total</th>
-              {canSeeProfit && <th className="no-print px-4 py-2 font-medium">Profit</th>}
+              <th className="px-2 py-2 font-medium">SI</th>
+              <th className="px-2 py-2 font-medium">Description of Goods</th>
+              <th className="px-2 py-2 font-medium">HSN</th>
+              <th className="px-2 py-2 font-medium">Qty</th>
+              <th className="px-2 py-2 font-medium">Price</th>
+              <th className="px-2 py-2 font-medium">Disc Amt</th>
+              <th className="px-2 py-2 font-medium">Net Value</th>
+              {isInterstate ? (
+                <th className="px-2 py-2 font-medium">IGST</th>
+              ) : (
+                <>
+                  <th className="px-2 py-2 font-medium">CGST</th>
+                  <th className="px-2 py-2 font-medium">SGST</th>
+                </>
+              )}
+              <th className="px-2 py-2 font-medium">Total</th>
+              {canSeeProfit && <th className="no-print px-2 py-2 font-medium">Profit</th>}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {(items ?? []).map((item) => (
-              <tr key={item.id}>
-                <td className="px-4 py-2 text-gray-900 dark:text-gray-100">
-                  {item.products?.code} - {item.products?.name}
-                </td>
-                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{item.quantity}</td>
-                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{Number(item.rate).toFixed(2)}</td>
-                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{item.discount_percent}</td>
-                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{Number(item.taxable_value).toFixed(2)}</td>
-                <td className="px-4 py-2 text-gray-500 dark:text-gray-400">
-                  {(Number(item.cgst) + Number(item.sgst) + Number(item.igst)).toFixed(2)}
-                </td>
-                <td className="px-4 py-2 text-gray-900 dark:text-gray-100">{Number(item.line_total).toFixed(2)}</td>
-                {canSeeProfit && (
-                  <td className="no-print px-4 py-2 text-gray-500 dark:text-gray-400">{Number(item.profit_amount).toFixed(2)}</td>
-                )}
-              </tr>
-            ))}
+          <tbody className="divide-y divide-gray-100 text-gray-900">
+            {(items ?? []).map((item, i) => {
+              const discAmt = Number(item.quantity) * Number(item.rate) - Number(item.taxable_value);
+              return (
+                <tr key={item.id}>
+                  <td className="px-2 py-2">{i + 1}</td>
+                  <td className="px-2 py-2">
+                    {item.products?.code} - {item.products?.name}
+                  </td>
+                  <td className="px-2 py-2">{item.products?.hsn_code ?? "-"}</td>
+                  <td className="px-2 py-2">
+                    {item.quantity} {item.products?.unit ?? ""}
+                  </td>
+                  <td className="px-2 py-2">{Number(item.rate).toFixed(2)}</td>
+                  <td className="px-2 py-2">{discAmt.toFixed(2)}</td>
+                  <td className="px-2 py-2">{Number(item.taxable_value).toFixed(2)}</td>
+                  {isInterstate ? (
+                    <td className="px-2 py-2">
+                      {Number(item.gst_percent).toFixed(0)}% / {Number(item.igst).toFixed(2)}
+                    </td>
+                  ) : (
+                    <>
+                      <td className="px-2 py-2">
+                        {(Number(item.gst_percent) / 2).toFixed(1)}% / {Number(item.cgst).toFixed(2)}
+                      </td>
+                      <td className="px-2 py-2">
+                        {(Number(item.gst_percent) / 2).toFixed(1)}% / {Number(item.sgst).toFixed(2)}
+                      </td>
+                    </>
+                  )}
+                  <td className="px-2 py-2 font-medium">{Number(item.line_total).toFixed(2)}</td>
+                  {canSeeProfit && (
+                    <td className="no-print px-2 py-2 text-gray-500">{Number(item.profit_amount).toFixed(2)}</td>
+                  )}
+                </tr>
+              );
+            })}
           </tbody>
+          <tfoot className="border-t border-gray-300 font-semibold text-gray-900">
+            <tr>
+              <td colSpan={6} className="px-2 py-2 text-right">
+                Total
+              </td>
+              <td className="px-2 py-2">{Number(invoice.taxable_total).toFixed(2)}</td>
+              <td className="px-2 py-2" colSpan={isInterstate ? 1 : 2}>
+                {(Number(invoice.cgst_total) + Number(invoice.sgst_total) + Number(invoice.igst_total)).toFixed(2)}
+              </td>
+              <td className="px-2 py-2">{Number(invoice.total_amount).toFixed(2)}</td>
+              {canSeeProfit && <td className="no-print px-2 py-2">{Number(invoice.profit_total).toFixed(2)}</td>}
+            </tr>
+          </tfoot>
         </table>
       </div>
 
-      <div className="mt-4 flex justify-end">
-        <div className="w-72 rounded-md bg-gray-50 dark:bg-gray-950 p-3 text-sm">
-          <div className="flex justify-between">
-            <span className="text-gray-500 dark:text-gray-400">Subtotal</span>
-            <span>{Number(invoice.subtotal).toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500 dark:text-gray-400">Discount</span>
-            <span>{Number(invoice.discount_total).toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500 dark:text-gray-400">Taxable</span>
-            <span>{Number(invoice.taxable_total).toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500 dark:text-gray-400">CGST</span>
-            <span>{Number(invoice.cgst_total).toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500 dark:text-gray-400">SGST</span>
-            <span>{Number(invoice.sgst_total).toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500 dark:text-gray-400">IGST</span>
-            <span>{Number(invoice.igst_total).toFixed(2)}</span>
-          </div>
-          <div className="mt-1 flex justify-between border-t border-gray-200 dark:border-gray-800 pt-1 font-semibold">
-            <span>Total</span>
-            <span>{Number(invoice.total_amount).toFixed(2)}</span>
-          </div>
-          {canSeeProfit && (
-            <div className="no-print mt-1 flex justify-between border-t border-gray-200 dark:border-gray-800 pt-1">
-              <span className="text-gray-500 dark:text-gray-400">Profit</span>
-              <span>
-                {Number(invoice.profit_total).toFixed(2)} (
-                {invoice.cost_total > 0
-                  ? ((Number(invoice.profit_total) / Number(invoice.cost_total)) * 100).toFixed(1)
-                  : "0"}
-                %)
-              </span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {invoice.notes && (
-        <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
-          <span className="font-medium text-gray-700 dark:text-gray-300">Notes: </span>
-          {invoice.notes}
+      {canSeeProfit && (
+        <p className="no-print mt-2 text-sm text-gray-500 dark:text-gray-400">
+          Profit: {Number(invoice.profit_total).toFixed(2)} (
+          {invoice.cost_total > 0 ? ((Number(invoice.profit_total) / Number(invoice.cost_total)) * 100).toFixed(1) : "0"}
+          %)
         </p>
       )}
+
+      <TaxInvoiceFooter
+        company={company}
+        amountWords={amountInWords(Number(invoice.total_amount))}
+        gstBreakdown={gstBreakdown}
+        totalAmount={Number(invoice.total_amount)}
+      />
     </div>
   );
 }
