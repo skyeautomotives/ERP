@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import type { RouteFormState } from "./actions";
 import type { Database } from "@/lib/supabase/database.types";
 
@@ -23,16 +23,50 @@ export function RouteForm({
 }) {
   const [state, formAction, pending] = useActionState(action, initialState);
   const selectedDays = new Set(route?.route_days ?? []);
+  const isNew = !route;
+  const [isEditing, setIsEditing] = useState(isNew);
+  const wasSubmitting = useRef(false);
+
+  useEffect(() => {
+    if (pending) wasSubmitting.current = true;
+    if (!pending && wasSubmitting.current && !state.error) {
+      wasSubmitting.current = false;
+      if (!isNew) setIsEditing(false);
+    }
+  }, [pending, state, isNew]);
+
+  const fieldsDisabled = !canEdit || (!isNew && !isEditing);
 
   return (
-    <form action={formAction} className="max-w-lg space-y-4">
+    <form key={isEditing ? "edit" : "view"} action={formAction} className="max-w-lg space-y-4">
+      {!isNew && canEdit && (
+        <div className="flex justify-end">
+          {isEditing ? (
+            <button
+              type="button"
+              onClick={() => setIsEditing(false)}
+              className="rounded-md px-3 py-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              Cancel
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setIsEditing(true)}
+              className="rounded-md border border-gray-300 dark:border-gray-700 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+            >
+              Edit
+            </button>
+          )}
+        </div>
+      )}
       <div>
         <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Route name</label>
         <input
           name="name"
           required
           defaultValue={route?.name ?? ""}
-          disabled={!canEdit}
+          disabled={fieldsDisabled}
           autoComplete="off"
           className="w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-500 dark:disabled:text-gray-500"
         />
@@ -43,7 +77,7 @@ export function RouteForm({
         <input
           name="area"
           defaultValue={route?.area ?? ""}
-          disabled={!canEdit}
+          disabled={fieldsDisabled}
           autoComplete="off"
           className="w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-500 dark:disabled:text-gray-500"
         />
@@ -54,7 +88,7 @@ export function RouteForm({
         <select
           name="assigned_user_id"
           defaultValue={route?.assigned_user_id ?? ""}
-          disabled={!canEdit}
+          disabled={fieldsDisabled}
           className="w-full rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm disabled:bg-gray-50 dark:disabled:bg-gray-800"
         >
           <option value="">Unassigned</option>
@@ -76,7 +110,7 @@ export function RouteForm({
                 name="route_days"
                 value={day}
                 defaultChecked={selectedDays.has(day)}
-                disabled={!canEdit}
+                disabled={fieldsDisabled}
               />
               {day}
             </label>
@@ -86,7 +120,7 @@ export function RouteForm({
 
       {state.error && <p className="rounded-md bg-red-50 dark:bg-red-950/40 px-3 py-2 text-sm text-red-700 dark:text-red-400">{state.error}</p>}
 
-      {canEdit && (
+      {canEdit && (isNew || isEditing) && (
         <button
           type="submit"
           disabled={pending}

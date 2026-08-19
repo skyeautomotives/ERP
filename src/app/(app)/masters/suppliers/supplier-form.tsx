@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import type { SupplierFormState } from "./actions";
 import type { Database } from "@/lib/supabase/database.types";
 
@@ -48,19 +48,53 @@ export function SupplierForm({
   canEdit: boolean;
 }) {
   const [state, formAction, pending] = useActionState(action, initialState);
+  const isNew = !supplier;
+  const [isEditing, setIsEditing] = useState(isNew);
+  const wasSubmitting = useRef(false);
+
+  useEffect(() => {
+    if (pending) wasSubmitting.current = true;
+    if (!pending && wasSubmitting.current && !state.error) {
+      wasSubmitting.current = false;
+      if (!isNew) setIsEditing(false);
+    }
+  }, [pending, state, isNew]);
+
+  const fieldsDisabled = !canEdit || (!isNew && !isEditing);
 
   return (
-    <form action={formAction} className="space-y-4">
-      <Field label="Supplier name" name="name" defaultValue={supplier?.name} disabled={!canEdit} required />
-      <Field label="Address" name="address" defaultValue={supplier?.address} disabled={!canEdit} />
+    <form key={isEditing ? "edit" : "view"} action={formAction} className="space-y-4">
+      {!isNew && canEdit && (
+        <div className="flex justify-end">
+          {isEditing ? (
+            <button
+              type="button"
+              onClick={() => setIsEditing(false)}
+              className="rounded-md px-3 py-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              Cancel
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setIsEditing(true)}
+              className="rounded-md border border-gray-300 dark:border-gray-700 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+            >
+              Edit
+            </button>
+          )}
+        </div>
+      )}
+      <Field label="Supplier name" name="name" defaultValue={supplier?.name} disabled={fieldsDisabled} required />
+      <Field label="Address" name="address" defaultValue={supplier?.address} disabled={fieldsDisabled} />
 
       <div className="grid grid-cols-3 gap-4">
-        <Field label="Phone" name="phone" defaultValue={supplier?.phone} disabled={!canEdit} />
-        <Field label="GSTIN" name="gstin" defaultValue={supplier?.gstin} disabled={!canEdit} />
-        <Field label="State" name="state" defaultValue={supplier?.state} disabled={!canEdit} />
+        <Field label="Phone" name="phone" defaultValue={supplier?.phone} disabled={fieldsDisabled} />
+        <Field label="GSTIN" name="gstin" defaultValue={supplier?.gstin} disabled={fieldsDisabled} />
+        <Field label="State" name="state" defaultValue={supplier?.state} disabled={fieldsDisabled} />
       </div>
 
-      <Field label="Contact person" name="contact_person" defaultValue={supplier?.contact_person} disabled={!canEdit} />
+      <Field label="Contact person" name="contact_person" defaultValue={supplier?.contact_person} disabled={fieldsDisabled} />
 
       <div className="grid grid-cols-2 gap-4">
         <Field
@@ -68,14 +102,14 @@ export function SupplierForm({
           name="credit_period_days"
           type="number"
           defaultValue={supplier?.credit_period_days}
-          disabled={!canEdit}
+          disabled={fieldsDisabled}
         />
         <Field
           label="Opening balance"
           name="opening_balance"
           type="number"
           defaultValue={supplier?.opening_balance}
-          disabled={!canEdit}
+          disabled={fieldsDisabled}
         />
       </div>
 
@@ -84,7 +118,7 @@ export function SupplierForm({
         <select
           name="opening_balance_type"
           defaultValue={supplier?.opening_balance_type ?? "credit"}
-          disabled={!canEdit}
+          disabled={fieldsDisabled}
           className="w-full max-w-xs rounded-md border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm disabled:bg-gray-50 dark:disabled:bg-gray-800"
         >
           <option value="debit">Debit</option>
@@ -93,19 +127,19 @@ export function SupplierForm({
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        <Field label="Bank name" name="bank_name" defaultValue={supplier?.bank_name} disabled={!canEdit} />
+        <Field label="Bank name" name="bank_name" defaultValue={supplier?.bank_name} disabled={fieldsDisabled} />
         <Field
           label="Account number"
           name="bank_account_number"
           defaultValue={supplier?.bank_account_number}
-          disabled={!canEdit}
+          disabled={fieldsDisabled}
         />
-        <Field label="IFSC" name="bank_ifsc" defaultValue={supplier?.bank_ifsc} disabled={!canEdit} />
+        <Field label="IFSC" name="bank_ifsc" defaultValue={supplier?.bank_ifsc} disabled={fieldsDisabled} />
       </div>
 
       {state.error && <p className="rounded-md bg-red-50 dark:bg-red-950/40 px-3 py-2 text-sm text-red-700 dark:text-red-400">{state.error}</p>}
 
-      {canEdit && (
+      {canEdit && (isNew || isEditing) && (
         <button
           type="submit"
           disabled={pending}
