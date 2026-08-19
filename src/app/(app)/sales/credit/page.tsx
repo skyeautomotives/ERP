@@ -46,7 +46,7 @@ export default async function CreditSalesPage({
         </div>
         {can(user, "sales", "create") && (
           <Link
-            href="/sales/credit/new"
+            href="/sales/new?type=credit"
             className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
           >
             New credit sale

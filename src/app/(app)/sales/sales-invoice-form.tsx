@@ -18,18 +18,19 @@ type Option = { id: string; label: string };
 const emptyItem = (): LineItem => ({ product_id: "", quantity: 0, rate: 0, discount_percent: 0, gst_percent: 0 });
 
 export function SalesInvoiceForm({
-  saleType,
+  initialSaleType,
   customers,
   routes,
   staff,
   products,
 }: {
-  saleType: "credit" | "cash";
+  initialSaleType: "credit" | "cash";
   customers: CustomerOption[];
   routes: Option[];
   staff: Option[];
   products: ProductOption[];
 }) {
+  const [saleType, setSaleType] = useState<"credit" | "cash">(initialSaleType);
   const [customerId, setCustomerId] = useState<string>("");
   const [customerOptions, setCustomerOptions] = useState<CustomerOption[]>(customers);
   const [productOptions, setProductOptions] = useState<ProductOption[]>(products);
@@ -129,6 +130,34 @@ export function SalesInvoiceForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Sale type</label>
+        <div className="inline-flex rounded-md border border-gray-300 dark:border-gray-700 p-1">
+          <button
+            type="button"
+            onClick={() => setSaleType("credit")}
+            className={`rounded px-4 py-1.5 text-sm font-medium ${
+              saleType === "credit"
+                ? "bg-blue-600 text-white"
+                : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+            }`}
+          >
+            Credit
+          </button>
+          <button
+            type="button"
+            onClick={() => setSaleType("cash")}
+            className={`rounded px-4 py-1.5 text-sm font-medium ${
+              saleType === "cash"
+                ? "bg-blue-600 text-white"
+                : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+            }`}
+          >
+            Cash
+          </button>
+        </div>
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Customer</label>

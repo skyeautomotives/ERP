@@ -65,7 +65,7 @@ test.afterAll(async () => {
 });
 
 test("credit sale creates a correctly-totalled invoice with profit", async ({ page }) => {
-  await page.goto("/sales/credit/new");
+  await page.goto("/sales/new?type=credit");
   await page.selectOption('select[name="customer_id"]', customerId);
   await page.selectOption('select[name="staff_id"]', staffId);
   await page.selectOption('select[name="line_product_id"]', productId);
@@ -95,7 +95,7 @@ test("credit sale creates a correctly-totalled invoice with profit", async ({ pa
 });
 
 test("cash sale for a walk-in customer", async ({ page }) => {
-  await page.goto("/sales/cash/new");
+  await page.goto("/sales/new?type=cash");
   await page.selectOption('select[name="staff_id"]', staffId);
   await page.fill('input[name="cash_customer_name"]', tag("Walkin"));
   await page.selectOption('select[name="line_product_id"]', productId);
@@ -242,7 +242,7 @@ test("last price shows the previous sale of this product to this customer", asyn
   if (invErr) throw invErr;
   createdInvoiceIds.push(invoiceId);
 
-  await page.goto("/sales/credit/new");
+  await page.goto("/sales/new?type=credit");
   await page.selectOption('select[name="customer_id"]', customerId);
   await page.selectOption('select[name="line_product_id"]', productId);
 
@@ -254,7 +254,7 @@ test("a brand-new customer can be created inline from Sales Entry and used in th
   const db = await dbClient();
   const newName = tag(`Inline Customer ${Date.now()}`);
 
-  await page.goto("/sales/credit/new");
+  await page.goto("/sales/new?type=credit");
   await page.selectOption('select[name="staff_id"]', staffId);
 
   await page.getByRole("button", { name: "+ New", exact: true }).click();
