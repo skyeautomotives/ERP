@@ -5,6 +5,8 @@ import { ConfirmButton } from "@/components/confirm-button";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
 import { cancelReceipt } from "../actions";
+import { PrintShareActions } from "@/components/print-share-actions";
+import { DocumentLetterhead } from "@/components/document-letterhead";
 
 export default async function ReceiptDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -12,15 +14,18 @@ export default async function ReceiptDetailPage({ params }: { params: Promise<{ 
   if (!can(user, "accounts", "view")) redirect("/unauthorized");
 
   const supabase = await createClient();
-  const [{ data: receipt }, { data: allocations }] = await Promise.all([
+  const [{ data: receipt }, { data: allocations }, { data: company }] = await Promise.all([
     supabase.from("receipts").select("*, customers(name, phone)").eq("id", id).single(),
     supabase
       .from("receipt_allocations")
       .select("amount_allocated, sales_invoices(invoice_number, total_amount)")
       .eq("receipt_id", id),
+    supabase.from("company_settings").select("name, address, gstin, phone, logo_url").limit(1).single(),
   ]);
 
   if (!receipt) notFound();
+
+  const shareText = `Receipt ${receipt.receipt_number} from ${receipt.customers?.name ?? "customer"} - Rs.${Number(receipt.amount).toFixed(2)} received. Thank you!`;
 
   return (
     <div>
@@ -28,7 +33,9 @@ export default async function ReceiptDetailPage({ params }: { params: Promise<{ 
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{receipt.receipt_number}</h1>
-            <HelpButton content={HELP_CONTENT["receipts"]} />
+            <span className="no-print">
+              <HelpButton content={HELP_CONTENT["receipts"]} />
+            </span>
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             {receipt.method === "cash" ? "Cash Receipt" : "Bank Receipt"} - {receipt.receipt_date}
@@ -50,6 +57,12 @@ export default async function ReceiptDetailPage({ params }: { params: Promise<{ 
           </span>
         )}
       </div>
+
+      <div className="mt-4">
+        <PrintShareActions backHref={`/accounts/receipts/${receipt.method}`} shareText={shareText} phone={receipt.customers?.phone} />
+      </div>
+
+      <DocumentLetterhead company={company} />
 
       <div className="mt-6 grid grid-cols-2 gap-6 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 text-sm">
         <div>

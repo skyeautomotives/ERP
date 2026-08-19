@@ -7,7 +7,7 @@ export function SidebarShell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-4 py-3 lg:hidden">
+      <div className="no-print flex items-center justify-between border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-4 py-3 lg:hidden">
         <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Skye ERP</p>
         <button
           type="button"

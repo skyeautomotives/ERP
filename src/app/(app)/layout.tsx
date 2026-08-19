@@ -58,7 +58,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <div className="flex min-h-screen flex-col lg:flex-row">
       <OfflineSyncManager userId={user.id} />
       <SidebarShell>
-      <aside className="flex h-full w-60 shrink-0 flex-col overflow-y-auto border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 lg:sticky lg:top-0 lg:h-screen">
+      <aside className="no-print flex h-full w-60 shrink-0 flex-col overflow-y-auto border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 lg:sticky lg:top-0 lg:h-screen">
         <div className="border-b border-gray-200 dark:border-gray-800 px-4 py-4">
           <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Skye ERP</p>
           <p className="mt-0.5 truncate text-xs text-gray-500 dark:text-gray-400">{user.fullName}</p>

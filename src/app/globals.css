@@ -47,3 +47,54 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Printable invoices/receipts/etc: hide app chrome (sidebar, buttons) and
+   force a plain light page regardless of the app's dark mode. Printable
+   content itself is built with plain always-light classes (no dark:
+   variants) rather than relying on this override to win against every
+   scattered per-element dark: rule - see PrintShareActions/letterhead
+   components. */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  @page {
+    margin: 12mm;
+  }
+
+  html, body {
+    background: #ffffff !important;
+    color: #111827 !important;
+  }
+
+  /* Printing while the OS/browser is in dark mode leaves both this block and
+     Tailwind's dark-mode media query active at once - ordinary print rules
+     for the page background don't reach classes on individual cards/tables
+     that still resolve their own dark-mode background/text rules. Tailwind's
+     class names are literal strings in the rendered class attribute, so an
+     attribute selector on the exact class name reliably wins here (it's
+     declared after Tailwind's own output in this file, and !important
+     forces it regardless of source order). This targets the small, fixed
+     set of dark-surface classes actually used across the app's cards and
+     tables, not a general override of every dark-mode class. */
+  [class*="dark:bg-gray-800"],
+  [class*="dark:bg-gray-900"],
+  [class*="dark:bg-gray-950"] {
+    background-color: #ffffff !important;
+  }
+  [class*="dark:text-gray-100"],
+  [class*="dark:text-gray-200"],
+  [class*="dark:text-gray-300"] {
+    color: #111827 !important;
+  }
+  [class*="dark:text-gray-400"],
+  [class*="dark:text-gray-500"] {
+    color: #6b7280 !important;
+  }
+  [class*="dark:border-gray-700"],
+  [class*="dark:border-gray-800"],
+  [class*="dark:border-gray-900"] {
+    border-color: #e5e7eb !important;
+  }
+}

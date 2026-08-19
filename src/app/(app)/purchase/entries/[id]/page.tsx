@@ -6,6 +6,8 @@ import { cancelPurchaseInvoice } from "../actions";
 import { VerificationPanel } from "../verification-panel";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
+import { PrintShareActions } from "@/components/print-share-actions";
+import { DocumentLetterhead } from "@/components/document-letterhead";
 
 export default async function PurchaseDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -13,7 +15,7 @@ export default async function PurchaseDetailPage({ params }: { params: Promise<{
   if (!can(user, "purchase", "view")) redirect("/unauthorized");
 
   const supabase = await createClient();
-  const [{ data: invoice }, { data: items }, { data: verification }] = await Promise.all([
+  const [{ data: invoice }, { data: items }, { data: verification }, { data: company }] = await Promise.all([
     supabase
       .from("purchase_invoices")
       .select("*, suppliers(name, phone)")
@@ -25,9 +27,12 @@ export default async function PurchaseDetailPage({ params }: { params: Promise<{
       .eq("invoice_id", id)
       .order("id"),
     supabase.from("purchase_verifications").select("*").eq("purchase_invoice_id", id).maybeSingle(),
+    supabase.from("company_settings").select("name, address, gstin, phone, logo_url").limit(1).single(),
   ]);
 
   if (!invoice) notFound();
+
+  const shareText = `Purchase ${invoice.our_reference_number} (supplier invoice ${invoice.supplier_invoice_number}) - Rs.${Number(invoice.total_amount).toFixed(2)}.`;
 
   return (
     <div>
@@ -35,7 +40,9 @@ export default async function PurchaseDetailPage({ params }: { params: Promise<{
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{invoice.our_reference_number}</h1>
-            <HelpButton content={HELP_CONTENT["purchase-entries"]} />
+            <span className="no-print">
+              <HelpButton content={HELP_CONTENT["purchase-entries"]} />
+            </span>
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Supplier invoice {invoice.supplier_invoice_number} - {invoice.supplier_invoice_date}
@@ -57,6 +64,12 @@ export default async function PurchaseDetailPage({ params }: { params: Promise<{
           </span>
         )}
       </div>
+
+      <div className="mt-4">
+        <PrintShareActions backHref="/purchase/entries" shareText={shareText} phone={invoice.suppliers?.phone} />
+      </div>
+
+      <DocumentLetterhead company={company} />
 
       {invoice.duplicate_override && (
         <p className="mt-2 rounded-md bg-yellow-50 dark:bg-yellow-950/40 px-3 py-2 text-xs text-yellow-800 dark:text-yellow-400">
@@ -142,7 +155,7 @@ export default async function PurchaseDetailPage({ params }: { params: Promise<{
           )}
         </div>
 
-        <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6">
+        <div className="no-print rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6">
           <VerificationPanel
             invoiceId={invoice.id}
             verification={verification}

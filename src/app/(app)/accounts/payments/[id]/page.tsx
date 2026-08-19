@@ -5,6 +5,8 @@ import { ConfirmButton } from "@/components/confirm-button";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
 import { cancelPayment } from "../actions";
+import { PrintShareActions } from "@/components/print-share-actions";
+import { DocumentLetterhead } from "@/components/document-letterhead";
 
 const PURPOSE_LABELS: Record<string, string> = {
   supplier: "Supplier bill payment",
@@ -18,15 +20,19 @@ export default async function PaymentDetailPage({ params }: { params: Promise<{ 
   if (!can(user, "accounts", "view")) redirect("/unauthorized");
 
   const supabase = await createClient();
-  const [{ data: payment }, { data: allocations }] = await Promise.all([
-    supabase.from("payments").select("*, suppliers(name), expense_categories(name)").eq("id", id).single(),
+  const [{ data: payment }, { data: allocations }, { data: company }] = await Promise.all([
+    supabase.from("payments").select("*, suppliers(name, phone), expense_categories(name)").eq("id", id).single(),
     supabase
       .from("payment_allocations")
       .select("amount_allocated, purchase_invoices(our_reference_number, total_amount)")
       .eq("payment_id", id),
+    supabase.from("company_settings").select("name, address, gstin, phone, logo_url").limit(1).single(),
   ]);
 
   if (!payment) notFound();
+
+  const payeeLabel = payment.suppliers?.name ?? payment.expense_categories?.name ?? payment.paid_to ?? "recipient";
+  const shareText = `Payment ${payment.payment_number} to ${payeeLabel} - Rs.${Number(payment.amount).toFixed(2)}.`;
 
   return (
     <div>
@@ -34,7 +40,9 @@ export default async function PaymentDetailPage({ params }: { params: Promise<{ 
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{payment.payment_number}</h1>
-            <HelpButton content={HELP_CONTENT["payments"]} />
+            <span className="no-print">
+              <HelpButton content={HELP_CONTENT["payments"]} />
+            </span>
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             {payment.method === "cash" ? "Cash Payment" : "Bank Payment"} - {payment.payment_date}
@@ -56,6 +64,12 @@ export default async function PaymentDetailPage({ params }: { params: Promise<{ 
           </span>
         )}
       </div>
+
+      <div className="mt-4">
+        <PrintShareActions backHref={`/accounts/payments/${payment.method}`} shareText={shareText} phone={payment.suppliers?.phone} />
+      </div>
+
+      <DocumentLetterhead company={company} />
 
       <div className="mt-6 grid grid-cols-2 gap-6 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 text-sm">
         <div>
