@@ -83,17 +83,21 @@ Before creating your first sale, set your company's **State** on **Settings > Co
 
 ### Credit Sales and Cash Sales
 
-**Sales > Credit Sales** or **Sales > Cash Sales > New...**. Pick a customer (for cash sales, you can also leave it as a walk-in and just type a name), route, and the sales staff member. Add one or more product lines - pick a product, enter quantity, rate, and any discount %.
+Credit and cash sales are recorded on the same screen now - **Sales > Credit Sales** or **Sales > Cash Sales**, then **New credit sale** / **New cash sale** (both buttons open the same form, just starting on the matching tab). At the top, a **Credit / Cash** switch lets you change your mind before saving without starting over. Pick a customer (for cash sales, you can also leave it as a walk-in and just type a name), route, and the sales staff member. Add one or more product lines - pick a product, enter quantity, rate, discount %, and GST % (GST fills in from the product automatically but can be changed for this one line if it's genuinely different for this sale - a note appears when it's been changed from the product's usual rate).
 
 As soon as you pick a product for a customer who's bought it before, the screen shows **what that customer was last charged** for it - the price, date, and invoice number - so you always know the previous price before typing in today's price.
 
 GST, totals, and (for Admin/Accountant/Management users) profit are calculated automatically. Sales Staff accounts don't see cost/profit figures, by design.
 
-Invoice numbers are assigned automatically and never repeat, even if two people are billing at the same time.
+Invoice numbers are assigned automatically and never repeat, even if two people are billing at the same time. The Credit Sales and Cash Sales lists themselves stay separate, since only credit sales carry a balance still owed.
 
 ### Sales Orders
 
-**Sales > Sales Orders > New sales order**. Use this for a customer's order that isn't a final bill yet - same product-line entry as above, but nothing is charged and stock isn't affected until you convert it. Open a pending order and click **Convert to invoice** to turn it into a real credit sale (this is when stock actually decreases and GST/profit are calculated).
+**Sales > Sales Orders > New sales order**. Use this for a customer's order that isn't a final bill yet - same product-line entry as above, but nothing is charged and stock isn't affected until you convert it. Each order gets its own number (SO0001, SO0002, ...) and a History panel showing every status change, same as other records.
+
+Open a pending order and click **Convert to invoice** to turn it into a real sale (this is when stock actually decreases and GST/profit are calculated) - it becomes a credit sale by default.
+
+To convert several orders at once, go to **Sales > Credit Sales** (or Cash Sales) and click **New credit sale**, then **Import from Sales Order** at the top. This opens a list of every order still waiting to be billed - tick the ones you want, choose Cash or Credit for each one individually (a sales rep who took orders on a route visit might have some paid on the spot and some to bill later), preview the products on any order before deciding, then convert them all together. You'll see a link to each new invoice once it's done.
 
 ### Cancelling an invoice
 
@@ -420,6 +424,29 @@ It's safe to upload the same file again later, e.g. after adding more to it in t
 **Export**: click **Export current data** to download everything currently in Skye ERP (customers, products, current stock, current outstanding) in this same file format - useful as a backup, or as a starting point you can edit and re-import.
 
 This is how the business's real customer/product list was first loaded into Skye ERP - all 382 customers and 397 products came in through this exact feature.
+
+---
+
+## Deleting a customer, supplier, product, or route
+
+Every master-data detail page (Customers, Suppliers, Products, Routes, and Expense Categories) now has a **Delete** button next to Deactivate. A confirmation box asks you to make sure before anything happens - the same confirmation now appears for every "Cancel" button throughout the app too (invoices, receipts, payments, orders), not just delete.
+
+Delete only works on a record that's never been used in any transaction - if you try to delete a customer/supplier/product that has invoices, purchases, or stock history against it, you'll see a message explaining that and suggesting Deactivate instead (which hides it from new entries without touching its history). This protects your records, not a bug.
+
+## View first, then Edit
+
+Customer, Supplier, Product, and Route detail pages, plus Settings > Company, now open in a read-only view instead of being editable the instant you click into them. Click **Edit** to make changes, **Cancel** to discard them and go back to what was saved, or **Save** to keep them - after saving you're returned to the view.
+
+## Printing and sharing an invoice, receipt, or payment
+
+Every invoice, purchase, receipt, and payment detail page now has three buttons at the top: **Back to list**, **Print / Save as PDF**, and **Share to WhatsApp**.
+
+- **Print / Save as PDF** opens your browser's normal print dialog with a clean copy of the document (no menu, no buttons) - choose "Save as PDF" as the destination if you want a file instead of a printout. Your company name, address, and GSTIN (from Settings > Company) now appear at the top of every printed document.
+- **Share to WhatsApp** opens WhatsApp with a message already typed out (the document number, who it's for, and the amount) - on a phone this opens the WhatsApp app directly; on a computer it opens WhatsApp Web. WhatsApp doesn't allow a webpage to attach a file automatically, so if you want to send the actual PDF, print/save it first with the button above, then attach it in WhatsApp yourself.
+
+## A visible Back button, everywhere
+
+Every screen except the two main dashboards now has a **Back** button at the top - no need to hunt through the sidebar to get back to where you came from.
 
 ---
 
