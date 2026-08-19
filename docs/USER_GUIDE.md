@@ -448,6 +448,12 @@ Every invoice, purchase, receipt, and payment detail page now has three buttons 
 
 Every screen except the two main dashboards now has a **Back** button at the top - no need to hunt through the sidebar to get back to where you came from.
 
+## The sales invoice now matches your real paper format
+
+The printed/on-screen sales invoice was rebuilt to match your business's actual invoice layout: GSTIN and State/State Code in the corners, your company name and address centered at the top, a "TAX INVOICE" label, then the customer's full details (name, address, mobile, state, state code, GSTIN), a line-item table with HSN codes, and at the bottom the amount in words, a GST-rate breakdown, your bank details, and a signature line.
+
+Your company's real GSTIN, address, phone, and bank details (from your invoice) have been filled in under **Settings > Company** - check that everything there is correct, since it now prints on every invoice. This also means GST now correctly splits into IGST for an out-of-state sale (it was silently always computing as CGST+SGST before, since the company's state hadn't been set).
+
 ---
 
 *All 14 planned phases are complete; this and future sections cover post-launch changes made at the user's request.*
