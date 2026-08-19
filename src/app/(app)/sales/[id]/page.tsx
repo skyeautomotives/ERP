@@ -15,7 +15,7 @@ const PROFIT_VISIBLE_ROLES = ["Admin", "Accountant", "Management"];
 function formatDate(iso: string | null): string {
   if (!iso) return "-";
   const [y, m, d] = iso.split("-");
-  return `${d}-${m}-${y}`;
+  return `${d}/${m}/${y}`;
 }
 
 export default async function InvoiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -63,19 +63,9 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{invoice.invoice_number}</h1>
-            <span className="no-print">
-              <HelpButton content={HELP_CONTENT["sales-invoice-detail"]} />
-            </span>
-          </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {invoice.sale_type === "credit" ? "Credit Sale" : "Cash Sale"} - {invoice.invoice_date}
-          </p>
-        </div>
-        <div className="no-print flex items-center gap-2">
+      <div className="no-print flex items-center justify-between">
+        <HelpButton content={HELP_CONTENT["sales-invoice-detail"]} />
+        <div className="flex items-center gap-2">
           {invoice.status === "active" && can(user, "sales", "delete") && (
             <ConfirmButton
               id={invoice.id}
@@ -98,6 +88,9 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
 
       {/* Internal-only info not part of the printed document */}
       <div className="no-print mt-4 flex gap-6 text-sm text-gray-500 dark:text-gray-400">
+        <span>
+          Type: <span className="font-medium text-gray-900 dark:text-gray-100">{invoice.sale_type === "credit" ? "Credit Sale" : "Cash Sale"}</span>
+        </span>
         <span>
           Route: <span className="font-medium text-gray-900 dark:text-gray-100">{invoice.routes?.name ?? "-"}</span>
         </span>

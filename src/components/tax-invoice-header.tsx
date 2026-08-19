@@ -69,8 +69,8 @@ export function TaxInvoiceHeader({
         <div className="rounded border border-gray-400 px-4 py-1 text-sm font-semibold uppercase">{docLabel}</div>
       </div>
 
-      <div className="mt-3 flex items-center justify-between border-b border-gray-200 pb-2 text-xs">
-        <span>No. {docNumber}</span>
+      <div className="mt-3 flex items-center justify-between border-b border-gray-200 pb-2 text-sm">
+        <span className="font-semibold">No. {docNumber}</span>
         <span>Date : {docDate}</span>
       </div>
 
