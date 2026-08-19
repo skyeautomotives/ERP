@@ -5,6 +5,7 @@ import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { OrderActions } from "../order-actions";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
+import { RecordHistory } from "@/components/record-history";
 
 export default async function SalesOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -28,10 +29,12 @@ export default async function SalesOrderDetailPage({ params }: { params: Promise
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{order.customers?.name ?? "Sales order"}</h1>
+            <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{order.order_number ?? order.customers?.name ?? "Sales order"}</h1>
             <HelpButton content={HELP_CONTENT["sales-orders"]} />
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Status: {order.status}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {order.customers?.name ?? "Unknown customer"} - Status: {order.status}
+          </p>
         </div>
         {order.status === "pending" && can(user, "sales", "create") && <OrderActions orderId={order.id} />}
         {order.status === "converted" && order.converted_invoice_id && (
@@ -86,6 +89,11 @@ export default async function SalesOrderDetailPage({ params }: { params: Promise
           {order.notes}
         </p>
       )}
+
+      <div className="mt-6 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6">
+        <h2 className="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100">History</h2>
+        <RecordHistory table="sales_orders" recordId={order.id} />
+      </div>
     </div>
   );
 }

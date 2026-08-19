@@ -168,6 +168,14 @@ export function CompanyForm({ company, canEdit }: { company: Company | null; can
       </div>
       <div className="grid grid-cols-2 gap-4">
         <Field
+          label="Sales order number prefix"
+          name="order_prefix"
+          defaultValue={company.order_prefix}
+          disabled={fieldsDisabled}
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <Field
           label="Sales incentive rate (%)"
           name="sales_incentive_rate"
           type="number"

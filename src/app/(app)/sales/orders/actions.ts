@@ -7,6 +7,7 @@ import type { InvoiceLineInput } from "../actions";
 import type { Database } from "@/lib/supabase/database.types";
 
 type CreateInvoiceArgs = Database["public"]["Functions"]["create_sales_invoice"]["Args"];
+type CreateOrderArgs = Database["public"]["Functions"]["create_sales_order"]["Args"];
 
 export type CreateOrderPayload = {
   customer_id: string | null;
@@ -32,45 +33,19 @@ export async function createSalesOrder(
   }
 
   const supabase = await createClient();
-  const insertPayload: Record<string, unknown> = {
-    customer_id: payload.customer_id,
-    route_id: payload.route_id,
-    staff_id: payload.staff_id,
-    notes: payload.notes,
-    created_by: user!.id,
-  };
-  if (payload.client_id) insertPayload.id = payload.client_id;
+  const { data: orderId, error } = await supabase.rpc("create_sales_order", {
+    p_customer_id: payload.customer_id,
+    p_route_id: payload.route_id,
+    p_staff_id: payload.staff_id,
+    p_notes: payload.notes,
+    p_items: payload.items,
+    p_client_id: payload.client_id ?? null,
+  } as CreateOrderArgs);
 
-  const { data: order, error: orderError } = await supabase
-    .from("sales_orders")
-    .insert(insertPayload)
-    .select("id")
-    .single();
-
-  if (orderError?.code === "23505" && payload.client_id) {
-    // Already synced by an earlier attempt - idempotent no-op.
-    revalidatePath("/sales/orders");
-    return { error: null, id: payload.client_id };
-  }
-  if (orderError || !order) return { error: orderError?.message ?? "Failed to create order." };
-
-  const { error: itemsError } = await supabase.from("sales_order_items").insert(
-    payload.items.map((item) => ({
-      order_id: order.id,
-      product_id: item.product_id,
-      quantity: item.quantity,
-      rate: item.rate,
-      discount_percent: item.discount_percent,
-    })),
-  );
-
-  if (itemsError) {
-    await supabase.from("sales_orders").delete().eq("id", order.id);
-    return { error: itemsError.message };
-  }
+  if (error || !orderId) return { error: error?.message ?? "Failed to create order." };
 
   revalidatePath("/sales/orders");
-  return { error: null, id: order.id };
+  return { error: null, id: orderId };
 }
 
 export async function cancelSalesOrder(orderId: string): Promise<{ error: string | null }> {

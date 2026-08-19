@@ -173,9 +173,12 @@ export type Database = {
           next_credit_note_number: number
           next_debit_note_number: number
           next_invoice_number: number
+          next_order_number: number
           next_payment_number: number
           next_purchase_ref_number: number
           next_receipt_number: number
+          order_number_padding: number
+          order_prefix: string
           payment_padding: number
           payment_prefix: string
           phone: string | null
@@ -210,9 +213,12 @@ export type Database = {
           next_credit_note_number?: number
           next_debit_note_number?: number
           next_invoice_number?: number
+          next_order_number?: number
           next_payment_number?: number
           next_purchase_ref_number?: number
           next_receipt_number?: number
+          order_number_padding?: number
+          order_prefix?: string
           payment_padding?: number
           payment_prefix?: string
           phone?: string | null
@@ -247,9 +253,12 @@ export type Database = {
           next_credit_note_number?: number
           next_debit_note_number?: number
           next_invoice_number?: number
+          next_order_number?: number
           next_payment_number?: number
           next_purchase_ref_number?: number
           next_receipt_number?: number
+          order_number_padding?: number
+          order_prefix?: string
           payment_padding?: number
           payment_prefix?: string
           phone?: string | null
@@ -1719,6 +1728,7 @@ export type Database = {
           customer_id: string | null
           id: string
           notes: string | null
+          order_number: string | null
           route_id: string | null
           staff_id: string | null
           status: string
@@ -1732,6 +1742,7 @@ export type Database = {
           customer_id?: string | null
           id?: string
           notes?: string | null
+          order_number?: string | null
           route_id?: string | null
           staff_id?: string | null
           status?: string
@@ -1745,6 +1756,7 @@ export type Database = {
           customer_id?: string | null
           id?: string
           notes?: string | null
+          order_number?: string | null
           route_id?: string | null
           staff_id?: string | null
           status?: string
@@ -2191,6 +2203,17 @@ export type Database = {
           p_notes: string
           p_route_id: string
           p_sale_type: string
+          p_staff_id: string
+        }
+        Returns: string
+      }
+      create_sales_order: {
+        Args: {
+          p_client_id?: string
+          p_customer_id: string
+          p_items: Json
+          p_notes: string
+          p_route_id: string
           p_staff_id: string
         }
         Returns: string

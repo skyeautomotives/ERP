@@ -6,6 +6,7 @@ import { list, updateStatus, type QueueItem } from "@/lib/offline-queue";
 import type { Database } from "@/lib/supabase/database.types";
 
 type CreateReceiptArgs = Database["public"]["Functions"]["create_receipt"]["Args"];
+type CreateOrderArgs = Database["public"]["Functions"]["create_sales_order"]["Args"];
 
 type SalesOrderPayload = {
   customer_id: string | null;
@@ -41,32 +42,15 @@ export function OfflineSyncManager({ userId }: { userId: string }) {
       try {
         if (item.type === "sales_order") {
           const payload = item.payload as SalesOrderPayload;
-          const { data: order, error: orderError } = await supabase
-            .from("sales_orders")
-            .insert({
-              id: item.localId,
-              customer_id: payload.customer_id,
-              route_id: payload.route_id,
-              staff_id: payload.staff_id,
-              notes: payload.notes,
-            })
-            .select("id")
-            .single();
-
-          if (orderError && orderError.code !== "23505") throw new Error(orderError.message);
-
-          if (!orderError) {
-            const { error: itemsError } = await supabase.from("sales_order_items").insert(
-              payload.items.map((it) => ({
-                order_id: order!.id,
-                product_id: it.product_id,
-                quantity: it.quantity,
-                rate: it.rate,
-                discount_percent: it.discount_percent,
-              })),
-            );
-            if (itemsError) throw new Error(itemsError.message);
-          }
+          const { error: orderError } = await supabase.rpc("create_sales_order", {
+            p_customer_id: payload.customer_id,
+            p_route_id: payload.route_id,
+            p_staff_id: payload.staff_id,
+            p_notes: payload.notes,
+            p_items: payload.items,
+            p_client_id: item.localId,
+          } as CreateOrderArgs);
+          if (orderError) throw new Error(orderError.message);
         } else if (item.type === "receipt") {
           const payload = item.payload as ReceiptPayload;
           const { error } = await supabase.rpc("create_receipt", {
