@@ -3,6 +3,26 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth/permissions";
 
+// PostgREST enforces a hard 1000-row cap per request regardless of an
+// explicit .limit()/.range() - a plain single-shot query silently truncates
+// once a table crosses that count. Loops in pages until exhausted so the
+// export stays complete as the catalog grows past 1000 rows.
+async function fetchAllRows<T>(
+  query: (from: number, to: number) => PromiseLike<{ data: T[] | null }>,
+): Promise<T[]> {
+  const PAGE_SIZE = 1000;
+  const all: T[] = [];
+  let from = 0;
+  while (true) {
+    const { data } = await query(from, from + PAGE_SIZE - 1);
+    if (!data || data.length === 0) break;
+    all.push(...data);
+    if (data.length < PAGE_SIZE) break;
+    from += PAGE_SIZE;
+  }
+  return all;
+}
+
 // Exports current customers/products/stock/prices in the exact same 5-sheet
 // shape Settings > Data Import expects (same column headers) - round-trips
 // with it, and doubles as a plain backup of the master data.
@@ -15,10 +35,10 @@ export async function GET() {
   const supabase = await createClient();
   const today = new Date().toISOString().slice(0, 10);
 
-  const [{ data: customers }, { data: products }, { data: stockLevels }, { data: outstanding }] = await Promise.all([
+  const [{ data: customers }, products, stockLevels, { data: outstanding }] = await Promise.all([
     supabase.from("customers").select("*, routes(name)").order("name"),
-    supabase.from("products").select("*").order("name"),
-    supabase.from("product_stock_levels").select("*"),
+    fetchAllRows((from, to) => supabase.from("products").select("*").order("name").range(from, to)),
+    fetchAllRows((from, to) => supabase.from("product_stock_levels").select("*").range(from, to)),
     supabase.from("sales_invoice_outstanding").select("*").eq("status", "active").gt("outstanding_amount", 0),
   ]);
 
@@ -50,7 +70,7 @@ export async function GET() {
     PriceType: "",
   }));
 
-  const productSheet = (products ?? []).map((p) => ({
+  const productSheet = products.map((p) => ({
     "Product Code": p.name,
     ProductName: p.name,
     Description: "",
@@ -75,7 +95,7 @@ export async function GET() {
     "OverDue Days": "",
   }));
 
-  const stockSheet = (stockLevels ?? []).map((s) => ({
+  const stockSheet = stockLevels.map((s) => ({
     ProductCode: s.code,
     StoreCode: "Main Store",
     Unit: s.unit ?? "",
@@ -83,7 +103,7 @@ export async function GET() {
     StockDate: today,
   }));
 
-  const priceSheet = (products ?? []).map((p) => ({
+  const priceSheet = products.map((p) => ({
     ProductCode: p.code,
     PriceType: "Wprice",
     PriceDate: today,

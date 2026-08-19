@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { getStaffOptions } from "@/lib/masters/staff-options";
+import { getAllActiveProducts } from "@/lib/masters/all-products";
 import { SalesOrderForm } from "../sales-order-form";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
@@ -11,7 +12,7 @@ export default async function NewSalesOrderPage() {
   if (!can(user, "sales", "create")) redirect("/unauthorized");
 
   const supabase = await createClient();
-  const [{ data: customers }, { data: routes }, staff, { data: products }] = await Promise.all([
+  const [{ data: customers }, { data: routes }, staff, products] = await Promise.all([
     supabase
       .from("customers")
       .select("id, name, route_id, assigned_user_id")
@@ -19,11 +20,7 @@ export default async function NewSalesOrderPage() {
       .order("name"),
     supabase.from("routes").select("id, name").eq("is_active", true).order("name"),
     getStaffOptions(),
-    supabase
-      .from("products")
-      .select("id, code, name, default_rate:selling_rate, gst_percent")
-      .eq("is_active", true)
-      .order("name"),
+    getAllActiveProducts("selling_rate"),
   ]);
 
   return (
@@ -37,7 +34,7 @@ export default async function NewSalesOrderPage() {
           customers={customers ?? []}
           routes={(routes ?? []).map((r) => ({ id: r.id, label: r.name }))}
           staff={staff.map((s) => ({ id: s.id, label: s.full_name }))}
-          products={products ?? []}
+          products={products}
           userId={user!.id}
         />
       </div>

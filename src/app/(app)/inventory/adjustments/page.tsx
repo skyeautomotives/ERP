@@ -6,14 +6,15 @@ import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
 import { ModuleTabs } from "@/components/module-tabs";
 import { INVENTORY_TABS } from "../inventory-tabs";
+import { getAllActiveProducts } from "@/lib/masters/all-products";
 
 export default async function StockAdjustmentsPage() {
   const user = await getCurrentUser();
   if (!can(user, "inventory", "view")) redirect("/unauthorized");
 
   const supabase = await createClient();
-  const [{ data: products }, { data: adjustments }] = await Promise.all([
-    supabase.from("products").select("id, code, name").eq("is_active", true).order("name"),
+  const [products, { data: adjustments }] = await Promise.all([
+    getAllActiveProducts(),
     supabase
       .from("stock_adjustments")
       .select("id, quantity_change, reason, notes, created_at, products(code, name)")
@@ -36,7 +37,7 @@ export default async function StockAdjustmentsPage() {
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6">
           {can(user, "inventory", "create") ? (
-            <AdjustmentForm products={(products ?? []).map((p) => ({ id: p.id, label: `${p.code} - ${p.name}` }))} />
+            <AdjustmentForm products={products.map((p) => ({ id: p.id, label: `${p.code} - ${p.name}` }))} />
           ) : (
             <p className="text-sm text-gray-500 dark:text-gray-400">
               You don&apos;t have permission to record stock adjustments.

@@ -82,9 +82,9 @@ test("sales order (online) creates a row with the correct line item", async ({ p
   await page.goto("/sales/orders/new");
   await page.selectOption('select[name="customer_id"]', customerId);
   await page.selectOption('select[name="staff_id"]', staffId);
-  await page.selectOption('select[name="line_product_id"]', productId);
-  await page.fill('input[name="line_quantity"]', "6");
-  await page.fill('input[placeholder="Rate"]', "150");
+  await page.locator('select[name="line_product_id"]').first().selectOption(productId);
+  await page.locator('input[name="line_quantity"]').first().fill("6");
+  await page.locator('input[placeholder="Rate"]').first().fill("150");
 
   await page.getByRole("button", { name: /create sales order/i }).click();
   await page.waitForURL(/\/sales\/orders\/[0-9a-f-]{36}$/, { timeout: 15_000 });
@@ -204,9 +204,9 @@ test("poor network - a sales order queues offline and syncs once back online", a
 
   await page.selectOption('select[name="customer_id"]', customerId);
   await page.selectOption('select[name="staff_id"]', staffId);
-  await page.selectOption('select[name="line_product_id"]', productId);
-  await page.fill('input[name="line_quantity"]', "4");
-  await page.fill('input[placeholder="Rate"]', "150");
+  await page.locator('select[name="line_product_id"]').first().selectOption(productId);
+  await page.locator('input[name="line_quantity"]').first().fill("4");
+  await page.locator('input[placeholder="Rate"]').first().fill("150");
   await page.getByRole("button", { name: /create sales order/i }).click();
 
   // sales-order-form.tsx's exact "Saved offline" panel (shown in place of the

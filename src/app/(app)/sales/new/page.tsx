@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { can, getCurrentUser } from "@/lib/auth/permissions";
 import { getStaffOptions } from "@/lib/masters/staff-options";
+import { getAllActiveProducts } from "@/lib/masters/all-products";
 import { SalesInvoiceForm } from "../sales-invoice-form";
 import { HelpButton } from "@/components/help-button";
 import { HELP_CONTENT } from "@/lib/help-content";
@@ -19,7 +20,7 @@ export default async function NewSalePage({
   const initialSaleType = type === "cash" ? "cash" : "credit";
 
   const supabase = await createClient();
-  const [{ data: customers }, { data: routes }, staff, { data: products }] = await Promise.all([
+  const [{ data: customers }, { data: routes }, staff, products] = await Promise.all([
     supabase
       .from("customers")
       .select("id, name, route_id, assigned_user_id, credit_period_days")
@@ -27,11 +28,7 @@ export default async function NewSalePage({
       .order("name"),
     supabase.from("routes").select("id, name").eq("is_active", true).order("name"),
     getStaffOptions(),
-    supabase
-      .from("products")
-      .select("id, code, name, default_rate:selling_rate, gst_percent")
-      .eq("is_active", true)
-      .order("name"),
+    getAllActiveProducts("selling_rate"),
   ]);
 
   return (
@@ -49,7 +46,7 @@ export default async function NewSalePage({
           customers={customers ?? []}
           routes={(routes ?? []).map((r) => ({ id: r.id, label: r.name }))}
           staff={staff.map((s) => ({ id: s.id, label: s.full_name }))}
-          products={products ?? []}
+          products={products}
         />
       </div>
     </div>

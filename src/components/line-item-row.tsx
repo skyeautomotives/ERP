@@ -124,7 +124,15 @@ export function LineItemRow({
   }
 
   return (
-    <div className="rounded-md border border-gray-200 dark:border-gray-800 p-3">
+    <div
+      className="rounded-md border border-gray-200 dark:border-gray-800 p-3"
+      onKeyDown={(e) => {
+        // These fields live inside the invoice's <form> - pressing Enter
+        // while quickly tabbing through qty/rate during billing would
+        // otherwise submit (and finalize) the whole invoice immediately.
+        if (e.key === "Enter") e.preventDefault();
+      }}
+    >
       <div className="mb-1 grid grid-cols-12 gap-2 text-[11px] font-medium text-gray-400 dark:text-gray-500">
         <span className="col-span-4">Product</span>
         <span className="col-span-2">Qty</span>

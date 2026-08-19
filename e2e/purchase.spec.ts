@@ -65,9 +65,9 @@ test("credit purchase creates a correctly-totalled invoice and increases stock",
   await page.goto("/purchase/entries/new");
   await page.selectOption('select[name="supplier_id"]', supplierId);
   await page.fill('input[name="supplier_invoice_number"]', tag(`CREDIT-${Date.now()}`));
-  await page.selectOption('select[name="line_product_id"]', productId);
-  await page.fill('input[name="line_quantity"]', "10");
-  await page.fill('input[placeholder="Rate"]', "100");
+  await page.locator('select[name="line_product_id"]').first().selectOption(productId);
+  await page.locator('input[name="line_quantity"]').first().fill("10");
+  await page.locator('input[placeholder="Rate"]').first().fill("100");
 
   await page.getByRole("button", { name: /create purchase/i }).click();
   await page.waitForURL(/\/purchase\/entries\/[0-9a-f-]{36}$/, { timeout: 15_000 });
@@ -279,9 +279,11 @@ test("a brand-new product can be created inline from Purchase Entry and used in 
 
   // The new product should now be selected on the line automatically -
   // confirm by checking the rate auto-filled from the quick-create dialog,
-  // then just set a quantity and submit.
-  await expect(page.locator('input[placeholder="Rate"]')).toHaveValue("200", { timeout: 10_000 });
-  await page.fill('input[name="line_quantity"]', "3");
+  // then just set a quantity and submit. Picking/creating a product on the
+  // last line auto-adds a fresh empty line, so there are now two Rate
+  // inputs on the page - target the first (filled) one specifically.
+  await expect(page.locator('input[placeholder="Rate"]').first()).toHaveValue("200", { timeout: 10_000 });
+  await page.locator('input[name="line_quantity"]').first().fill("3");
 
   await page.getByRole("button", { name: /create purchase/i }).click();
   await page.waitForURL(/\/purchase\/entries\/[0-9a-f-]{36}$/, { timeout: 15_000 });

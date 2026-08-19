@@ -68,9 +68,9 @@ test("credit sale creates a correctly-totalled invoice with profit", async ({ pa
   await page.goto("/sales/new?type=credit");
   await page.selectOption('select[name="customer_id"]', customerId);
   await page.selectOption('select[name="staff_id"]', staffId);
-  await page.selectOption('select[name="line_product_id"]', productId);
-  await page.fill('input[name="line_quantity"]', "10");
-  await page.fill('input[placeholder="Rate"]', "150");
+  await page.locator('select[name="line_product_id"]').first().selectOption(productId);
+  await page.locator('input[name="line_quantity"]').first().fill("10");
+  await page.locator('input[placeholder="Rate"]').first().fill("150");
 
   await page.getByRole("button", { name: /create credit sale/i }).click();
   await page.waitForURL(/\/sales\/[0-9a-f-]{36}$/, { timeout: 15_000 });
@@ -98,9 +98,9 @@ test("cash sale for a walk-in customer", async ({ page }) => {
   await page.goto("/sales/new?type=cash");
   await page.selectOption('select[name="staff_id"]', staffId);
   await page.fill('input[name="cash_customer_name"]', tag("Walkin"));
-  await page.selectOption('select[name="line_product_id"]', productId);
-  await page.fill('input[name="line_quantity"]', "2");
-  await page.fill('input[placeholder="Rate"]', "150");
+  await page.locator('select[name="line_product_id"]').first().selectOption(productId);
+  await page.locator('input[name="line_quantity"]').first().fill("2");
+  await page.locator('input[placeholder="Rate"]').first().fill("150");
 
   await page.getByRole("button", { name: /create cash sale/i }).click();
   await page.waitForURL(/\/sales\/[0-9a-f-]{36}$/, { timeout: 15_000 });
@@ -264,9 +264,11 @@ test("a brand-new customer can be created inline from Sales Entry and used in th
   // The new customer should now be selected on the form automatically.
   await expect(page.locator('select[name="customer_id"]')).not.toHaveValue("", { timeout: 10_000 });
 
-  await page.selectOption('select[name="line_product_id"]', productId);
-  await page.fill('input[name="line_quantity"]', "1");
-  await page.fill('input[placeholder="Rate"]', "150");
+  // Picking a product on the last line auto-adds a fresh empty line right
+  // after, so target the first (filled-in) row's inputs explicitly.
+  await page.locator('select[name="line_product_id"]').first().selectOption(productId);
+  await page.locator('input[name="line_quantity"]').first().fill("1");
+  await page.locator('input[placeholder="Rate"]').first().fill("150");
   await page.getByRole("button", { name: /create credit sale/i }).click();
   await page.waitForURL(/\/sales\/[0-9a-f-]{36}$/, { timeout: 15_000 });
   const invoiceId = page.url().split("/").pop()!;

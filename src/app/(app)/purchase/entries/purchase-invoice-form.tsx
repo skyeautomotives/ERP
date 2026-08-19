@@ -49,7 +49,13 @@ export function PurchaseInvoiceForm({
   }, [items]);
 
   function updateItem(index: number, updated: LineItem) {
-    setItems((prev) => prev.map((it, i) => (i === index ? updated : it)));
+    setItems((prev) => {
+      const next = prev.map((it, i) => (i === index ? updated : it));
+      const isLastRow = index === prev.length - 1;
+      const justPickedProduct = !prev[index].product_id && updated.product_id;
+      if (isLastRow && justPickedProduct) next.push(emptyItem());
+      return next;
+    });
   }
 
   function removeItem(index: number) {

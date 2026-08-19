@@ -75,7 +75,16 @@ export function SalesInvoiceForm({
   }, [items]);
 
   function updateItem(index: number, updated: LineItem) {
-    setItems((prev) => prev.map((it, i) => (i === index ? updated : it)));
+    setItems((prev) => {
+      const next = prev.map((it, i) => (i === index ? updated : it));
+      // Picking a product on what's currently the last line auto-adds a
+      // fresh empty line, so billing quickly doesn't need a click on
+      // "+ Add line" after every single item.
+      const isLastRow = index === prev.length - 1;
+      const justPickedProduct = !prev[index].product_id && updated.product_id;
+      if (isLastRow && justPickedProduct) next.push(emptyItem());
+      return next;
+    });
   }
 
   function removeItem(index: number) {
