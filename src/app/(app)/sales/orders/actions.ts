@@ -63,7 +63,10 @@ export async function cancelSalesOrder(orderId: string): Promise<{ error: string
   return { error: null };
 }
 
-export async function convertSalesOrder(orderId: string): Promise<{ error: string | null; invoiceId?: string }> {
+export async function convertSalesOrder(
+  orderId: string,
+  saleType: "cash" | "credit" = "credit",
+): Promise<{ error: string | null; invoiceId?: string }> {
   const user = await getCurrentUser();
   if (!can(user, "sales", "create")) return { error: "Not authorized." };
 
@@ -79,7 +82,7 @@ export async function convertSalesOrder(orderId: string): Promise<{ error: strin
   if (!order.staff_id) return { error: "This order has no sales staff assigned." };
 
   const { data: invoiceId, error: rpcError } = await supabase.rpc("create_sales_invoice", {
-    p_sale_type: "credit",
+    p_sale_type: saleType,
     p_customer_id: order.customer_id,
     p_cash_customer_name: null,
     p_cash_customer_phone: null,
@@ -105,4 +108,60 @@ export async function convertSalesOrder(orderId: string): Promise<{ error: strin
   revalidatePath("/sales/orders");
   revalidatePath(`/sales/orders/${orderId}`);
   return { error: null, invoiceId };
+}
+
+export type PendingOrderSummary = {
+  id: string;
+  order_number: string | null;
+  customer_name: string;
+  route_name: string | null;
+  staff_name: string | null;
+  created_at: string;
+  subtotal: number;
+  items: { product_code: string; product_name: string; quantity: number; rate: number }[];
+};
+
+export async function getPendingSalesOrders(): Promise<{ error: string | null; orders: PendingOrderSummary[] }> {
+  const user = await getCurrentUser();
+  if (!can(user, "sales", "view")) return { error: "Not authorized.", orders: [] };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("sales_orders")
+    .select(
+      "id, order_number, created_at, customers(name), routes(name), user_profiles(full_name), sales_order_items(quantity, rate, products(code, name))",
+    )
+    .eq("status", "pending")
+    .order("created_at", { ascending: false });
+
+  if (error) return { error: error.message, orders: [] };
+
+  const orders: PendingOrderSummary[] = (data ?? []).map((o) => ({
+    id: o.id,
+    order_number: o.order_number,
+    customer_name: o.customers?.name ?? "Unknown customer",
+    route_name: o.routes?.name ?? null,
+    staff_name: o.user_profiles?.full_name ?? null,
+    created_at: o.created_at,
+    subtotal: o.sales_order_items.reduce((sum, it) => sum + Number(it.quantity) * Number(it.rate), 0),
+    items: o.sales_order_items.map((it) => ({
+      product_code: it.products?.code ?? "",
+      product_name: it.products?.name ?? "",
+      quantity: Number(it.quantity),
+      rate: Number(it.rate),
+    })),
+  }));
+
+  return { error: null, orders };
+}
+
+export async function convertSalesOrdersBulk(
+  conversions: { orderId: string; saleType: "cash" | "credit" }[],
+): Promise<{ orderId: string; invoiceId?: string; error?: string }[]> {
+  const results: { orderId: string; invoiceId?: string; error?: string }[] = [];
+  for (const { orderId, saleType } of conversions) {
+    const result = await convertSalesOrder(orderId, saleType);
+    results.push({ orderId, invoiceId: result.invoiceId, error: result.error ?? undefined });
+  }
+  return results;
 }
